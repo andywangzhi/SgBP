@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%
+String path = request.getContextPath();
+%>
+<html>
+  <head>
+    <title>人才队伍建设信息配置</title>    
+    <link rel="stylesheet" type="text/css" href="<%=path%>/themes/default/easyui.css" />
+	<link rel="stylesheet" type="text/css" href="<%=path%>/css/icon/icon.css" />
+	<script type="text/javascript" src="<%=path%>/js/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="<%=path%>/js/jquery/jquery.form.js"></script>
+	<script type="text/javascript" src="<%=path%>/js/jquery.easyui.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="<%=path%>/business/css/reset.css" />
+    <script type="text/javascript">
+		var path = '<%=path%>'; 
+		var ram=Math.random();
+		var clicked=true;
+		function save(){
+			if(clicked){
+				$("#save").attr("disabled",true);	
+				clicked=false;
+			}else{
+				return;
+			}
+			$("#frm").ajaxSubmit({
+				url: path+'/soa/RsTalantTeamAction!saveOrUpdate.action?ram='+ ram,
+				dataType:"json",
+				success: function(data, status)
+				{   
+					var flag=data.flag;
+			        if(flag=="1"){
+				        alert("保存成功");
+				        location.href=path+'/soa/RsTalantTeamAction!toConfig.action';
+			        }else{
+			        	clicked=true;
+			        	alert("保存失败");
+			        }
+				},
+				error:function()
+				{
+					clicked=true;
+					$("#save").attr("disabled",true);	
+					alert("保存失败");
+				}
+			});
+		}
+    </script>
+  </head>
+  
+  <body>
+   <div class="web_paht">
+    <div class="row_l web_paht_l">您的位置：人才队伍建设&nbsp;&gt;&nbsp;基本信息配置</div>
+</div>
+
+<div class="main_in">
+    <div id="nav" class="easyui-accordion" fit="true" border="false"  >
+         <div title="基本信息配置" headerCls="bar_title" icon="title" selected="true">
+         <form id="frm" name="frm" action="" method="post">
+         <input type="hidden" name="socialworker.swid" value="<s:property value="socialworker.swid"/>"/>
+         <input type="hidden" name="socialworker.swdate" value="<s:property value="socialworker.swdate"/>"/>
+              <div class="table_edit">
+                  <table>
+                      <tbody>
+                          <tr>
+                              <th width="90px">人口总量：</th>
+                              <td colspan="2"><input id="t11" name="socialworker.t11" type="text" value="<s:property value="socialworker.t11"/>" class="inp" maxlength="6"/></td>
+                              <th width="90px">从业人员总量：</th>
+                              <td colspan="2"><input id="t12" name="socialworker.t12" type="text" value="<s:property value="socialworker.t12"/>" class="inp" maxlength="6"/></td>
+                              <th width="90px">农村农运力总量</th>
+                              <td colspan="3"><input id="t13" name="socialworker.t13" type="text" value="<s:property value="socialworker.t13"/>" class="inp" maxlength="6"/></td>
+                          </tr>
+                          <tr>
+                              <td colspan="10" style="text-align: center;" >持证社工人数</td>
+                          </tr>
+                          <tr>
+	                          <th width="90px">武江：</th>
+	                          <td><input id="t1" name="socialworker.t1" type="text" value="<s:property value="socialworker.t1"/>" class="inp" maxlength="6"/></td>
+	                          <th width="90px">浈江：</th>
+	                          <td><input id="t2" name="socialworker.t2" type="text" value="<s:property value="socialworker.t2"/>" class="inp" maxlength="6"/></td>
+	                          <th width="90px">曲江：</th>
+	                          <td><input id="t3" name="socialworker.t3" type="text" value="<s:property value="socialworker.t3"/>" class="inp" maxlength="6"/></td>
+	                          <th width="90px">始兴：</th>
+	                          <td><input id="t4" name="socialworker.t4" type="text" value="<s:property value="socialworker.t4"/>" class="inp" maxlength="6"/></td>
+	                          <th width="90px">仁化：</th>
+	                          <td><input id="t5" name="socialworker.t5" type="text" value="<s:property value="socialworker.t5"/>" class="inp" maxlength="6"/></td>
+                          </tr>
+                           <tr>
+	                          <th width="90px">翁源：</th>
+	                          <td><input id="t6" name="socialworker.t6" type="text" value="<s:property value="socialworker.t6"/>" class="inp" maxlength="6"/></td>
+	                          <th width="90px">乳源：</th>
+	                          <td><input id="t7" name="socialworker.t7" type="text" value="<s:property value="socialworker.t7"/>" class="inp" maxlength="6"/></td>
+	                          <th width="90px">新丰：</th>
+	                          <td><input id="t8" name="socialworker.t8" type="text" value="<s:property value="socialworker.t8"/>" class="inp" maxlength="6"/></td>
+	                          <th width="90px">乐昌：</th>
+	                          <td><input id="t9" name="socialworker.t9" type="text" value="<s:property value="socialworker.t9"/>" class="inp" maxlength="6"/></td>
+	                          <th width="90px">南雄：</th>
+	                          <td><input id="t10" name="socialworker.t10" type="text" value="<s:property value="socialworker.t10"/>" class="inp" maxlength="6"/></td>
+                          </tr>
+                      </tbody>
+                      <tfoot>
+                          <tr><td colspan="10">
+                          <a id="save" onclick="save();" class="btn_search" >保 存</a>&nbsp;&nbsp;
+                          <a href="<%=path%>/soa/RsTalantTeamAction!view.action"; class="btn_search" >返回</a>
+                          </td></tr>
+                      </tfoot>
+                  </table>
+              </div>
+             </form>
+        </div>
+    </div>
+    
+</div>
+  </body>
+</html>

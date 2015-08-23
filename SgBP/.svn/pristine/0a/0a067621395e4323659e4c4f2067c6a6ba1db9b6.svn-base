@@ -1,0 +1,13 @@
+db.driver=oracle.jdbc.driver.OracleDriver
+#db.url=jdbc:oracle:thin:@192.168.17.128:1521:orcl
+db.url=jdbc:oracle:thin:@192.168.100.88:1521:orcl92
+#------oracle 9i -----
+db.dialect=org.hibernate.dialect.Oracle9iDialect
+#------oracle 10g ----
+#db.dialect=org.hibernate.dialect.Oracle10gDialect
+db.user=sguser
+db.password=sguser
+db.schema=sguser
+
+jndi=jdbc/QueryDB
+

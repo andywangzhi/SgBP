@@ -1,0 +1,1004 @@
+package com.gzepro.internal.query.system.action;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import net.sf.json.JSONObject;
+
+import org.apache.struts2.ServletActionContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.gzepro.internal.query.common.util.DateUtil;
+import com.gzepro.internal.query.common.util.DeleteTemporaryFile;
+import com.gzepro.internal.query.common.util.ExcelDAO;
+import com.gzepro.internal.query.common.util.WordDAO;
+import com.gzepro.internal.query.model.RsBatchlog;
+import com.gzepro.internal.query.model.RsEducationexperience;
+import com.gzepro.internal.query.model.RsPerson;
+import com.gzepro.internal.query.model.RsProjectexperience;
+import com.gzepro.internal.query.model.RsTechnicallymess;
+import com.gzepro.internal.query.model.RsTechnologicalharvest;
+import com.gzepro.internal.query.model.RsWorkexperience;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.affix.RsAffixDTO;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.rctj.BatchlogForm;
+import com.gzepro.internal.query.soa.service.user.impl.RsAffixService;
+import com.gzepro.internal.query.system.base.SystemBaseAction;
+import com.gzepro.internal.query.system.service.ExcelService;
+
+/**
+ * @author wz
+ * @version 1.0 Created on: 2012-7-1
+ */
+@SuppressWarnings("serial")
+@Scope("prototype")
+@Component("system.uploadExecl")
+public class BatchUploadExeclAction extends SystemBaseAction {
+
+	private static int count=0;//全局标记是否为第一次调用
+	private BatchlogForm form = new BatchlogForm();
+	private File[] attachFile;
+	protected String loginAccountUserName = "";
+	@Resource
+	protected ExcelService excelService;
+	@Resource
+	private RsAffixService rsAffixService;
+	public static SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
+	public static SimpleDateFormat sdfs=new SimpleDateFormat("yyyyMMdd");
+	
+	private RsAffixDTO rsAffix = new RsAffixDTO();
+
+	@Override
+	public String execute() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
+		this.loginAccountUserName = this.readCookieSSO(request, response);
+		return super.execute();
+	}
+	
+//	读取数据导入实时状态
+	public String doStatus() 
+	{
+		JSONObject json = new JSONObject();
+		// 设置该响应不在缓存中读取
+		HttpServletResponse response= this.getResponse();
+		response.addHeader("Expires", "0");
+		response.addHeader("Cache-Control",
+				"no-store, no-cache, must-revalidate");
+		response.addHeader("Pragma", "no-cache");
+		response.setHeader("Cache-Control", "no-cache");
+		response.setCharacterEncoding("utf-8");          
+	    response.setContentType("text/html; charset=utf-8");          
+		int totalSize = 0;// 总数据的条数
+		int bytesRead = 0;// 已导入数据条数
+		long getElapsedTimeInSeconds=0;// 获得已经上传得时间
+		HttpSession session = this.getRequest().getSession(false);
+        if (session.getAttribute("TOTALSIZE")  != null) {
+        	if(count != 1){
+        		session.removeAttribute("TOTALSIZE");
+        	}else{
+        		totalSize=Integer.parseInt(session.getAttribute("TOTALSIZE").toString());
+        	}
+        }
+        if (session.getAttribute("BYTESREAD")  != null) {
+        	if(count != 1){
+        		session.removeAttribute("BYTESREAD");
+        	}else{
+        		bytesRead=Integer.parseInt(session.getAttribute("BYTESREAD").toString());
+        	}
+        }
+        if (session.getAttribute("STARTTIME")  != null) {
+        	long stime=Long.parseLong((String)session.getAttribute("STARTTIME"));
+        	getElapsedTimeInSeconds=(System.currentTimeMillis() - stime) / 1000;
+        }
+		
+		//计算上传完成的百分比
+        String percentComplete="0";
+        if(totalSize > 0){
+        	double k = (double)bytesRead/totalSize*100; 
+        	BigDecimal big=new BigDecimal(k);  
+        	percentComplete = big.setScale(2,BigDecimal.ROUND_HALF_UP).toString(); 
+        }
+		//获得上传已用的时间
+		long timeInSeconds = getElapsedTimeInSeconds;
+		//计算平均上传速率
+		//double uploadRate = bytesRead / (timeInSeconds + 0.00001);
+		//System.out.println("**************计算平均上传速率="+bytesRead);
+		// 计算总共所需时间
+		//double estimatedRuntime = totalSize / (uploadRate + 0.00001);
+		
+		//将上传状态返回给客户端
+		StringBuffer str=new StringBuffer();
+		str.append("<p>导入进度:</p>");
+		if (bytesRead <= totalSize) {
+			str.append(
+					"<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: "
+							+ percentComplete + "%;\"></div></div>");
+			str.append(
+					"<p>已处理: " + bytesRead + "  /  总数： " + totalSize
+							+ " (" + percentComplete + "%) </p>");
+			str.append(
+					"<p>已用时间: " + formatTime(timeInSeconds) + " </p>");
+		} else {
+			str.append(
+					"<p>已处理: " + bytesRead + " / 总数" + totalSize
+							+ "</p>");
+			str.append("<p>导入完成.</p>");
+		}
+        //如果文件已经导入完毕
+		if (count == 2) {
+			count=0;
+			json.put("status", "2");
+			str.append("<p>导入完成.</p>");
+		}else{
+			json.put("status", String.valueOf(count));
+		}
+		json.put("schedule", str.toString());
+		outputJson(json);
+		return this.NONE;
+	}
+	
+	private String formatTime(double timeInSeconds) {
+		long seconds = (long) Math.floor(timeInSeconds);
+		long minutes = (long) Math.floor(timeInSeconds / 60.0);
+		long hours = (long) Math.floor(minutes / 60.0);
+
+		if (hours != 0) {
+			return hours + "时 " + (minutes % 60) + "分 "
+					+ (seconds % 60) + "秒";
+		} else if (minutes % 60 != 0) {
+			return (minutes % 60) + "分 " + (seconds % 60) + "秒";
+		} else {
+			return (seconds % 60) + " 秒";
+		}
+	}
+	
+	public String queryBatchlog() throws Exception {
+		 String lognumber=form.getLognumber();
+		 String fromDate=form.getFromDate();
+		 String todate =form.getToDate();
+		 String adduser=form.getAdduser();
+		 String typeid="1";
+		 Date fdate=null;
+		 Date tdate=null;
+		 if(fromDate!=null&&fromDate.length()>0){
+			String date=BatchUploadExeclAction.parseDate(fromDate);
+			fdate =sdf.parse(String.valueOf(date)+"000000");
+		 }
+		 if(todate!=null&&todate.length()>0){
+			 String date=BatchUploadExeclAction.parseDate(todate);
+			 tdate =sdf.parse(String.valueOf(date)+"235900");
+		 }
+		 if (lognumber!=null&&lognumber.length()>0) {
+			lognumber=lognumber.trim();
+		}
+		 if (adduser!=null&&adduser.length()>0) {
+			 adduser=adduser.trim();
+		}
+		this.paging=excelService.queryRsBatchlog(lognumber, fdate, tdate, adduser, typeid,paging);
+		if(this.paging.getVoList()!=null&&this.paging.getVoList().size()>0){
+			form.setDtoList(this.paging.getVoList());
+		}
+		return "log";
+	}
+	
+	public String queryBatchlogs() throws Exception {
+		 String lognumber=form.getLognumber();
+		this.paging=excelService.queryRsBatchlog(lognumber.trim(), null, null, null, null,paging);
+		if(this.paging.getVoList()!=null&&this.paging.getVoList().size()>0){
+			form.setDtoList(this.paging.getVoList());
+		}
+		return "logs";
+	}
+	
+	
+	public static String parseDate(String d) throws Exception{
+	    String date="";
+	    if(d!=null&&d.length()>0){
+	    	String bYYYY = d.substring(0, d.indexOf("-"));
+			String bMM = d.substring(d.indexOf("-")+1, d.lastIndexOf("-"));
+			String bDD = d.substring(d.lastIndexOf("-")+1,d.length() );
+			if( bMM.length()==1){
+				date= bYYYY +"0"+ bMM;
+			}else{
+				date= bYYYY +""+ bMM;
+			}
+			if( bDD.length()==1){
+				date= date +"0"+ bDD;
+			}else{
+				date= date +""+ bDD;
+			}
+	    }
+	    return date;
+	}
+
+	public String saveExecl() {
+		count=1;//开始导入
+		JSONObject json = new JSONObject();
+		long startTime = System.currentTimeMillis();// 开始导入的时间
+		ExcelDAO dao = null;
+		String addUser = this.getAccount().getLoginCode();
+		Date addDate = new   Date(System.currentTimeMillis());
+		HttpSession session = this.getRequest().getSession(false);
+		try {
+			File f = attachFile[0];
+			dao = ExcelDAO.getExcelDAO(new FileInputStream(f));
+		} catch (Exception e) {
+			e.printStackTrace();
+			json.put("error", "上传的文件不对！");
+			outputJson(json);
+			count=2;
+			return this.NONE;
+		}
+		Map<String, RsPerson> persionMap;
+		if (addUser==null||addDate==null) {
+			json.put("error", "用户已经失效 请重新登录！");
+			outputJson(json);
+			count=2;
+			return this.NONE;
+		}
+		try {
+			persionMap = dao.getRsPerson();
+		} catch (Exception e1) {
+			json.put("error", e1.getMessage());
+			outputJson(json);
+			count=2;
+			return this.NONE;
+		}
+		if(persionMap==null||persionMap.size()<=0){
+			if(dao.getFirstErroeMessage() != null && !dao.getFirstErroeMessage().equals("")){
+				json.put("error", dao.getFirstErroeMessage());
+			}else{
+				json.put("error", "人员基本信息不能为空！");
+			}			
+			outputJson(json);
+			count=2;
+			return this.NONE;
+		}
+		 if (session.getAttribute("TOTALSIZE")  != null) {
+             session.removeAttribute("TOTALSIZE");
+           
+         }
+         if (session.getAttribute("STARTTIME")  != null) {
+             session.removeAttribute("STARTTIME");
+             session.setAttribute("STARTTIME", String.valueOf(startTime));
+         }else{
+         	session.setAttribute("STARTTIME", String.valueOf(startTime));
+         }
+         if (session.getAttribute("BYTESREAD")  != null) {
+             session.removeAttribute("BYTESREAD");
+         }
+		Map<String, List<RsTechnicallymess>> technicallymessMap = dao
+				.getRsTechnicallymess();
+		Map<String, List<RsEducationexperience>> educationexperienceMap = dao
+				.getRsEducationexperience();
+		Map<String, List<RsWorkexperience>> workexperienceMap = dao
+				.getRsWorkexperience();
+		Map<String, List<RsTechnologicalharvest>> technologicalharvestMap = dao
+				.getRsTechnologicalharvest();
+		Map<String, List<RsProjectexperience>> projectexperienceMap = dao
+				.getRsProjectexperience();
+		RsBatchlog errorPerson = dao.getPerson();// 人员错误信息
+		Map<String, String> personMap=dao.getPersonMap();
+		RsBatchlog errorTechnicallymess = dao.getTechnicallymess();// 职称错误信息
+		RsBatchlog errorEducationexperience = dao.getEducationexperience();// 教育错误信息
+		RsBatchlog errorWorkexperience = dao.getWorkexperience();// 工作错误信息
+		RsBatchlog errorProjectexperience = dao.getProjectexperience();// 项目错误信息
+		RsBatchlog errorTechnologicalharvest = dao.getTechnologicalharvest(); // 成果错误信息
+		String number=excelService.queryBatchlogNumber().toString();
+		String lognumber="P"+sdfs.format(new   Date(System.currentTimeMillis()))+resetNumber(number);
+		  session.setAttribute("TOTALSIZE",String.valueOf(errorPerson.getTotal()));
+		if(technicallymessMap!=null&&technicallymessMap.size()>0){
+			for (String idcard : technicallymessMap.keySet()) {
+				if(persionMap.get(idcard)==null){
+					List<RsTechnicallymess> list=technicallymessMap.get(idcard);
+					if(list!=null&&list.size()>0){
+						for (RsTechnicallymess  rsTechnicallymess : list) {
+							if(personMap!=null&&personMap.get(idcard)!=null){
+								errorTechnicallymess.setFailcounts();
+								errorTechnicallymess.getErrorlogs().append("<p>"+
+								errorTechnicallymess.getFailcount().toString() + "、" + "身份证号码："
+								+ idcard +"职称技能专业名称："+rsTechnicallymess.getTechnicallytype()+ ",人员基本信息的"+personMap.get(idcard)+",职称技能导入失败！</p>");
+							
+							}else{
+							errorTechnicallymess.setFailcounts();
+							errorTechnicallymess.getErrorlogs().append("<p>"+
+							errorTechnicallymess.getFailcount().toString() + "、" + "身份证号码："
+							+ idcard +"职称技能专业名称："+rsTechnicallymess.getTechnicallytype()+ ",在人员基本信息中不存在!</p>");
+							}
+						}
+					}
+				}
+			}
+		}
+		if(educationexperienceMap!=null&&educationexperienceMap.size()>0){
+			for (String idcard : educationexperienceMap.keySet()) {
+				if(persionMap.get(idcard)==null){
+					List<RsEducationexperience> list=educationexperienceMap.get(idcard);
+					if(list!=null&&list.size()>0){
+						for (RsEducationexperience rsEducationexperience : list){
+							if(personMap!=null&&personMap.get(idcard)!=null){
+								errorEducationexperience.setFailcounts();
+								errorEducationexperience.getErrorlogs().append("<p>"+
+								errorEducationexperience.getFailcount().toString() + "、" + "身份证号码："
+								+ idcard + "毕业院校:"+rsEducationexperience.getPcollege()+ ",人员基本信息的"+personMap.get(idcard)+"，教育简历导入失败！</p>");
+							}else{
+							errorEducationexperience.setFailcounts();
+							errorEducationexperience.getErrorlogs().append("<p>"+
+							errorEducationexperience.getFailcount().toString() + "、" + "身份证号码："
+							+ idcard + "毕业院校:"+rsEducationexperience.getPcollege()+",在人员基本信息中不存在!</p>");
+							}
+						}
+					}
+				}
+			}
+		}
+		if(workexperienceMap!=null&&workexperienceMap.size()>0){
+			for (String idcard : workexperienceMap.keySet()) {
+				if(persionMap.get(idcard)==null){
+					List<RsWorkexperience> list=workexperienceMap.get(idcard);
+					if(list!=null&&list.size()>0){
+						for (RsWorkexperience rsWorkexperience : list) {
+							if(personMap!=null&&personMap.get(idcard)!=null){
+								errorWorkexperience.setFailcounts();
+								errorWorkexperience.getErrorlogs().append("<p>"+
+								errorWorkexperience.getFailcount().toString() + "、" + "身份证号码："
+								+ idcard +"单位名称："+rsWorkexperience.getCompanyname()+  ",人员基本信息的"+personMap.get(idcard)+"，工作经历导入失败！</p>");
+							}else{
+							errorWorkexperience.setFailcounts();
+							errorWorkexperience.getErrorlogs().append("<p>"+
+							errorWorkexperience.getFailcount().toString() + "、" + "身份证号码："
+							+ idcard +"单位名称："+rsWorkexperience.getCompanyname()+ ",在人员基本信息中不存在!</p>");
+							}
+						}
+					}
+				}
+			}
+		}
+		if(technologicalharvestMap!=null&&technologicalharvestMap.size()>0){
+			for (String idcard : technologicalharvestMap.keySet()) {
+				if(persionMap.get(idcard)==null){
+					List<RsTechnologicalharvest> list=technologicalharvestMap.get(idcard);
+					if(list!=null&&list.size()>0){
+						for (RsTechnologicalharvest rsTechnologicalharvest : list) {
+							if(personMap!=null&&personMap.get(idcard)!=null){
+								errorTechnologicalharvest.setFailcounts();
+								errorTechnologicalharvest.getErrorlogs().append("<p>"+
+								errorTechnologicalharvest.getFailcount().toString() + "、" + "身份证号码："
+								+ idcard +"科技成果名称："+ rsTechnologicalharvest.getHarvestname()+ ",人员基本信息的"+personMap.get(idcard)+"，科技成果导入失败！</p>");
+							}else{
+							errorTechnologicalharvest.setFailcounts();
+							errorTechnologicalharvest.getErrorlogs().append("<p>"+
+							errorTechnologicalharvest.getFailcount().toString() + "、" + "身份证号码："
+							+ idcard +"科技成果名称："+ rsTechnologicalharvest.getHarvestname()+",在人员基本信息中不存在!</p>");
+							}
+						}
+					}
+				}
+			}
+		}
+		if(projectexperienceMap!=null&&projectexperienceMap.size()>0){
+			for (String idcard : projectexperienceMap.keySet()) {
+				if(persionMap.get(idcard)==null){
+					List<RsProjectexperience> list=projectexperienceMap.get(idcard);
+					if(list!=null&&list.size()>0){
+						for (RsProjectexperience rsProjectexperience : list) {
+							if(personMap!=null&&personMap.get(idcard)!=null){
+								errorProjectexperience.setFailcounts();
+								errorProjectexperience.getErrorlogs().append("<p>"+
+								errorProjectexperience.getFailcount().toString() + "、" + "身份证号码："
+								+ idcard +"项目名称："+rsProjectexperience.getProjname()+ ",人员基本信息的"+personMap.get(idcard)+"，项目经验导入失败！</p>");
+							}else{
+							errorProjectexperience.setFailcounts();
+							errorProjectexperience.getErrorlogs().append("<p>"+
+							errorProjectexperience.getFailcount().toString() + "、" + "身份证号码："
+							+ idcard +"项目名称："+rsProjectexperience.getProjname()+ ",在人员基本信息中不存在!</p>");
+							}
+						}
+					}
+				}
+			}
+		}
+		for (String id : persionMap.keySet()) {
+			RsPerson person = persionMap.get(id);
+			session.removeAttribute("BYTESREAD");
+			session.setAttribute("BYTESREAD", String.valueOf(errorPerson.getFailcount()+errorPerson.getSuccesscount()));
+			// 查询人员是否已经存在
+			boolean bool = excelService.queryRsperson(person.getIdcard());
+			if (bool) {
+				errorPerson.setFailcounts();
+				errorPerson.getErrorlogs().append("<p>"+
+						errorPerson.getFailcount().toString() + "、" + "身份证号码："
+								+ person.getIdcard() + " 在系统中已经存在!</p>");// 已经录入了的人员信息，不用重复录入！
+				if (technicallymessMap != null
+						&& technicallymessMap.get(id) != null) {
+					 List<RsTechnicallymess> list=technicallymessMap.get(id);
+						for (RsTechnicallymess rsTechnicallymess : list){
+							errorTechnicallymess.setFailcounts();
+							errorTechnicallymess.getErrorlogs().append("<p>"+
+							errorTechnicallymess.getFailcount().toString() + "、" + "身份证号码："
+							+ person.getIdcard() +"职称技能专业名称："+rsTechnicallymess.getTechnicallytype()+ " ,人员信息在系统中已经存在!</p>");
+					}
+				}
+				if (educationexperienceMap != null
+						&& educationexperienceMap.get(id) != null) {
+					 List<RsEducationexperience> list=educationexperienceMap.get(id);
+						for (RsEducationexperience rsEducationexperience : list){
+							errorEducationexperience.setFailcounts();
+							errorEducationexperience.getErrorlogs().append("<p>"+
+							errorEducationexperience.getFailcount().toString() + "、" + "身份证号码："
+							+ person.getIdcard() + "毕业院校:"+rsEducationexperience.getPcollege()+", 人员信息在系统中已经存在!</p>");
+						}
+				}
+					
+				if (workexperienceMap != null
+						&& workexperienceMap.get(id) != null) {
+					List<RsWorkexperience> list=workexperienceMap.get(id);
+					for (RsWorkexperience rsWorkexperience : list) {
+						errorWorkexperience.setFailcounts();
+						errorWorkexperience.getErrorlogs().append("<p>"+
+						errorWorkexperience.getFailcount().toString() + "、" + "身份证号码："
+						+ person.getIdcard() +"单位名称："+rsWorkexperience.getCompanyname()+ " ,人员信息在系统中已经存在!</p>");
+					}
+				}
+				
+				if (technologicalharvestMap != null
+						&& technologicalharvestMap.get(id) != null) {
+					List<RsTechnologicalharvest> list=technologicalharvestMap.get(id);
+					for (RsTechnologicalharvest rsTechnologicalharvest : list) {
+						errorTechnologicalharvest.setFailcounts();
+						errorTechnologicalharvest.getErrorlogs().append("<p>"+
+						errorTechnologicalharvest.getFailcount().toString() + "、" + "身份证号码："
+						+ person.getIdcard() +"科技成果名称："+ rsTechnologicalharvest.getHarvestname()+" ,人员信息在系统中已经存在!</p>");
+					}
+				}
+				if (projectexperienceMap != null
+						&& projectexperienceMap.get(id) != null) {
+					List<RsProjectexperience> list=projectexperienceMap.get(id);
+					for (RsProjectexperience rsProjectexperience : list) {
+						errorProjectexperience.setFailcounts();
+						errorProjectexperience.getErrorlogs().append("<p>"+
+						errorProjectexperience.getFailcount().toString() + "、" + "身份证号码："
+						+ person.getIdcard() +"项目名称："+rsProjectexperience.getProjname()+ ",人员信息在系统中已经存在!</p>");
+					}
+				}					
+			} else {
+				try {
+					person.setAdddate(addDate);//经受时间
+					person.setUnitlvl("3");
+					person.setAdduser(addUser);//经受人
+					person.setBatchcode(lognumber);//导入批次
+					person.setSourcetype("2");//数据来源
+					person = excelService.add(person);
+					errorPerson.setSuccesscounts();// 成功数加1
+				} catch (Exception e) {
+					e.printStackTrace();
+					// 添加到数据库出错
+					errorPerson.setFailcounts();
+					errorPerson.getErrorlogs().append("<p>"+
+							errorPerson.getFailcount().toString() + "、"
+									+ "身份证号码：" + person.getIdcard()
+									+ "导入数据库失败！"+"</p>");// 已经录入了的人员信息，不用重复录入！
+					if (technicallymessMap != null
+							&& technicallymessMap.get(id) != null) {
+						 List<RsTechnicallymess> list=technicallymessMap.get(id);
+							for (RsTechnicallymess rsTechnicallymess : list){
+								errorTechnicallymess.setFailcounts();
+								errorTechnicallymess.getErrorlogs().append("<p>"+
+								errorTechnicallymess.getFailcount().toString() + "、" + "身份证号码："
+								+ person.getIdcard() +"职称技能专业名称："+rsTechnicallymess.getTechnicallytype()+ " ,人员信息添加失败!</p>");
+						}
+					}
+					if (educationexperienceMap != null
+							&& educationexperienceMap.get(id) != null) {
+						 List<RsEducationexperience> list=educationexperienceMap.get(id);
+							for (RsEducationexperience rsEducationexperience : list){
+								errorEducationexperience.setFailcounts();
+								errorEducationexperience.getErrorlogs().append("<p>"+
+								errorEducationexperience.getFailcount().toString() + "、" + "身份证号码："
+								+ person.getIdcard() + "毕业院校:"+rsEducationexperience.getPcollege()+" ,人员信息添加失败!</p>");
+							}
+					}
+						
+					if (workexperienceMap != null
+							&& workexperienceMap.get(id) != null) {
+						List<RsWorkexperience> list=workexperienceMap.get(id);
+						for (RsWorkexperience rsWorkexperience : list) {
+							errorWorkexperience.setFailcounts();
+							errorWorkexperience.getErrorlogs().append("<p>"+
+							errorWorkexperience.getFailcount().toString() + "、" + "身份证号码："
+							+ person.getIdcard() +"单位名称："+rsWorkexperience.getCompanyname()+ ", 人员信息添加失败!</p>");
+						}
+					}
+					
+					if (technologicalharvestMap != null
+							&& technologicalharvestMap.get(id) != null) {
+						List<RsTechnologicalharvest> list=technologicalharvestMap.get(id);
+						for (RsTechnologicalharvest rsTechnologicalharvest : list) {
+							errorTechnologicalharvest.setFailcounts();
+							errorTechnologicalharvest.getErrorlogs().append("<p>"+
+							errorTechnologicalharvest.getFailcount().toString() + "、" + "身份证号码："
+							+ person.getIdcard() +"科技成果名称："+ rsTechnologicalharvest.getHarvestname()+" ,人员信息添加失败!</p>");
+						}
+					}
+					if (projectexperienceMap != null
+							&& projectexperienceMap.get(id) != null) {
+						List<RsProjectexperience> list=projectexperienceMap.get(id);
+						for (RsProjectexperience rsProjectexperience : list) {
+							errorProjectexperience.setFailcounts();
+							errorProjectexperience.getErrorlogs().append("<p>"+
+							errorProjectexperience.getFailcount().toString() + "、" + "身份证号码："
+							+ person.getIdcard() +"项目名称："+rsProjectexperience.getProjname()+ ",人员信息添加失败!</p>");
+						}
+					}
+				}
+				if (person != null && person.getPersonid() != null) {
+					if (technicallymessMap != null
+							&& technicallymessMap.get(id) != null) {
+						for (RsTechnicallymess rsTechnicallymess : technicallymessMap
+								.get(id)) {
+							rsTechnicallymess.setRsPerson(person);//添加人员ID
+							rsTechnicallymess.setAdddate(addDate);//添加经受时间
+							rsTechnicallymess.setAdduser(addUser);//添加经受人
+							try {
+								excelService
+										.addRsTechnicallymess(rsTechnicallymess);
+								errorTechnicallymess.setSuccesscounts();// 成功数加1
+							} catch (Exception e) {
+								errorTechnicallymess.setFailcounts();
+								errorTechnicallymess.getErrorlogs().append("<p>"+
+										errorTechnicallymess.getFailcount().toString() + "、" + "身份证号码："
+										+ person.getIdcard() +"职称技能专业名称："+rsTechnicallymess.getTechnicallytype()+ e.getMessage()+" </p>");
+							}
+						}
+					}
+					if (educationexperienceMap != null
+							&& educationexperienceMap.get(id) != null) {
+						for (RsEducationexperience educationexperience : educationexperienceMap
+								.get(id)) {
+							educationexperience.setRsPerson(person);
+							educationexperience.setAdddate(addDate);//添加经受时间
+							educationexperience.setAdduser(addUser);//添加经受人
+							try {
+								excelService
+										.addRsEducationexperience(educationexperience);
+								errorEducationexperience.setSuccesscounts();// 成功数加1
+							} catch (Exception e) {
+								errorEducationexperience.setFailcounts();
+								errorEducationexperience.getErrorlogs().append("<p>"+
+								errorEducationexperience.getFailcount().toString() + "、" + "身份证号码："
+								+ person.getIdcard() + "毕业院校:"+educationexperience.getPcollege()+e.getMessage()+",人员信息添加失败!</p></p>");
+							}
+						}
+					}
+					if (workexperienceMap != null
+							&& workexperienceMap.get(id) != null) {
+						for (RsWorkexperience rsWorkexperience : workexperienceMap
+								.get(id)) {
+							rsWorkexperience.setRsPerson(person);
+							rsWorkexperience.setAdddate(addDate);//添加经受时间
+							rsWorkexperience.setAdduser(addUser);//添加经受人
+							try {
+								excelService
+										.addRsWorkexperience(rsWorkexperience);
+								errorWorkexperience.setSuccesscounts();
+							} catch (Exception e) {
+								errorWorkexperience.setFailcounts();
+								errorWorkexperience.getErrorlogs().append("<p>"+
+								errorWorkexperience.getFailcount().toString() + "、" + "身份证号码："
+								+ person.getIdcard() +"单位名称："+rsWorkexperience.getCompanyname()+e.getMessage()+", 人员信息添加失败!</p>");
+							}
+						}
+					}
+					if (technologicalharvestMap != null
+							&& technologicalharvestMap.get(id) != null) {
+						for (RsTechnologicalharvest rsTechnologicalharvest : technologicalharvestMap
+								.get(id)) {
+							rsTechnologicalharvest.setRsPerson(person);
+							rsTechnologicalharvest.setAdddate(addDate);//添加经受时间
+							rsTechnologicalharvest.setAdduser(addUser);//添加经受人
+							try {
+								excelService
+										.addRsTechnologicalharvest(rsTechnologicalharvest);
+								errorTechnologicalharvest.setSuccesscounts();
+							} catch (Exception e) {
+								errorTechnologicalharvest.setFailcounts();
+								errorTechnologicalharvest.getErrorlogs().append("<p>"+
+								errorTechnologicalharvest.getFailcount().toString() + "、" + "身份证号码："
+								+ person.getIdcard() +"科技成果名称："+ rsTechnologicalharvest.getHarvestname()+" ,人员信息添加失败!</p>");
+							}
+						}
+					}
+					if (projectexperienceMap != null
+							&& projectexperienceMap.get(id) != null) {
+						for (RsProjectexperience rsProjectexperience : projectexperienceMap
+								.get(id)) {
+							rsProjectexperience.setRsPerson(person);
+							rsProjectexperience.setAdddate(addDate);//添加经受时间
+							rsProjectexperience.setAdduser(addUser);//添加经受人
+							try {
+								excelService
+										.addRsProjectexperience(rsProjectexperience);
+								errorProjectexperience.setSuccesscounts();// 成功数加1
+							} catch (Exception e) {
+									errorProjectexperience.setFailcounts();
+									errorProjectexperience.getErrorlogs().append("<p>"+
+									errorProjectexperience.getFailcount().toString() + "、" + "身份证号码："
+									+ person.getIdcard() +"项目名称："+rsProjectexperience.getProjname()+ ",人员信息添加失败!</p>");
+							}
+						}
+					}
+				}
+			}
+
+		}
+		if (errorPerson.getTotal()>0) {
+			 errorPerson.setLognumber(lognumber);// 添加人员错误信息
+			 errorPerson.setTypeid("1");
+			 errorPerson.setAdduser(addUser);
+			 errorPerson.setAdddate(addDate);
+			 errorPerson.setErrorlog(ExcelDAO.getCheckLog(errorPerson.getErrorlogs()));
+			 excelService.addBatchlog(errorPerson);
+		   if (errorTechnicallymess.getTotal()>0) {
+					 errorTechnicallymess.setTypeid("2");
+					 errorTechnicallymess.setAdduser(addUser);
+					 errorTechnicallymess.setAdddate(addDate);
+					 errorTechnicallymess.setLognumber(lognumber);// 添加职称错误信息
+					 errorTechnicallymess.setErrorlog(ExcelDAO.getCheckLog(errorTechnicallymess.getErrorlogs()));
+				excelService.addBatchlog(errorTechnicallymess);
+			}
+			 if (errorEducationexperience.getTotal()>0) {
+				 errorEducationexperience.setTypeid("3");
+				 errorEducationexperience.setAdduser(addUser);
+				 errorEducationexperience.setAdddate(addDate);
+				 errorEducationexperience.setLognumber(lognumber);// 添加教育错误信息
+				 errorEducationexperience.setErrorlog(ExcelDAO.getCheckLog(errorEducationexperience.getErrorlogs()));
+				 excelService.addBatchlog(errorEducationexperience);
+			}
+			if (errorWorkexperience.getTotal()>0) {
+				errorWorkexperience.setTypeid("4");
+				errorWorkexperience.setAdduser(addUser);
+				errorWorkexperience.setAdddate(addDate);
+				 errorWorkexperience.setLognumber(lognumber);// 添加工作错误信息
+				 errorWorkexperience.setErrorlog(ExcelDAO.getCheckLog(errorWorkexperience.getErrorlogs()));
+				 excelService.addBatchlog(errorWorkexperience);
+			}
+			if (errorProjectexperience.getTotal()>0) {
+				errorProjectexperience.setTypeid("6");
+				errorProjectexperience.setAdduser(addUser);
+				errorProjectexperience.setAdddate(addDate);
+				 errorProjectexperience.setLognumber(lognumber);//添加 项目错误信息
+				 errorProjectexperience.setErrorlog(ExcelDAO.getCheckLog(errorProjectexperience.getErrorlogs()));
+				 excelService.addBatchlog(errorProjectexperience);
+			}
+			if ( errorTechnologicalharvest.getTotal()>0) {
+				errorTechnologicalharvest.setTypeid("5");
+				errorTechnologicalharvest.setAdduser(addUser);
+				errorTechnologicalharvest.setAdddate(addDate);
+				 errorTechnologicalharvest.setLognumber(lognumber); //添加 成果错误信息
+				 errorTechnologicalharvest.setErrorlog(ExcelDAO.getCheckLog(errorTechnologicalharvest.getErrorlogs()));
+				 excelService.addBatchlog(errorTechnologicalharvest);
+			}
+		}
+		count=2;
+		json.put("lognumber", lognumber);
+		json.put("msg", "上传文件成功");
+		outputJson(json);
+		return this.NONE;
+		}
+	
+	
+	
+	public String saveWord() {
+		JSONObject json = new JSONObject();
+		WordDAO dao=null;
+		String addUser = this.getAccount().getLoginCode();
+		Date addDate = new   Date(System.currentTimeMillis());
+		if (addUser==null||addDate==null) {
+			json.put("error", "用户已经失效 请重新登录！");
+			outputJson(json);
+			return this.NONE;
+		}
+		System.getProperty("java.library.path"+"######################");
+		HttpSession session = this.getRequest().getSession(false);
+		String number=excelService.queryBatchlogNumber().toString();
+		String lognumber="P"+sdfs.format(new   Date(System.currentTimeMillis()))+resetNumber(number);
+		Map<String,Map<String,String>> map=getConfValue();
+		File f = attachFile[0];
+		String url="\\file"+"\\"+DateUtil.dateToDateString(new Date(), "yyyyMMdd");
+		String folder= "P"+sdf.format(new Date(System.currentTimeMillis()));
+		String fname= url+"\\"+folder+"\\";
+		try {
+				File file=new File(fname);
+				if (!file.exists()) { // 目录不存在就创建
+					file.mkdirs();
+				}
+				file=new File(fname+ lognumber+".doc");
+				try {
+				OutputStream out=new FileOutputStream(file);
+				InputStream in=new  FileInputStream(f);
+				BufferedInputStream is=new BufferedInputStream(in);
+				 int readLen=0;  
+				 byte[] buf=new byte[1024];  
+				 while ((readLen=is.read(buf, 0, 1024))!=-1) {  
+				     out.write(buf, 0, readLen);  
+				 }
+				 is.close();
+				 in.close();
+				out.flush();
+				out.close();
+			} catch (Exception e1) {
+				throw new Exception("读取文件错误!");
+			}
+			try {
+				dao=new WordDAO(file.getAbsolutePath(),map);
+				RsPerson person=dao.getRsPerson();
+				if (dao.log.length()<=0) {
+					person.setAdddate(addDate);//经受时间
+					person.setAdduser(addUser);//经受人
+					person.setBatchcode(lognumber);//导入批次
+					person.setSourcetype("2");//数据来源
+					
+					boolean bool = excelService.queryRsperson(person.getIdcard());
+					if (bool) {
+						throw new Exception("人员信息在系统中已经存在！");
+					}
+					else{
+						//添加人员基本信息
+						person = excelService.add(person);
+						//添加人员职称信息
+						List<RsTechnicallymess> list= dao.getRsTechnicallymessList();
+						if (list!=null&&list.size()>0) {
+							for (RsTechnicallymess rsTechnicallymess:list) {
+								rsTechnicallymess.setAdddate(addDate);
+								rsTechnicallymess.setAdduser(addUser);
+								rsTechnicallymess.setRsPerson(person);
+								excelService.addRsTechnicallymess(rsTechnicallymess);
+							}
+						}
+						//添加人员教育简历
+						List<RsEducationexperience> list1= dao.getRsEducationexperienceList();
+						if (list1!=null&&list1.size()>0) {
+							for (RsEducationexperience educationexperience:list1) {
+								educationexperience.setAdddate(addDate);
+								educationexperience.setAdduser(addUser);
+								educationexperience.setRsPerson(person);
+								excelService.addRsEducationexperience(educationexperience);
+							}
+						}
+						//添加人员工作经历
+						List<RsWorkexperience> list2= dao.getRsWorkexperienceList();
+						if (list2!=null&&list2.size()>0) {
+							for (RsWorkexperience rsWorkexperience:list2) {
+								rsWorkexperience.setAdddate(addDate);
+								rsWorkexperience.setAdduser(addUser);
+								rsWorkexperience.setRsPerson(person);
+								excelService.addRsWorkexperience(rsWorkexperience);
+							}
+						}
+						//添加人员科技成果信息
+						List<RsTechnologicalharvest> list3= dao.getRsTechnologicalharvestList();
+						if (list3!=null&&list3.size()>0) {
+							for (RsTechnologicalharvest rsTechnologicalharvest:list3) {
+								rsTechnologicalharvest.setAdddate(addDate);
+								rsTechnologicalharvest.setAdduser(addUser);
+								rsTechnologicalharvest.setRsPerson(person);
+								excelService.addRsTechnologicalharvest(rsTechnologicalharvest);
+							}
+						}
+						//添加人员项目经验
+						List<RsProjectexperience> list4= dao.getRsProjectexperienceList();
+						if (list4!=null&&list4.size()>0) {
+							for (RsProjectexperience projectexperience:list4) {
+								projectexperience.setAdddate(addDate);
+								projectexperience.setAdduser(addUser);
+								projectexperience.setRsPerson(person);
+								excelService.addRsProjectexperience(projectexperience);
+							}
+						}
+						try {
+							//因为要将word文档转换为html 取图片 所以先将打开的文档关闭
+							//dao.close();
+							//dao.change(file.getPath(), fname+ lognumber+".htm");
+							String newfile=dao.change(file.getPath());
+							if((newfile!=null)&&(!newfile.equals(""))){
+								File image=new File(newfile);
+								savePic(image, person.getPersonid());
+								image.delete();
+							}
+						} catch (Exception e) {
+							//e.printStackTrace();
+							dao.log.append("读取文档图片出错，请检查是否有传入图像！如果有请手动导入");
+						}
+					/*	List<String> l=getFileName(new File(fname),new ArrayList<String>(),".jpg");
+						if (l!=null&&l.size()>0) {
+							File image = new File(l.get(0));
+							savePic(image,person.getPersonid());
+						}*/
+						file=new File("D://file//"+file.getParentFile().getAbsolutePath());
+						DeleteTemporaryFile.del(file);//删除临时目录的文档
+					}
+				}else{
+					throw new Exception(dao.log.toString());
+				}
+			} catch (Exception e) {
+				throw new Exception(e.getMessage());
+			}finally{
+				try {
+					dao.close();
+				} catch (Exception e) {
+				}
+			}
+			try {
+				file=new File("D://file//"+file.getParentFile().getAbsolutePath());
+				DeleteTemporaryFile.del(file);//删除临时目录的文档
+			} catch (Exception e) {
+			}
+		} catch (Exception e1) {
+			json.put("error", e1.getMessage());
+		}
+	
+		json.put("msg", "上传文件成功");
+		if (dao.log.length()>0) {
+			json.put("log", dao.log.toString());
+		}
+		outputJson(json);
+		return this.NONE;
+		}
+	
+	/**
+	 * 
+	 * @return 在取出来的次数前面加0，已补全6位数
+	 */
+	public static String resetNumber(String num){
+		String number="";
+		if(num!=null&&num.length()>0){
+		  number="00000"+num;
+		 number=number.substring(number.length()-6);
+		}
+		return number;
+	}
+	
+	
+	
+	
+	/**
+	 * 读取cookie
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	private String readCookieSSO(HttpServletRequest request,
+			HttpServletResponse response) {
+		String cookieValue = "";
+		try {
+			Cookie cookies[] = request.getCookies();
+			if (cookies != null) {
+				for (int i = 0; i < cookies.length; i++) {
+					if (cookies[i].getName().equals(LoginAction.COOKIE_NAME)) {
+						cookieValue = cookies[i].getValue();
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return cookieValue;
+	}
+
+	public File[] getAttachFile() {
+		return attachFile;
+	}
+
+	public void setAttachFile(File[] attachFile) {
+		this.attachFile = attachFile;
+	}
+
+	public BatchlogForm getForm() {
+		return form;
+	}
+
+
+	public void setForm(BatchlogForm form) {
+		this.form = form;
+	}
+
+
+	public String getLoginAccountUserName() {
+		return loginAccountUserName;
+	}
+
+
+	public void setLoginAccountUserName(String loginAccountUserName) {
+		this.loginAccountUserName = loginAccountUserName;
+	}
+
+
+	public ExcelService getExcelService() {
+		return excelService;
+	}
+
+
+	public void setExcelService(ExcelService excelService) {
+		this.excelService = excelService;
+	}
+	
+	private boolean checkPic(File file) {
+		long lon = file.length();
+		if((lon / 1024) > 1000) {
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * 保存附件
+	 * @return
+	 * @throws IOException 
+	 */
+	private void savePic(File file,String personId) throws Exception {
+		if(file != null && file.isFile()){
+			InputStream inputStream = new FileInputStream(file);
+			rsAffix.setAffixContext(rsAffixService.inputStreamToByte(inputStream));
+			rsAffix.setAffixName(file.getName());
+			rsAffix.setAffixStyle("1");
+			rsAffix.setAffixType("1");
+			rsAffix.setAuditState("000");
+			rsAffix.setDeleState("0");
+			rsAffix.setUploadDate(DateUtil.getCurDate());
+			rsAffix.setUploadPerson(this.getAccount().getLoginCode());
+			rsAffix.setPersonId(personId);
+			rsAffixService.saveOrUpdate(rsAffix);
+			inputStream.close();
+		}
+	}
+	
+	
+	public static List<String> getFileName(File dir,List<String> list,String type) {
+		if (!dir.isDirectory()) { // 必须是目录
+			return null;
+		}
+		File[] files = dir.listFiles(); // 获取一个目录里面的所有文件
+		for (File file : files) {
+			if (file.isFile()) { // 判断是否为文件
+				if (file.getName().endsWith(type)) {
+					list.add(file.getAbsolutePath());
+				}
+			}
+		}
+		for (File file : files) {
+			if (file.isDirectory()) {
+				getFileName(file,list,type);// 递归调用,显示子目录里面的文件信息
+			}
+		}
+		return list;
+	}
+
+	public RsAffixDTO getRsAffix() {
+		return rsAffix;
+	}
+
+	public void setRsAffix(RsAffixDTO rsAffix) {
+		this.rsAffix = rsAffix;
+	}
+	
+
+}

@@ -1,0 +1,234 @@
+package com.gzepro.internal.query.soa.action.rcsm.base;
+
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.gzepro.internal.query.common.util.DateUtil;
+import com.gzepro.internal.query.model.RsSocialworker;
+import com.gzepro.internal.query.model.RsTalantteam;
+import com.gzepro.internal.query.soa.base.SoaBaseJsonAction;
+import com.gzepro.internal.query.soa.service.user.impl.RsTalantTeamService;
+
+@SuppressWarnings("serial")
+@Scope("prototype")
+@Component("rsTalantTeam")
+public class RsTalantTeamAction   extends SoaBaseJsonAction{
+
+	public static DecimalFormat df = new DecimalFormat("0.00");//格式化小数，不足的补0
+	@Resource
+	private RsTalantTeamService rsTalantTeamService;
+	
+	private RsSocialworker socialworker=new RsSocialworker();
+	
+	private String stat="1";
+	
+	private String queryYear;//查询条件年份，默认为当前年
+	
+	private Map<String, String> resultMap=new HashMap<String, String>();//统计的结果返回到页面
+	
+	@Override
+	public String execute() throws Exception {
+		return SUCCESS;
+	}
+	
+	public String toConfig()throws Exception{
+		try{
+			if(queryYear==null||"".equals(queryYear)){
+				queryYear=String.valueOf(DateUtil.getYear(new Date()));//当前的年份
+			}
+			List<RsSocialworker> list=rsTalantTeamService.queryCurrentYearConf(queryYear);
+			if(list!=null&&list.size()>0){
+				socialworker=list.get(0);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "error";
+		}
+		return "conf";
+	}
+
+	public String view()throws Exception{
+		try{
+			if(queryYear==null||"".equals(queryYear)){
+				queryYear=String.valueOf(DateUtil.getYear(new Date()));//当前的年份
+			}
+			//首先查询当前年份的配置信息,如果当前年的配置信息没有，就直接提示先填写当前年的配置信息
+			List<RsSocialworker> curYearConfData=rsTalantTeamService.queryCurrentYearConf(queryYear);
+			if(curYearConfData==null){
+				this.stat="0";
+				return "noConfigInfo";
+			}
+			resultMap=new HashMap<String, String>();
+			String lastYear=String.valueOf(Integer.valueOf(queryYear)-1);
+			RsSocialworker curYearConf=curYearConfData.get(0);//当年的配置信息
+			Long t11=curYearConf.getT11();//人口总量
+			Long t12=curYearConf.getT12();//从业人员总量
+			Long t13=curYearConf.getT13();//农村农运力总量
+			List<RsTalantteam> curData=rsTalantTeamService.queryDataByYear(queryYear);//当前年的所有数据
+			List<RsTalantteam> lastData=rsTalantTeamService.queryDataByYear(lastYear);//上一年的所有数据
+			
+			
+			//今年持证社工人数
+			Long[] czsg=new Long[]{curYearConf.getT1(),curYearConf.getT2(),curYearConf.getT3(),curYearConf.getT4(),curYearConf.getT5(),curYearConf.getT6(),curYearConf.getT7(),curYearConf.getT8(),curYearConf.getT9(),curYearConf.getT10()};
+			for (int i = 0; i < czsg.length; i++) {
+				resultMap.put(13+"-"+i, czsg[i].toString());
+			}
+			
+			//解析数据
+			if(curData!=null&&curData.size()>0){
+				for (int i = 0; i < curData.size(); i++) {
+					RsTalantteam curT =curData.get(i);
+					RsTalantteam lastT = (lastData==null?null:lastData.get(i));
+					int part=curT.getTp().intValue();
+					Long[] curDataArray=new Long[]{curT.getT1(),curT.getT2(),curT.getT3(),curT.getT4(),curT.getT5(),curT.getT6(),curT.getT7(),curT.getT8(),curT.getT9(),curT.getT10()};
+					Long[] lastDataArray=null;
+					if(lastT!=null){
+						lastDataArray=new Long[]{lastT.getT1(),lastT.getT2(),lastT.getT3(),lastT.getT4(),lastT.getT5(),lastT.getT6(),lastT.getT7(),lastT.getT8(),lastT.getT9(),lastT.getT10()};
+					}
+					switch (part) {
+					case 1:
+						//统计第一部分每万人口中人才资源量
+						this.calPct(1, curDataArray, lastDataArray,t11,resultMap);
+						break;
+					case 2:
+						//统计第二部分企业经营管理人才占从业人员的比例
+						this.calPct(2, curDataArray, lastDataArray,t12,resultMap);
+						break;
+					case 3:
+						//统计第三部分专业技术人才占从业人员的比例
+						this.calPct(3, curDataArray, lastDataArray,t12,resultMap);
+						break;
+					case 5:
+						//统计第四部分农村实用人才占农村农运力的比例
+						this.calPct(5, curDataArray, lastDataArray,t13,resultMap);
+						break;				
+					default:
+						//统计第五部分持证社工
+						this.calPct(6, curDataArray, lastDataArray,null,resultMap);
+						break;
+					}
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "error";
+		}
+		return "view";
+	}
+	
+	/*
+	 * param: part 统计的哪一部分
+	 * param: curDataArray　当前年的数据
+	 * param: lastDataArray　上一年的数据
+	 * param: curYearConf　当年的配置信息
+	 * param: resultMap　保存统计结果
+	 * desc:统计各部分的百分比信息
+	 */
+	public void calPct(int part,Long[] curDataArray,Long[] lastDataArray,Long fm,Map<String, String> resultMap){
+		for (int i = 0; i < curDataArray.length; i++) {
+			//先计算所占比例(持证社会除外)
+			if(part!=6){
+				this.ca1(part,i,curDataArray[i],fm,resultMap);
+			}
+			//再计算比例增长率
+			if(lastDataArray!=null){
+				this.ca2(part, i, curDataArray[i], lastDataArray[i], fm, resultMap);
+			}else{
+				this.ca2(part, i, curDataArray[i], null, fm, resultMap);
+			}
+			
+		}
+	}
+	
+	//先计算所占比例
+	public void ca1(int part,int i,Long curdata,Long fm,Map<String,String> resultMap){
+		float size = (float)(curdata==null?0:curdata)*100/fm;
+		String str = df.format(size)+"%";
+		resultMap.put((1+(part-1)*2)+"-"+i, str);
+	}
+	
+	//再计算比例增长率
+	public void ca2(int part,int i,Long curdata,Long lastData,Long fm,Map<String,String> resultMap){
+		if(part!=6){
+			if(lastData!=null){
+				if(lastData==0){
+					resultMap.put((2+(part-1)*2)+"-"+i, "");
+				}else{
+					float size = (float)((curdata==null?0:curdata)-lastData)*100/fm;
+					String str = df.format(size)+"%";
+					resultMap.put((2+(part-1)*2)+"-"+i, str);
+				}
+			}else{
+				resultMap.put((2+(part-1)*2)+"-"+i, "");
+			}
+		}else{
+			//持证社工的统计有所区别
+			resultMap.put((1+(part-1)*2)+"-"+i, (lastData==null?"":lastData.toString()));//上一年持证社工人数
+			if(lastData!=null){
+				if(lastData==0){
+					resultMap.put((2+(part-1)*2)+"-"+i, "");
+				}else{
+					float size = (float)((curdata==null?0:curdata)-lastData)*100/lastData;
+					String str = df.format(size)+"%";
+					resultMap.put((2+(part-1)*2)+"-"+i, str);
+				}
+			}else{
+				resultMap.put((2+(part-1)*2)+"-"+i, "");
+			}
+		}
+	}
+	
+	public String saveOrUpdate()throws Exception{
+		try{
+			if(socialworker!=null){
+				socialworker=rsTalantTeamService.saveOrUpdate(socialworker);
+			}
+		}catch (Exception ex) {
+			ex.printStackTrace();
+			return "error";
+		}
+		return "conf";
+	}
+
+	public RsSocialworker getSocialworker() {
+		return socialworker;
+	}
+
+	public void setSocialworker(RsSocialworker socialworker) {
+		this.socialworker = socialworker;
+	}
+
+	public String getStat() {
+		return stat;
+	}
+
+	public void setStat(String stat) {
+		this.stat = stat;
+	}
+
+	public String getQueryYear() {
+		return queryYear;
+	}
+
+	public void setQueryYear(String queryYear) {
+		this.queryYear = queryYear;
+	}
+
+	public Map<String, String> getResultMap() {
+		return resultMap;
+	}
+
+	public void setResultMap(Map<String, String> resultMap) {
+		this.resultMap = resultMap;
+	}
+	
+	
+}

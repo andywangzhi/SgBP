@@ -1,0 +1,430 @@
+/*
+ * Copyright (c) 2009-2012 by fsll
+ * All rights reserved.
+ */
+
+package com.gzepro.internal.query.base.service;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.annotation.Resource;
+import javax.servlet.ServletContext;
+
+import org.apache.struts2.ServletActionContext;
+import org.springframework.stereotype.Component;
+
+import com.gmcc.support.trade.service.provider.UserServiceLocator;
+import com.gmcc.support.trade.service.provider.UserServiceSoapBindingStub;
+import com.gmcc.support.trade.service.provider.rcsm.affix.RsAffixServiceLocator;
+import com.gmcc.support.trade.service.provider.rcsm.affix.RsAffixServiceSoapBindingStub;
+import com.gmcc.support.trade.service.provider.rcsm.base.RsPersonServiceLocator;
+import com.gmcc.support.trade.service.provider.rcsm.base.RsPersonServiceSoapBindingStub;
+import com.gmcc.support.trade.service.provider.rcsm.gzjl.WorkexperienceServiceLocator;
+import com.gmcc.support.trade.service.provider.rcsm.gzjl.WorkexperienceServiceSoapBindingStub;
+import com.gmcc.support.trade.service.provider.rcsm.jyjl.EducationexperienceServiceLocator;
+import com.gmcc.support.trade.service.provider.rcsm.jyjl.EducationexperienceServiceSoapBindingStub;
+import com.gmcc.support.trade.service.provider.rcsm.kjcg.TechnologicalHarvestServiceLocator;
+import com.gmcc.support.trade.service.provider.rcsm.kjcg.TechnologicalHarvestServiceSoapBindingStub;
+import com.gmcc.support.trade.service.provider.rcsm.rctj.RsPersonTypeServiceLocator;
+import com.gmcc.support.trade.service.provider.rcsm.rctj.RsPersonTypeServicePortBindingStub;
+import com.gmcc.support.trade.service.provider.rcsm.xmjy.ProjectExperienceServiceLocator;
+import com.gmcc.support.trade.service.provider.rcsm.xmjy.ProjectExperienceServiceSoapBindingStub;
+import com.gmcc.support.trade.service.provider.rcsm.zcxx.TechnicallymessServiceLocator;
+import com.gmcc.support.trade.service.provider.rcsm.zcxx.TechnicallymessServiceSoapBindingStub;
+import com.gzepro.internal.query.common.persistence.BaseDao;
+import com.gzepro.internal.query.common.persistence.SpringJdbcQueryManager;
+import com.gzepro.internal.query.common.struts.ContextPvd;
+import com.gzepro.internal.query.common.struts.interceptor.LoginInterceptor;
+import com.gzepro.internal.query.common.struts.web.ApplicationListener;
+import com.gzepro.internal.query.common.util.DateUtil;
+import com.gzepro.internal.query.common.util.PropertyUtil;
+import com.gzepro.internal.query.common.util.WSProxy;
+import com.gzepro.internal.query.system.model.Account;
+import com.gzepro.internal.query.system.model.Dictionary;
+import com.gzepro.internal.query.system.model.Role;
+import com.opensymphony.xwork2.ActionContext;
+
+/**
+ * @author lw
+ * @version 1.0
+ * Created on: 2012-7-1
+ */
+@Component("baseService")
+public class BaseService {
+	
+	protected static final String GLOBAL_CONFIG_FILE = "config/config.properties";
+	
+	@Resource
+	protected BaseDao baseDao;
+	
+	@Resource
+	protected SpringJdbcQueryManager springJdbcQueryManager;
+	
+	@Resource
+	protected ContextPvd contextPvd;
+	
+	
+    public BaseDao getBaseDao() {
+		return baseDao;
+	}
+
+	public void setBaseDao(BaseDao baseDao) {
+		this.baseDao = baseDao;
+	}
+
+	public SpringJdbcQueryManager getSpringJdbcQueryManager() {
+		return springJdbcQueryManager;
+	}
+
+	public void setSpringJdbcQueryManager(SpringJdbcQueryManager springJdbcQueryManager) {
+		this.springJdbcQueryManager = springJdbcQueryManager;
+	}
+
+	/**
+     * 读取配置文件
+     * @param filePath
+     * @return
+     */
+	public Properties getProperties(String filePath) {
+		PropertyUtil propertyUtil = new PropertyUtil();
+		return propertyUtil.getProperties(filePath);
+	}
+	
+    /**
+     * 读取配置文件
+     * @param filePath
+     * @param proName
+     * @return
+     */
+	public String getPropertieValue(String filePath,String proName) {
+		PropertyUtil propertyUtil = new PropertyUtil();
+		return propertyUtil.getPropertieValue(filePath, proName);
+	}
+	
+    /**
+     * 读取全局配置文件
+     * @param keyPrefix key的前缀, 如format_date_yyymm,当前登陆用户的语言为中文,
+     * 则完整的key为format_date_yyymm_0
+     * @return
+     */
+	public String getGlobalPropertieValue(String keyPrefix) {
+		String lang =ActionContext.getContext().getSession().get(LoginInterceptor.CUR_USER_LANG).toString();
+		keyPrefix = keyPrefix+"_"+lang;
+		PropertyUtil propertyUtil = new PropertyUtil();
+		return propertyUtil.getPropertieValue(GLOBAL_CONFIG_FILE, keyPrefix);
+	}
+	
+	/**
+	 * 获得当前的登陆用户
+	 * @return
+	 */
+	protected Account getAccount() {
+		Account loginAccount = (Account) ActionContext.getContext().getSession().get(LoginInterceptor.USER_LOGIN);
+		return loginAccount;
+	}
+	
+	/**
+	 * 获得当前登陆用户的身份
+	 * @return
+	 */
+	protected int getDistType() {
+		return Integer.parseInt(ActionContext.getContext().getSession().get(LoginInterceptor.ACCOUNT_DIST_TYPE).toString());
+	}
+	
+	/**
+	 * 获得用户对指定菜单的PinCde
+	 * @param accountId 用户Id
+	 * @param menuId 菜单Id
+	 * @return 用户的最大权限
+	 */
+	public int getAccountMenuPin(Long accountId, Long menuId)
+	{ 
+	  int result = -1;//-1表示不做限制
+	  String hql = " select r from AccountRole ar,RoleMenu rm,Role r where ar.roleId=rm.roleId and rm.roleId=r.id and r.valid='1' and rm.rightType = 'm' and ar.accountId = ? and  rm.menuId = ?  ";
+	  List<Role> ls0 = this.baseDao.find(hql, new Object[] { accountId , menuId});
+	  if(ls0.size()>0){
+		  for(Role r:ls0){
+			  if(r.getPinGrading() != null && r.getPinGrading() > result){
+				  result = r.getPinGrading().intValue();
+			  }
+		  }
+	  }
+	  return result;
+	}
+	
+	/**
+	 * 通过key获得当前登陆用户的资源值
+	 * @param key
+	 * @return
+	 */
+	public String getResourceValue(String key) {
+		key = key.trim();
+		
+		String lang ="1";
+		//ServletContext servletContext = ServletActionContext.getServletContext();
+		//Map<String,String[]> map = (HashMap)servletContext.getAttribute("_WEB_SYS_RESOURCE_KEY_");
+		Map<String,String[]> map = ApplicationListener._resmap;
+		if(map.containsKey(key)){
+			Object obj = map.get(key)[Integer.parseInt(lang)];
+			if(obj != null){
+				return (String)obj;
+			}else{
+				return "";
+			}
+		}else{
+			if(key.indexOf("_")!=-1){
+				int index = key.indexOf("_");
+				return key.substring((index+1),key.length());
+			}else{
+				return key;
+			}
+		}
+	}
+	
+	/**
+	 * 获得指定菜单的敏感信息
+	 * @param menuId 点击的菜单id
+	 * @param accountId 当前登录用户Id
+	 */
+	protected Map findMenuDicByAccountId(Long menuId,Long accountId){
+		String hql = "select distinct d from Dictionary d,MenuDictionary md where d.id=md.dictionaryId and d.valid='1' and d.sensitive='1' and md.menuId = ?  ";
+		hql += " and md.dictionaryId in ( select rm.rightId from RoleMenu rm,AccountRole ar where rm.roleId = ar.roleId and rm.rightType='d' and rm.menuId = ? and  ar.accountId = ? )  ";
+		List<Dictionary> list = this.baseDao.find(hql, new Object[] { menuId, menuId, accountId});
+		Map<String,String> map = new HashMap<String,String>();
+		if(list != null && list.size() >0){
+			for(Dictionary dic:list){
+				map.put(dic.getCode(), "***********");
+			}
+			return map;
+		}
+		return null;
+	}
+	
+	/**
+	 * 初始化customerStub 
+	 * @return
+	 * @throws Exception
+	 */
+	protected UserServiceSoapBindingStub initUserStub () throws Exception{
+        com.gmcc.support.trade.service.provider.UserServiceSoapBindingStub binding;
+        UserServiceLocator serviceLocator = new UserServiceLocator();
+		String serviceUrl = this.getPropertieValue("config/webservice.properties", "RouterForUser");
+		serviceLocator.setUserServicePortEndpointAddress(serviceUrl);
+		binding = (com.gmcc.support.trade.service.provider.UserServiceSoapBindingStub)serviceLocator.getUserServicePort();
+		
+		//为服务添加SoapHeads信息
+        WSProxy sSProxy = new WSProxy();
+        binding.setHeader(sSProxy.getUsernameEle());
+        binding.setHeader(sSProxy.getPasswordEle()); 
+		return binding;
+	}
+	
+	/**
+	 * 初始化RsPersonStub 人员基本信息
+	 * @return
+	 * @throws Exception
+	 */
+	protected RsPersonServiceSoapBindingStub initRsPersonStub () throws Exception{
+        com.gmcc.support.trade.service.provider.rcsm.base.RsPersonServiceSoapBindingStub binding;
+        RsPersonServiceLocator serviceLocator = new RsPersonServiceLocator();
+		String serviceUrl = this.getPropertieValue("config/webservice.properties", "RsPersonProxyService");
+		serviceLocator.setRsPersonServicePortEndpointAddress(serviceUrl);
+		binding = (com.gmcc.support.trade.service.provider.rcsm.base.RsPersonServiceSoapBindingStub)serviceLocator.getRsPersonServicePort();
+		
+		//为服务添加SoapHeads信息
+        WSProxy sSProxy = new WSProxy();
+        binding.setHeader(sSProxy.getUsernameEle());
+        binding.setHeader(sSProxy.getPasswordEle()); 
+		return binding;
+	}
+	
+	/**
+	 * 初始化RsPersonType 人才统计基本信息
+	 * @return
+	 * @throws Exception
+	 */
+	protected RsPersonTypeServicePortBindingStub initRctjStub () throws Exception{
+        com.gmcc.support.trade.service.provider.rcsm.rctj.RsPersonTypeServicePortBindingStub binding;
+        RsPersonTypeServiceLocator serviceLocator = new RsPersonTypeServiceLocator();
+		String serviceUrl = this.getPropertieValue("config/webservice.properties", "RsPersonTypeProxyService");
+		serviceLocator.setRsPersonTypeServicePortEndpointAddress(serviceUrl);
+		binding = (com.gmcc.support.trade.service.provider.rcsm.rctj.RsPersonTypeServicePortBindingStub)serviceLocator.getRsPersonTypeServicePort();
+		
+		//为服务添加SoapHeads信息
+        WSProxy sSProxy = new WSProxy();
+        binding.setHeader(sSProxy.getUsernameEle());
+        binding.setHeader(sSProxy.getPasswordEle()); 
+		return binding;
+	}
+	
+	
+	/**
+	 * 初始化WorkexperienceStub 工作经历
+	 * @return
+	 * @throws Exception
+	 */
+	protected WorkexperienceServiceSoapBindingStub initWorkexperienceStub () throws Exception{
+        com.gmcc.support.trade.service.provider.rcsm.gzjl.WorkexperienceServiceSoapBindingStub binding;
+        WorkexperienceServiceLocator serviceLocator = new WorkexperienceServiceLocator();
+		String serviceUrl = this.getPropertieValue("config/webservice.properties", "WorkexperienceProxyService");
+		serviceLocator.setWorkexperienceServicePortEndpointAddress(serviceUrl);
+		binding = (com.gmcc.support.trade.service.provider.rcsm.gzjl.WorkexperienceServiceSoapBindingStub)serviceLocator.getWorkexperienceServicePort();
+		
+		//为服务添加SoapHeads信息
+        WSProxy sSProxy = new WSProxy();
+        binding.setHeader(sSProxy.getUsernameEle());
+        binding.setHeader(sSProxy.getPasswordEle()); 
+		return binding;
+	}
+	
+	/**
+	 * 初始化EducationProxyServiceStub 教育经历
+	 * @return
+	 * @throws Exception
+	 */
+	protected EducationexperienceServiceSoapBindingStub initEducationexperienceStub () throws Exception{
+        com.gmcc.support.trade.service.provider.rcsm.jyjl.EducationexperienceServiceSoapBindingStub binding;
+        EducationexperienceServiceLocator serviceLocator = new EducationexperienceServiceLocator();
+		String serviceUrl = this.getPropertieValue("config/webservice.properties", "EducationProxyService");
+		serviceLocator.setEducationexperienceServicePortEndpointAddress(serviceUrl);
+		binding = (com.gmcc.support.trade.service.provider.rcsm.jyjl.EducationexperienceServiceSoapBindingStub)serviceLocator.getEducationexperienceServicePort();
+		
+		//为服务添加SoapHeads信息
+        WSProxy sSProxy = new WSProxy();
+        binding.setHeader(sSProxy.getUsernameEle());
+        binding.setHeader(sSProxy.getPasswordEle()); 
+		return binding;
+	}
+	
+	/**
+	 * 初始化TechnologicalHarvestServiceSoapBindingStub 科技成果
+	 * @return
+	 * @throws Exception
+	 */
+	protected TechnologicalHarvestServiceSoapBindingStub initTechnologicalHarvestStub () throws Exception{
+        com.gmcc.support.trade.service.provider.rcsm.kjcg.TechnologicalHarvestServiceSoapBindingStub binding;
+        TechnologicalHarvestServiceLocator serviceLocator = new TechnologicalHarvestServiceLocator();
+		String serviceUrl = this.getPropertieValue("config/webservice.properties", "TechnologicalHarvestProxyService");
+		serviceLocator.setTechnologicalHarvestServicePortEndpointAddress(serviceUrl);
+		binding = (com.gmcc.support.trade.service.provider.rcsm.kjcg.TechnologicalHarvestServiceSoapBindingStub)serviceLocator.getTechnologicalHarvestServicePort();
+		
+		//为服务添加SoapHeads信息
+        WSProxy sSProxy = new WSProxy();
+        binding.setHeader(sSProxy.getUsernameEle());
+        binding.setHeader(sSProxy.getPasswordEle()); 
+		return binding;
+	}
+	
+	
+	/**
+	 * 初始化TechnologicalHarvestServiceSoapBindingStub 项目经验
+	 * @return
+	 * @throws Exception
+	 */
+	protected ProjectExperienceServiceSoapBindingStub initProjectExperienceStub () throws Exception{
+        com.gmcc.support.trade.service.provider.rcsm.xmjy.ProjectExperienceServiceSoapBindingStub binding;
+        ProjectExperienceServiceLocator serviceLocator = new ProjectExperienceServiceLocator();
+		String serviceUrl = this.getPropertieValue("config/webservice.properties", "ProjectExperienceProxyService");
+		serviceLocator.setProjectExperienceServicePortEndpointAddress(serviceUrl);
+		binding = (com.gmcc.support.trade.service.provider.rcsm.xmjy.ProjectExperienceServiceSoapBindingStub)serviceLocator.getProjectExperienceServicePort();
+		
+		//为服务添加SoapHeads信息
+        WSProxy sSProxy = new WSProxy();
+        binding.setHeader(sSProxy.getUsernameEle());
+        binding.setHeader(sSProxy.getPasswordEle()); 
+		return binding;
+	}
+	
+	/**
+	 * 初始化TechnologicalHarvestServiceSoapBindingStub 职称信息
+	 * @return
+	 * @throws Exception
+	 */
+	protected TechnicallymessServiceSoapBindingStub initTechnicallymessStub () throws Exception{
+        com.gmcc.support.trade.service.provider.rcsm.zcxx.TechnicallymessServiceSoapBindingStub binding;
+        TechnicallymessServiceLocator serviceLocator = new TechnicallymessServiceLocator();
+		String serviceUrl = this.getPropertieValue("config/webservice.properties", "TechnicallymessProxyService");
+		serviceLocator.setTechnicallymessServicePortEndpointAddress(serviceUrl);
+		binding = (com.gmcc.support.trade.service.provider.rcsm.zcxx.TechnicallymessServiceSoapBindingStub)serviceLocator.getTechnicallymessServicePort();
+		
+		//为服务添加SoapHeads信息
+        WSProxy sSProxy = new WSProxy();
+        binding.setHeader(sSProxy.getUsernameEle());
+        binding.setHeader(sSProxy.getPasswordEle()); 
+		return binding;
+	}
+
+	/**
+	 * 初始化RsAffixStub 附件信息
+	 * @return
+	 * @throws Exception
+	 */
+	protected RsAffixServiceSoapBindingStub initRsAffixStub () throws Exception{
+        com.gmcc.support.trade.service.provider.rcsm.affix.RsAffixServiceSoapBindingStub binding;
+        RsAffixServiceLocator serviceLocator = new RsAffixServiceLocator();
+		String serviceUrl = this.getPropertieValue("config/webservice.properties", "RsAffixService");
+		serviceLocator.setRsAffixServicePortEndpointAddress(serviceUrl);
+		binding = (com.gmcc.support.trade.service.provider.rcsm.affix.RsAffixServiceSoapBindingStub)serviceLocator.getRsAffixServicePort();
+		
+		//为服务添加SoapHeads信息
+        WSProxy sSProxy = new WSProxy();
+        binding.setHeader(sSProxy.getUsernameEle());
+        binding.setHeader(sSProxy.getPasswordEle()); 
+		return binding;
+	}
+	
+	/**
+	 * 处理日期 格式为yyyy-MM-dd
+	 * @return 返回日期的整形
+	 */
+	public int dealDate(String inputQuery){
+		int dateInt = 0;
+		if(inputQuery!=null && !inputQuery.trim().equals("")){
+			Date beginDate=DateUtil.getDate(inputQuery,"yyyy-MM-dd");  //yyyy-MM-dd
+    		int bYYYY = DateUtil.getYear(beginDate);
+    		int bMM = DateUtil.getMonth(beginDate);
+    		int bDD = DateUtil.getDay(beginDate);
+    		if( bMM <=9 ){
+    			dateInt= Integer.parseInt(bYYYY +"0"+ bMM);
+    		}else{
+    			dateInt= Integer.parseInt(bYYYY +""+ bMM);
+    		}
+    		if( bDD <=9 ){
+    			dateInt= Integer.parseInt(dateInt +"0"+ bDD);
+    		}else{
+    			dateInt= Integer.parseInt(dateInt +""+ bDD);
+    		}
+    	}
+		return dateInt;
+	}
+
+	/**
+	 * 处理日期 格式为yyyy-MM-dd
+	 * @return 返回日期的整形
+	 */
+	public int dealDate2(String inputQuery){
+		int dateInt = 0;
+		if(inputQuery!=null && !inputQuery.trim().equals("")){
+			Date beginDate=DateUtil.getDate(inputQuery,"yyyy-MM");  //yyyy-MM-dd
+    		int bYYYY = DateUtil.getYear(beginDate);
+    		int bMM = DateUtil.getMonth(beginDate);
+    		//int bDD = DateUtil.getDay(beginDate);
+    		if( bMM <=9 ){
+    			dateInt= Integer.parseInt(bYYYY +"0"+ bMM);
+    		}else{
+    			dateInt= Integer.parseInt(bYYYY +""+ bMM);
+    		}
+    		/*if( bDD <=9 ){
+    			dateInt= Integer.parseInt(dateInt +"0"+ bDD);
+    		}else{
+    			dateInt= Integer.parseInt(dateInt +""+ bDD);
+    		}*/
+    	}
+		return dateInt;
+	}
+	
+}

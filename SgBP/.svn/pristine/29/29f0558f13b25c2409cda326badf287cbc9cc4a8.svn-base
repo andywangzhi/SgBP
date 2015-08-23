@@ -1,0 +1,76 @@
+/**
+ * 
+ */
+package com.gzepro.internal.query.soa.action.rcsm.rctj;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.gzepro.internal.query.soa.base.SoaBaseJsonAction;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.rckh.RckhForm;
+import com.gzepro.internal.query.soa.service.user.impl.RsRcgzkhpfbService;
+import com.gzepro.internal.query.soa.service.user.impl.RsRczytjnrService;
+
+/**
+ * @author SgBP 广州易宝信息技术有限公司
+ * @since  2013-3-21
+ * @version 1.0
+ */
+@SuppressWarnings("serial")
+@Scope("prototype")
+@Component("soa.RcgzkhpfbAction")
+public class RcgzkhpfbAction extends SoaBaseJsonAction {
+	private RsRcgzkhpfbService rsRcgzkhpfbService;
+	private RckhForm form;
+	
+	private RsRczytjnrService rsRczytjnrService;
+	
+	public String saveOrUpdate(){
+		rsRcgzkhpfbService.saveOrUpdate(form.getRsRcgzkhpfb());
+		return "rcgzkhpfb";
+	}
+	
+	public String query(){
+		return "rcgzkhpfb";
+	}
+	
+	public String ExportRcgzkhpfbExecl(){
+		return null;
+	}
+	
+	public String saveOrupdateTJ(){
+		rsRczytjnrService.saveOrUpdate(form.getRsRczytjnr());
+		return "rczytjnr";
+	}
+	public String queryTJ(){
+		return "rczytjnr";
+	}
+	public String ExportRczytjnrExecl(){
+		return null;
+	}
+
+	public RsRcgzkhpfbService getRsRcgzkhpfbService() {
+		return rsRcgzkhpfbService;
+	}
+
+	public void setRsRcgzkhpfbService(RsRcgzkhpfbService rsRcgzkhpfbService) {
+		this.rsRcgzkhpfbService = rsRcgzkhpfbService;
+	}
+
+	public RckhForm getForm() {
+		return form;
+	}
+
+	public void setForm(RckhForm form) {
+		this.form = form;
+	}
+
+	public RsRczytjnrService getRsRczytjnrService() {
+		return rsRczytjnrService;
+	}
+
+	public void setRsRczytjnrService(RsRczytjnrService rsRczytjnrService) {
+		this.rsRczytjnrService = rsRczytjnrService;
+	}
+	
+}

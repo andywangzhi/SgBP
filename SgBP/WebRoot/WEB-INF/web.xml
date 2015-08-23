@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" 
+	xmlns="http://java.sun.com/xml/ns/j2ee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
+	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:config/spring/applicationContext.xml</param-value>
+	</context-param>
+	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<filter>
+		<filter-name>struts2</filter-name>
+		<filter-class>
+			org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter
+		</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>struts2</filter-name>
+		<url-pattern>*.action</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>
+			org.springframework.web.filter.CharacterEncodingFilter
+		</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<listener>
+		<listener-class>com.gzepro.internal.query.common.struts.web.ApplicationListener</listener-class>
+	</listener>
+	
+<!-- session超时定义,单位为分钟 -->
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+	<error-page>
+		<error-code>403</error-code>
+		<location>/403.html</location>
+	</error-page>  
+	<error-page>
+		<error-code>404</error-code>
+		<location>/404.html</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/500.html</location>
+	</error-page>  
+	
+	<welcome-file-list>
+		<welcome-file>index.htm</welcome-file>
+	</welcome-file-list>
+	
+	
+	<!-- 控制浏览器下载，而不直接打开 -->
+	<mime-mapping> 
+		<extension>zip</extension> 
+		<mime-type>application/zip</mime-type> 
+	</mime-mapping> 
+	<mime-mapping> 
+		<extension>xls</extension> 
+		<mime-type>application/vnd.ms-excel</mime-type> 
+	</mime-mapping> 
+	<mime-mapping> 
+		<extension>doc</extension> 
+		<mime-type>application/vnd.ms-word</mime-type> 
+	</mime-mapping> 
+	<mime-mapping>   
+		<extension>rar</extension>   
+		<mime-type>application/octet-stream</mime-type>   
+	</mime-mapping> 
+	<mime-mapping>
+		<extension>jpg</extension>
+		<mime-type>application/x-jpg</mime-type>
+	</mime-mapping>
+
+	
+</web-app>

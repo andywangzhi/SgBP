@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<constant name="struts.custom.i18n.resources" value="globalMessages" />
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<constant name="struts.devMode" value="true" />
+	<constant name="struts.ui.theme" value="simple" />
+	<constant name="struts.multipart.maxSize" value="5242880" />
+	<package name="base" extends="struts-default">
+		<interceptors> 
+		    <!-- 自定义拦截器 -->
+			<interceptor name="login" class="com.gzepro.internal.query.common.struts.interceptor.LoginInterceptor" />
+			<interceptor name="online" class="com.gzepro.internal.query.common.struts.interceptor.OnlineInterceptor" />
+			<interceptor name="invalidAccess" class="com.gzepro.internal.query.common.struts.interceptor.InvalidAccessInterceptor" />
+			<interceptor name="exception" class="com.gzepro.internal.query.common.struts.interceptor.ExceptionInterceptor"/>
+			<interceptor-stack name="defaultStack">
+			    <!--配置内建默认拦截器-->
+				<interceptor-ref name="defaultStack" />
+				<!--配置自定义的拦截器-->
+				<interceptor-ref name="exception"/>
+				<interceptor-ref name="login" />
+				<interceptor-ref name="online" />
+				<interceptor-ref name="invalidAccess" />
+			</interceptor-stack>
+			
+		    <interceptor-stack name="uploadStack">
+				<interceptor-ref name="fileUpload" />
+				<interceptor-ref name="defaultStack" />
+		    </interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="defaultStack" />
+                <default-action-ref name="notFound"/>
+		<global-results>
+		    <!-- 下面定义的结果对所有的Action都有效 -->
+            <result name="login" type="redirect">/viewLogin.action</result>
+            <result name="exception">/error.jsp</result>
+            <result name="invalidAccess">/roleError.html</result>
+        </global-results>
+        
+	    <action name="notFound">
+	      <result>/404.html</result>
+	    </action>
+        
+		<action name="viewLogin" class="anonymous.base">
+			<result name="success">/login.jsp</result>
+		</action>
+		<action name="redirect" class="anonymous.base">
+			<result name="success">/redirect.jsp</result>
+		</action>
+		
+		<action name="login" class="system.login">
+			<result name="success" type="redirect">/system/main.action</result>
+			<result name="input" >/login.jsp</result>
+			<result name="error" >/login.jsp</result>
+		</action>
+		
+		<action name="logout" class="system.logout">
+			<result name="success">/login.jsp</result>
+	    </action>
+		<!-- execl批量上传 -->
+		<action name="uploadExecl" class="system.uploadExecl">
+			<result name="log">/page/query/soa/rcsm/base/batchlog.jsp</result>
+			<result name="logs">/page/query/soa/rcsm/base/batchlogs.jsp</result>
+		</action>
+    </package>
+	<include file="config/struts/struts-admin-system.xml" />
+	<include file="config/struts/struts-soa.xml" />
+</struts>

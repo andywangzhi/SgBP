@@ -1,0 +1,666 @@
+package com.gzepro.internal.query.soa.service.user.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import com.gmcc.support.trade.service.provider.outrcsm.base.RsPersonOutVo;
+import com.gmcc.support.trade.service.provider.rcsm.base.RsPersonQo;
+import com.gmcc.support.trade.service.provider.rcsm.base.RsPersonVo;
+import com.gzepro.internal.query.base.service.BaseService;
+import com.gzepro.internal.query.common.Constants;
+import com.gzepro.internal.query.common.util.CloneUtil;
+import com.gzepro.internal.query.common.util.DateUtil;
+import com.gzepro.internal.query.common.util.Paging;
+import com.gzepro.internal.query.common.util.StrUtils;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.base.QueryRsPersonListSO;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.base.RetrieveRsPersonSO;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.base.RsPersonDetailDTO;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.base.RsPersonListDTO;
+import com.gzepro.internal.query.system.model.Conf;
+
+/**
+ * 
+  * @ClassName: RsPersonService
+  * @Description: TODO(人员基本信息服务业务调用类)
+  * @author 张建薇
+  * @date Jul 24, 2012 7:25:33 PM
+  *
+ */
+@Service("rsPersonService")
+public class RsPersonService extends BaseService{
+	
+	/**
+	 * 
+	  * @Title: saveOrUpdate
+	  * @Description: TODO(保存或者修改人员信息)
+	  * @param @param obj
+	  * @param @throws Exception
+	  * @return Integer    返回类型
+	  * @throws
+	 */
+	public String saveOrUpdate(Object obj)throws Exception {
+		RsPersonDetailDTO dto = (RsPersonDetailDTO)obj;
+		com.gmcc.support.trade.service.provider.rcsm.base.RsPersonVo parameters = new com.gmcc.support.trade.service.provider.rcsm.base.RsPersonVo();
+		parameters=(RsPersonVo)CloneUtil.cloneObject(dto,parameters,null);
+		//填表时间,不能为空
+		parameters.setOperationalDate((this.dealDate(dto.getOperationalDate())));
+		//经手时间
+		parameters.setAdddate(Integer.valueOf(dto.getAdddate()));
+		//修改时间
+		if(dto.getModifydate()!=null&&!"0".equals(dto.getModifydate())&&!"".equals(dto.getModifydate())){
+			parameters.setModifydate(Integer.valueOf(dto.getModifydate()));
+		}
+		//删除时间
+		if(dto.getDeledate()!=null&&!"0".equals(dto.getDeledate())&&!"".equals(dto.getDeledate())){
+			parameters.setDeledate(Integer.valueOf(dto.getDeledate()));
+		}
+		//比对时间
+		if(dto.getCheckdate()!=null&&!"0".equals(dto.getCheckdate())&&!"".equals(dto.getCheckdate())){
+			parameters.setCheckdate(Integer.valueOf(dto.getCheckdate()));
+		}
+		//验证时间
+		if(dto.getValidatedate()!=null&&!"0".equals(dto.getValidatedate())&&!"".equals(dto.getValidatedate())){
+			parameters.setValidatedate(Integer.valueOf(dto.getValidatedate()));
+		}
+		//审核时间
+		if(dto.getAuditdate()!=null&&!"0".equals(dto.getAuditdate())&&!"".equals(dto.getAuditdate())){
+			parameters.setAuditdate(Integer.valueOf(dto.getAuditdate()));
+		}
+		
+		String result = this.initRsPersonStub().acceptSaveRsPerson(parameters);
+		return result;
+	}
+	
+	/**
+	 * 
+	  * @Title: delete
+	  * @Description: TODO(删除人员信息)
+	  * @param @param obj
+	  * @param @throws Exception
+	  * @return Integer    返回类型
+	  * @throws
+	 */
+	public Integer delete(Object obj)throws Exception {
+		RsPersonDetailDTO dto = (RsPersonDetailDTO) obj;
+		RsPersonQo qo = new RsPersonQo();
+		qo.setPersonId(dto.getPersonId());
+		qo.setDeledate(this.dealDate(dto.getDeledate()));
+		qo.setDelestate(dto.getDelestate());
+		qo.setDeleuser(dto.getDeleuser());
+		int result = this.initRsPersonStub().acceptUpdateRsPersonState(qo);
+		return result;
+	}
+	
+	/**
+	 * 
+	  * @Title: updateState
+	  * @Description: TODO(更新状态：删除申请状态，审核申请状态...)
+	  * @param @param obj
+	  * @param @throws Exception
+	  * @return Integer    返回类型
+	  * @throws
+	 */
+	public Integer updateState(Object obj)throws Exception {
+		RsPersonListDTO dto = (RsPersonListDTO)obj;
+		RsPersonQo qo = new RsPersonQo();
+		qo.setPersonId(dto.getPersonId());
+		qo.setDeleapplystate(dto.getDeleapplystate());
+		qo.setDeledate(this.dealDate(dto.getDeledate()));
+		qo.setDelestate(dto.getDelestate());
+		qo.setDeleuser(dto.getDeleuser());
+		
+		qo.setAuditapplystate(dto.getAuditapplystate());
+		qo.setAuditdate(this.dealDate(dto.getAuditdate()));
+		qo.setAuditstate(dto.getAuditstate());
+		qo.setAudituser(dto.getAudituser());
+		int result = this.initRsPersonStub().acceptUpdateRsPersonState(qo);
+		
+		return result;
+	}
+	
+	/**
+	 * 
+	  * @Title: find
+	  * @Description: TODO(根据查询参数调用WS,返回查询到的人员详细信息)
+	  * @param @param soObject
+	  * @param @throws Exception
+	  * @return Object    返回类型
+	  * @throws
+	 */
+	public Object find(Object soObject, Long menuId, Long accountId)throws Exception {
+		//将搜索对象转换成人员详细信息查询的搜索对象
+		String personId = (String) soObject;
+		com.gmcc.support.trade.service.provider.rcsm.base.RsPersonVo valueElement = null;
+        valueElement = this.initRsPersonStub().acceptRsPersonDetail(personId);
+		
+		//调用WS返回结果 value
+        RsPersonVo[] value = new RsPersonVo[]{valueElement};
+        if (valueElement != null) {
+			return this.parseQueryResult(value, menuId, accountId);
+		}
+		return null;
+	}
+	
+	/**
+	 * 
+	  * @Title: view
+	  * @Description: TODO(根据查询参数调用WS,返回查询到的人员详细信息)
+	  * @param @param soObject
+	  * @param @param menuId
+	  * @param @param accountId
+	  * @param @return
+	  * @param @throws Exception
+	  * @return Object    返回类型
+	  * @throws
+	 */
+	public Object view(Object soObject, Long menuId, Long accountId)throws Exception {
+		//将搜索对象转换成人员详细信息查询的搜索对象
+		RetrieveRsPersonSO retrieveSO = (RetrieveRsPersonSO) soObject;
+		com.gmcc.support.trade.service.provider.rcsm.base.RsPersonVo valueElement = null;
+        valueElement = this.initRsPersonStub().acceptRsPersonDetail(retrieveSO.getPersonId());
+		//调用WS返回结果 value
+        RsPersonVo value = valueElement;
+		if( value != null ){ 
+			return this.parseDetailResult(value, menuId, accountId);
+	    }
+		return null;
+	}
+	
+	/**
+	 * 根据查询参数调用WS,返回查询到的人员信息
+	 * @param soObject 查询的参数对象
+	 * @param menuId  功能模块Id
+	 * @param accounted 当前的登录用户
+	 * @return 结果对象
+	 */
+	public Object query(Object soObject, Long menuId, Long accountId)throws Exception {
+		//将搜索对象转换成用户查询的搜索对象
+		QueryRsPersonListSO queryListSO = (QueryRsPersonListSO) soObject;
+        com.gmcc.support.trade.service.provider.rcsm.base.RsPersonQo parameters = new com.gmcc.support.trade.service.provider.rcsm.base.RsPersonQo();
+		parameters = (RsPersonQo) CloneUtil.cloneObject(queryListSO, parameters, null);
+		com.gmcc.support.trade.service.provider.rcsm.base.RsPersonVo[] valueElement = null;
+        valueElement = this.initRsPersonStub().acceptQueryRsPerson(parameters);
+		//调用WS返回结果 value
+        RsPersonVo[] value =valueElement;
+		if (value != null && value.length>0) {
+			return this.parseQueryResult(value, menuId, accountId);
+		}
+		return null;
+	}
+	
+	
+	
+	
+	public Long queryCountByPage(Paging paging, Object soObject, Long menuId, Long accountId) throws Exception {
+		QueryRsPersonListSO queryListSO = (QueryRsPersonListSO) soObject;
+        com.gmcc.support.trade.service.provider.rcsm.base.RsPersonQo parameters = new com.gmcc.support.trade.service.provider.rcsm.base.RsPersonQo();
+		parameters = (RsPersonQo) CloneUtil.cloneObject(queryListSO, parameters, null);
+		com.gmcc.support.trade.service.provider.rcsm.base.RsPersonVo[] valueElement = null;
+		com.gmcc.support.trade.service.provider.rcsm.base.Paging paramPaging = new com.gmcc.support.trade.service.provider.rcsm.base.Paging();
+		paramPaging.setCurrentIndex(paging.getCurrentIndex());
+		paramPaging.setPageSize(paging.getPageSize());
+		
+		String dateFlag=queryListSO.getDateStr();
+		if(dateFlag!=null&&!"".equals(dateFlag)){
+			String dateStr = "";
+			//对比时间组合
+			if(dateFlag.equals("db")){
+				dateStr = "[checkdate:";
+			}else if(dateFlag.equals("yz")){
+				dateStr = "[validatedate:";
+			}else if(dateFlag.equals("sh")){
+				dateStr = "[auditdate:";
+			}
+			//开始时间
+			if(StrUtils.strIsNull(queryListSO.getFromDate())){
+				dateStr+=this.dealDate(queryListSO.getFromDate())+"-";
+			}else{
+				dateStr+="0-";
+			} 
+			//结束时间
+			if(StrUtils.strIsNull(queryListSO.getToDate())) {
+				dateStr += this.dealDate(queryListSO.getToDate()) +"]";
+			}else{
+				dateStr += "0]";
+			}
+			if(!"".equals(dateStr)){
+				parameters.setDateStr(dateStr);
+			}
+		}
+		paramPaging = this.initRsPersonStub().acceptQueryRsPersonByPage(parameters, paramPaging);
+		if (paramPaging != null) {
+			return paramPaging.getTotalRecords();
+		}  
+		return new Long(0);  
+	}
+	
+	/**
+	 * 根据查询参数调用WS,返回查询到的人员信息
+	 * @param soObject 查询的参数对象
+	 * @param menuId  功能模块Id
+	 * @param accounted 当前的登录用户
+	 * @return 结果对象
+	 */
+	public Object queryByPage(Paging paging, Object soObject, Long menuId, Long accountId) throws Exception {
+		//将搜索对象转换成用户查询的搜索对象
+		QueryRsPersonListSO queryListSO = (QueryRsPersonListSO) soObject;
+        com.gmcc.support.trade.service.provider.rcsm.base.RsPersonQo parameters = new com.gmcc.support.trade.service.provider.rcsm.base.RsPersonQo();
+		parameters = (RsPersonQo) CloneUtil.cloneObject(queryListSO, parameters, null);
+		com.gmcc.support.trade.service.provider.rcsm.base.RsPersonVo[] valueElement = null;
+		com.gmcc.support.trade.service.provider.rcsm.base.Paging paramPaging = new com.gmcc.support.trade.service.provider.rcsm.base.Paging();
+		paramPaging.setCurrentIndex(paging.getCurrentIndex());
+		paramPaging.setPageSize(paging.getPageSize());
+		
+		String dateFlag=queryListSO.getDateStr();
+		if(dateFlag!=null&&!"".equals(dateFlag)){
+			String dateStr = "";
+			//对比时间组合
+			if(dateFlag.equals("db")){
+				dateStr = "[checkdate:";
+			}else if(dateFlag.equals("yz")){
+				dateStr = "[validatedate:";
+			}else if(dateFlag.equals("sh")){
+				dateStr = "[auditdate:";
+			}
+			//开始时间
+			if(StrUtils.strIsNull(queryListSO.getFromDate())){
+				dateStr+=this.dealDate(queryListSO.getFromDate())+"-";
+			}else{
+				dateStr+="0-";
+			} 
+			//结束时间
+			if(StrUtils.strIsNull(queryListSO.getToDate())) {
+				dateStr += this.dealDate(queryListSO.getToDate()) +"]";
+			}else{
+				dateStr += "0]";
+			}
+			if(!"".equals(dateStr)){
+				parameters.setDateStr(dateStr);
+			}
+		}
+		paramPaging = this.initRsPersonStub().acceptQueryRsPersonByPage(parameters, paramPaging);
+		if(paramPaging != null) {
+			paging.setTotalPages(paramPaging.getTotalPages());
+			paging.setTotalRecords(paramPaging.getTotalRecords());
+			//调用WS返回结果 value
+			if(paramPaging.getVoList() != null) {
+				valueElement =new RsPersonVo[paramPaging.getVoList().length];
+				Object[] objList=paramPaging.getVoList();
+				for (int i = 0; i < objList.length; i++) {
+					valueElement[i] = new RsPersonVo();
+					valueElement[i]= (RsPersonVo) CloneUtil.cloneObject(objList[i], valueElement[i], null); //转换dto对象
+					RsPersonVo vo=(RsPersonVo)objList[i];
+					if(vo.getAdddate()>0){
+						valueElement[i].setAdddate(vo.getAdddate());
+					}
+					
+					if(vo.getModifydate()>0){
+						valueElement[i].setAdddate(vo.getModifydate());
+					}
+					
+					if(vo.getDeledate()>0){
+						valueElement[i].setDeledate(vo.getDeledate());
+					}
+					
+					if(vo.getCheckdate()>0){
+						valueElement[i].setCheckdate(vo.getCheckdate());
+					}
+					
+					if(vo.getValidatedate()>0){
+						valueElement[i].setValidatedate(vo.getValidatedate());
+					}
+					
+					if(vo.getAuditdate()>0){
+						valueElement[i].setAuditdate(vo.getAuditdate());
+					}
+					
+				}
+				RsPersonVo[] value = valueElement;
+				if (value != null && value.length>0) {
+					return this.parseQueryResult(value, menuId, accountId);
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * 根据查询参数调用WS,返回查询到的人员信息
+	 * @param soObject 查询的参数对象
+	 * @param menuId  功能模块Id
+	 * @param accounted 当前的登录用户
+	 * @return 结果对象
+	 */
+	public Paging queryByPageforExt(Paging paging, QueryRsPersonListSO soObject) throws Exception {
+		//将搜索对象转换成用户查询的搜索对象
+		QueryRsPersonListSO queryListSO = (QueryRsPersonListSO) soObject;
+        com.gmcc.support.trade.service.provider.rcsm.base.RsPersonQo parameters = new com.gmcc.support.trade.service.provider.rcsm.base.RsPersonQo();
+		parameters = (RsPersonQo) CloneUtil.cloneObject(queryListSO, parameters, null);
+		com.gmcc.support.trade.service.provider.rcsm.base.RsPersonVo[] valueElement = null;
+		com.gmcc.support.trade.service.provider.rcsm.base.Paging paramPaging = new com.gmcc.support.trade.service.provider.rcsm.base.Paging();
+		paramPaging.setCurrentIndex(paging.getCurrentIndex());
+		paramPaging.setPageSize(paging.getPageSize());
+		
+		String dateFlag=queryListSO.getDateStr();
+		if(dateFlag!=null&&!"".equals(dateFlag)){
+			String dateStr = "";
+			//对比时间组合
+			if(dateFlag.equals("db")){
+				dateStr = "[checkdate:";
+			}else if(dateFlag.equals("yz")){
+				dateStr = "[validatedate:";
+			}else if(dateFlag.equals("sh")){
+				dateStr = "[auditdate:";
+			}
+			//开始时间
+			if(StrUtils.strIsNull(queryListSO.getFromDate())){
+				dateStr+=this.dealDate(queryListSO.getFromDate())+"-";
+			}else{
+				dateStr+="0-";
+			} 
+			//结束时间
+			if(StrUtils.strIsNull(queryListSO.getToDate())) {
+				dateStr += this.dealDate(queryListSO.getToDate()) +"]";
+			}else{
+				dateStr += "0]";
+			}
+			if(!"".equals(dateStr)){
+				parameters.setDateStr(dateStr);
+			}
+		}
+		paramPaging = this.initRsPersonStub().acceptQueryRsPersonByPage(parameters, paramPaging);
+		if(paramPaging != null) {
+			paging.setTotalPages(paramPaging.getTotalPages());
+			paging.setTotalRecords(paramPaging.getTotalRecords());
+			paging.setVoList(new ArrayList<RsPersonVo>());
+			//调用WS返回结果 value
+			if(paramPaging.getVoList() != null) {
+				valueElement =new RsPersonVo[paramPaging.getVoList().length];
+				Object[] objList=paramPaging.getVoList();
+				for (int i = 0; i < objList.length; i++) {
+					valueElement[i] = new RsPersonVo();
+					valueElement[i]= (RsPersonVo) CloneUtil.cloneObject(objList[i], valueElement[i], null); //转换dto对象
+					RsPersonVo vo=(RsPersonVo)objList[i];
+					if(vo.getAdddate()>0){
+						valueElement[i].setAdddate(vo.getAdddate());
+					}
+					
+					if(vo.getModifydate()>0){
+						valueElement[i].setAdddate(vo.getModifydate());
+					}
+					
+					if(vo.getDeledate()>0){
+						valueElement[i].setDeledate(vo.getDeledate());
+					}
+					
+					if(vo.getCheckdate()>0){
+						valueElement[i].setCheckdate(vo.getCheckdate());
+					}
+					
+					if(vo.getValidatedate()>0){
+						valueElement[i].setValidatedate(vo.getValidatedate());
+					}
+					
+					if(vo.getAuditdate()>0){
+						valueElement[i].setAuditdate(vo.getAuditdate());
+					}
+					paging.getVoList().add(valueElement[i]);
+				}	
+				return paging;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * 根据修改参数调用WS,修改用户相关状态
+	 * @param soObject 修改参数对象
+	 * @return 修改结果
+	 */
+	public int updateRsPersonState(Object obj) throws Exception {
+		RsPersonListDTO dto = (RsPersonListDTO)obj;
+		com.gmcc.support.trade.service.provider.rcsm.base.RsPersonQo parameters = new com.gmcc.support.trade.service.provider.rcsm.base.RsPersonQo();
+		parameters.setAuditstate(dto.getAuditstate());
+		parameters.setPersonId(dto.getPersonId());
+		//对比
+		if(dto.getCheckdate()!=null&&!"".equals(dto.getCheckdate())){
+			parameters.setCheckdate(this.dealDate(dto.getCheckdate()));
+		}
+		if(dto.getCheckuser()!=null&&!"".equals(dto.getCheckuser())){
+			parameters.setCheckuser(dto.getCheckuser());
+		}
+		//验证
+		if(dto.getValidatedate()!=null&&!"".equals(dto.getValidatedate())){
+			parameters.setValidatedate(this.dealDate(dto.getValidatedate()));
+		}
+		if(dto.getValidateuser()!=null&&!"".equals(dto.getValidateuser())){
+			parameters.setValidateuser(dto.getValidateuser());
+		}
+		//审核
+		if(dto.getAuditdate()!=null&&!"".equals(dto.getAuditdate())){
+			parameters.setAuditdate(this.dealDate(dto.getAuditdate()));
+			parameters.setAuditdetaildate(dto.getAuditdetaildate());
+		}
+		if(dto.getAudituser()!=null&&!"".equals(dto.getAudituser())){
+			parameters.setAudituser(dto.getAudituser());
+		}
+		int result = this.initRsPersonStub().acceptUpdateRsPersonState(parameters);
+		return result;
+	}
+	
+	/**
+	 * 取字典表中人才类型的信息
+	 * @param personTypeQo
+	 * @return
+	 * @throws Exception 
+	 * @throws RemoteException 
+	 */
+	public List<Conf> findPersonTypeConf() throws Exception{
+		String hql=" from Conf t where t.typeId=11 ";
+		List<Conf> list=baseDao.find(hql);
+		return list;
+	 }
+
+	/**
+	 * 取字典表中岗位的信息
+	 * @param personTypeQo
+	 * @return
+	 * @throws Exception 
+	 * @throws RemoteException 
+	 */
+	public List<Conf> findPostTypeConf() throws Exception{
+		String hql=" from Conf t where t.typeId=9 ";
+		List<Conf> list=baseDao.find(hql);
+		return list;
+	 }
+
+	/**
+	 * 取字典表中行业的信息
+	 * @param personTypeQo
+	 * @return
+	 * @throws Exception 
+	 * @throws RemoteException 
+	 */
+	public List<Conf> findTradeConf() throws Exception{
+		String hql=" from Conf t where t.typeId=8 ";
+		List<Conf> list=baseDao.find(hql);
+		return list;
+	 }
+
+	/**
+	 * 取字典表中省的信息
+	 * @param personTypeQo
+	 * @return
+	 * @throws Exception 
+	 * @throws RemoteException 
+	 */
+	public List<Conf> findProvinceConf() throws Exception{
+		String hql=" from Conf t where t.typeId=6 ";
+		List<Conf> list=baseDao.find(hql);
+		return list;
+	 }
+	
+	/**
+	 * 取字典表中市的信息
+	 * @param personTypeQo
+	 * @return
+	 * @throws Exception 
+	 * @throws RemoteException 
+	 */
+	public List<Conf> findCityConf() throws Exception{
+		String hql=" from Conf t where t.typeId=7 ";
+		List<Conf> list=baseDao.find(hql);
+		return list;
+	 }
+	
+	/**
+	 * 取字典表中性别的信息
+	 * @param personTypeQo
+	 * @return
+	 * @throws Exception 
+	 * @throws RemoteException 
+	 */
+	public Map<String, String> findSexConf() throws Exception{
+		String hql=" from Conf t where t.typeId=1 ";
+		Map<String, String> map=new HashMap<String, String>();
+		List<Conf> list = baseDao.find(hql);
+		for (Conf conf : list) {
+			map.put(conf.getCode(), conf.getName());
+		}
+		return map;
+	 }
+	
+	/**
+	 * 取字典表中民族的信息
+	 * @param personTypeQo
+	 * @return
+	 * @throws Exception 
+	 * @throws RemoteException 
+	 */
+	public Map<String, String> findNationConf() throws Exception{
+		String hql=" from Conf t where t.typeId=2 ";
+		Map<String, String> map=new HashMap<String, String>();
+		List<Conf> list=baseDao.find(hql);
+		for (Conf conf : list) {
+			map.put(conf.getCode(), conf.getName());
+		}
+		return map;
+	 }
+	
+	/**
+	 * 取字典表中党派的信息
+	 * @param personTypeQo
+	 * @return
+	 * @throws Exception 
+	 * @throws RemoteException 
+	 */
+	public Map<String, String> findPolityvisageConf() throws Exception{
+		String hql=" from Conf t where t.typeId=3 ";
+		Map<String, String> map=new HashMap<String, String>();
+		List<Conf> list=baseDao.find(hql);
+		for (Conf conf : list) {
+			map.put(conf.getCode(), conf.getName());
+		}
+		return map;
+	 }
+	
+	/**
+	 * 取字典表中学历的信息
+	 * @param personTypeQo
+	 * @return
+	 * @throws Exception 
+	 * @throws RemoteException 
+	 */
+	public Map<String, String> findCultureTypeConf() throws Exception{
+		String hql=" from Conf t where t.typeId=4 ";
+		Map<String, String> map=new HashMap<String, String>();
+		List<Conf> list=baseDao.find(hql);
+		for (Conf conf : list) {
+			map.put(conf.getCode(), conf.getName());
+		}
+		return map;
+	 }
+	
+	/**
+	 * 屏蔽查询结果的敏感信息
+	 * @param obj 待分析对象
+	 * @param menuId 功能模块Id
+	 * @param accountId 当前登录用户Id
+	 * @return 分析的结果
+	 * @throws Exception 
+	 */
+	private Object parseQueryResult(Object obj, Long menuId, Long accountId)throws Exception {
+		Map map = this.findMenuDicByAccountId(menuId, accountId);//获取用户指定功能模块的敏感字段
+		ArrayList<RsPersonListDTO> result = new ArrayList<RsPersonListDTO>();//保存处理结果
+		RsPersonVo[] dtoArr = (RsPersonVo[]) obj; //转换object对象
+		for (int i = 0; i < dtoArr.length; i++) {
+			RsPersonVo dto = dtoArr[i];
+			RsPersonListDTO tmpDto = new RsPersonListDTO();
+			tmpDto = (RsPersonListDTO) CloneUtil.cloneObject(dto, tmpDto, map); //转换dto对象
+			
+			String formatStr=getResourceValue(Constants.FORMAT_DATE);//页面显示的日期格式
+			if (map == null || (map != null && !map.containsKey("pbirthday"))) {
+				tmpDto.setPbirthday(DateUtil.getDateStringFormInt(dto.getPbirthday(),formatStr));
+			}
+			if (map == null || (map != null && !map.containsKey("operationalDate"))) {
+				tmpDto.setOperationalDate(DateUtil.getDateStringFormInt(dto.getOperationalDate(),formatStr));
+			}
+
+			if (map == null || (map != null && !map.containsKey("adddate"))) {
+				tmpDto.setAdddate(DateUtil.getDateStringFormInt(dto.getAdddate(),formatStr));
+			}
+			
+			if (map == null || (map != null && !map.containsKey("modifydate"))) {
+				tmpDto.setModifydate(DateUtil.getDateStringFormInt(dto.getModifydate(),formatStr));
+			}
+			
+			if (map == null || (map != null && !map.containsKey("deledate"))) {
+				tmpDto.setDeledate(DateUtil.getDateStringFormInt(dto.getDeledate(),formatStr));
+			}
+			
+			if (map == null || (map != null && !map.containsKey("checkdate"))) {
+				tmpDto.setCheckdate(DateUtil.getDateStringFormInt(dto.getCheckdate(),formatStr));
+			}
+			
+			if (map == null || (map != null && !map.containsKey("validatedate"))) {
+				tmpDto.setValidatedate(DateUtil.getDateStringFormInt(dto.getValidatedate(),formatStr));
+			}
+			
+			if (map == null || (map != null && !map.containsKey("auditdate"))) {
+				tmpDto.setAuditdate(DateUtil.getDateStringFormInt(dto.getAuditdate(),formatStr));
+			}
+			
+			result.add(tmpDto);
+		}
+		return result;
+	}
+	
+	/**
+     * 屏蔽查询结果的敏感信息
+	 * @param obj 待分析对象
+	 * @param menuId 功能模块Id
+	 * @param accountId 当前登录用户Id
+	 * @return 分析的结果
+	 * @throws Exception 
+	 */
+	private Object parseDetailResult(Object obj, Long menuId, Long accountId) throws Exception {
+		Map map = this.findMenuDicByAccountId(menuId, accountId);//获取用户指定功能模块的敏感字段
+		RsPersonDetailDTO  result = new RsPersonDetailDTO();//保存处理结果
+		RsPersonVo value =(RsPersonVo) obj; //转换object对象
+		result  = (RsPersonDetailDTO) CloneUtil.cloneObject(value,result,map); //转换dto对象
+		
+		String formatStr=getResourceValue(Constants.FORMAT_DATE);//页面显示的日期格式
+		if (map == null || (map != null && !map.containsKey("birthDate"))) {
+			result.setPbirthday(DateUtil.getDateStringFormInt(value.getPbirthday(),formatStr));
+		}
+		if (map == null || (map != null && !map.containsKey("operationalDate"))) {
+			result.setOperationalDate(DateUtil.getDateStringFormInt(value.getOperationalDate(),formatStr));
+		}
+		return result;
+	}
+	
+}

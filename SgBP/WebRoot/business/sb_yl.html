@@ -1,0 +1,376 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    
+	<link rel="stylesheet" type="text/css" href="../themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../themes/icon.css">
+	<script type="text/javascript" src="../jquery/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="../jquery/jquery.easyui.min.js"></script>
+     <script type="text/javascript" src="../locale/easyui-lang-zh_CN.js"></script>
+    
+    <link rel="stylesheet" type="text/css" href="css/reset.css" />
+    
+    <style type="text/css">
+    .inp { border:none; border-bottom:1px #CCC solid}
+    .inp2 { border:none; border-bottom:1px #CCC solid}
+	
+    </style>
+    
+    
+</head>
+<body> 
+
+<div class="web_paht">
+    <div class="row_l web_paht_l">您的位置：毕业生申报&nbsp;&gt;&nbsp;基本信息</div>
+    <div class="row_r web_paht_r tool">
+        <a href="#" class="prev">返回</a>
+        <a href="#" class="refresh">刷新</a>
+        <a href="#" class="print">打印</a>
+        <a href="#" class="up">导出</a>
+    </div>
+</div>
+
+<div class="main_in">
+        
+    
+    
+    <div id="nav" class="easyui-accordion" fit="true" border="false"  >
+         <div title="韶关市人才信息采集表" headerCls="bar_title" icon="title" selected="true">
+              <div class="table_edit">
+                  <div class="table_t"><h2>韶关市人才信息采集表</h2></div>
+                  <div class="table_info">
+                      <div class="row_l">单位(盖章)：</div>
+                      <div class="row_r">填表日期： <input name="" type="text" value="2012" class="inp2" style="width:50px;" />年 <input name="" type="text" value="" class="inp2" style="width:50px;" /> 月 <input name="" type="text" value="" class="inp2" style="width:50px;" /> 日</div>
+                  </div>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="8"><h3>个人基本信息</h3></th></tr>
+                          <tr>
+                              <th width="90px">姓名：</th>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <th width="90px">民族：</th>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <th width="90px">党派：</th>
+                              <td colspan="2">
+                                  <span class="row_l"><input name="dp" type="radio" value="" checked="checked" /> 中共党员&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="dp" type="radio" value="" /> 民主党派&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="dp" type="radio" value="" /> 无党派&nbsp;&nbsp;</span>
+                                  <span class="row_l"> <input name="dp" type="radio" value="" /> 其他<input name="dp" type="text" value="" class="inp2" /></span>
+                              </td>
+                              <td rowspan="4" style="width:130px; vertical-align:middle; text-align:center">相片</td>
+                          </tr>
+                          <tr>
+                              <th nowrap="nowrap">公民身份号码：</th>
+                              <td colspan="6"><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <th rowspan="2" nowrap="nowrap">院系名称<br />(普通院校最高学历)：</th>
+                              <td rowspan="2" colspan="3"><input name="" type="text" value="" class="inp" /></td>
+                              <th>专业名称：</th>
+                              <td colspan="2"><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <th>专业类别：</th>
+                              <td colspan="2">
+                                  <span class="row_l"><input name="zylb" type="radio" value="" checked="checked" /> 理学&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="zylb" type="radio" value="" /> 哲学&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="zylb" type="radio" value="" /> 经济&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="zylb" type="radio" value="" /> 工学&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="zylb" type="radio" value="" /> 法学&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="zylb" type="radio" value="" /> 教育学&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="zylb" type="radio" value="" /> 历史学&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="zylb" type="radio" value="" /> 文学&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="zylb" type="radio" value="" /> 农学&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="zylb" type="radio" value="" /> 医学&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="zylb" type="radio" value="" /> 军事学&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="zylb" type="radio" value="" /> 管理学</span>
+                              </td>
+                          </tr>
+                          <tr>
+                              <th>通讯住址：</th>
+                            <td colspan="5"><input name="" type="text" value="" class="inp" /></td>
+                              <th nowrap="nowrap" style="width:100px;">现户口所在地：</th>
+                            <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <th>联系电话：</th>
+                              <td colspan="3"><input name="" type="text" value="" class="inp" /></td>
+                              <th>电子邮箱：</th>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <th style="width:100px;">邮编：</th>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="7"><h3>职业现状</h3></th></tr>
+                          <tr>
+                              <th width="90px">现所在行业：</th>
+                              <td>
+                                  <span class="row_l"><input name="szhy" type="radio" value="" checked="checked" /> 政府&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="szhy" type="radio" value="" /> 工业&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="szhy" type="radio" value="" /> 农业&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="szhy" type="radio" value="" /> 矿业&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="szhy" type="radio" value="" /> 贸易&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="szhy" type="radio" value="" /> 服务业&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="szhy" type="radio" value="" /> 其他 <input name="" type="text" value="" class="inp2" style="width:50px;" /></span>
+                              </td>
+                              <th>现从事岗位：</th>
+                              <td>
+                                  <span class="row_l"><input name="csgw" type="radio" value="" checked="checked" /> 管理&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="csgw" type="radio" value="" /> 技术&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="csgw" type="radio" value="" /> 营销&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="csgw" type="radio" value="" /> 其他 <input name="" type="text" value="" class="inp2" style="width:50px;" /></span>
+                              </td>
+                          </tr>
+                          <tr>
+                              <th>单位性质：</th>
+                              <td>
+                                  <span class="row_l"><input name="dwxz" type="radio" value="" checked="checked" /> 管理&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="dwxz" type="radio" value="" /> 技术&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="dwxz" type="radio" value="" /> 营销&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="dwxz" type="radio" value="" /> 其他 <input name="" type="text" value="" class="inp2" style="width:50px;" /></span>
+                              </td>
+                              <th>所在县区：</th>
+                              <td>
+                                   <input name="" type="text" value="" class="inp2" style="width:80px;" /> 市
+                                   <input name="" type="text" value="" class="inp2" style="width:80px;" /> 区（县）
+                              </td>
+                          </tr>
+                          <tr>
+                              <th>现就业单位<br />名称：</th>
+                              <td>
+                                  <input name="" type="text" value="" class="inp" />
+                              </td>
+                              <th>担任行政（技术）<br />职务或级别：</th>
+                              <td>
+                                  <input name="" type="text" value="" class="inp" />
+                              </td>
+                          </tr>
+                          <tr>
+                              <th>人才类型<br />（可多选）：</th>
+                              <td colspan="3">
+                                  <span class="row_l"><input name="rclx" type="checkbox" value="" checked="checked" /> 党政人才&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="rclx" type="checkbox" value="" /> 企业经营管理人才&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="rclx" type="checkbox" value="" /> 专业技术人才&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="rclx" type="checkbox" value="" /> 高技能人才&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="rclx" type="checkbox" value="" /> 农村实用人才&nbsp;&nbsp;</span>
+                                  <span class="row_l"><input name="rclx" type="checkbox" value="" /> 社工人才</span>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="7"><h3>职称/技能信息</h3>><h4>&nbsp;（职称级别选项:初级、中级、高级、副高、正高；技能级别选项:初级、中级、高级）</h4></th></tr>
+                          <tr>
+                              <th><p align="center">取得时间</p></th>
+                              <th><p align="center">职称/技能<br />专业名称</p></th>
+                              <th><p align="center">职称/技能<br />级别</p></th>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="7"><h3>教育简历</h3><h4>&nbsp;（请从大学或技工学校开始填写直至最近进修的学历）</h4></th></tr>
+                          <tr>
+                              <th><p align="center">从何年何月</p></th>
+                              <th><p align="center">至何年何月</p></th>
+                              <th><p align="center">毕业院校</p></th>
+                              <th><p align="center">毕业院校</p></th>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="7"><h3>工作简历</h3><h4>&nbsp;（工作经历务必仔细填写到最近单位; 从事岗位选项：管理、技术、其他）</h4></th></tr>
+                          <tr>
+                              <th><p align="center">从何年何月</p></th>
+                              <th><p align="center">至何年何月</p></th>
+                              <th><p align="center">单位名称</p></th>
+                              <th><p align="center">从事岗位</p></th>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="7"><h3>科技成果、专利、论文著作、奖项</h3><h4>&nbsp;（成果级别分：国家级、省部级、市级、县（区）级）</h4></th></tr>
+                          <tr>
+                              <th><p align="center">获取日期</p></th>
+                              <th><p align="center">成果级别</p></th>
+                              <th><p align="center">科技成果名称</p></th>
+                              <th><p align="center">发证单位</p></th>
+                              <th><p align="center">备注</p></th>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="7"><h3>项目经验</h3></th></tr>
+                          <tr>
+                              <th><p align="center">从何年何月</p></th>
+                              <th><p align="center">至何年何月</p></th>
+                              <th><p align="center">团队人数</p></th>
+                              <th><p align="center">项目名称</p></th>
+                              <th><p align="center">项目金额</p></th>
+                              <th><p align="center">项目中担任<br />的角色</p></th>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                          <tr>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="7"><h3>其他专长、技术技能描述</h3></th></tr>
+                          <tr>
+                              <td colspan="6"><textarea name="" cols="" rows="" class="inf" style=" height:100px;"></textarea></td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr>
+                              <td>
+                              <div style="padding:10px 0 10px 0;">
+                                  <h3 style=" font-size:14px;line-height:30px; text-align:center">申  明</h3>
+                                  <p style="text-align:left; text-indent:24px;">本人所填以上资料均为真实、准确的个人信息。</p>
+                                  <p style="text-align:right">签名：<input name="" type="text" value="" class="inp2" style="width:100px;" /></p>
+                              </div>
+                              </td>
+                          </tr>
+                      </tbody>
+                      <tfoot>
+                          <tr><td>
+                          <a href="#" class="btn_search" >保 存</a>
+                          </td></tr>
+                      </tfoot>
+                      
+                  </table>
+                  
+                  <p class="table_info_b">填表说明：  1、填写时请注意字迹清晰，内容真实无误。</p> 
+                  
+             </div>
+              
+        </div>
+        
+        
+    </div>
+    
+</div>
+
+    
+</body>
+</html>

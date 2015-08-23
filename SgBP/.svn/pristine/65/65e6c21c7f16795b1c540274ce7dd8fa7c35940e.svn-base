@@ -1,0 +1,17 @@
+k_registerPage = new register
+k_username = account
+k_password = password
+k_repassword = Retype password
+k_email = email
+k_submit = submit
+k_rewrite =reset
+
+errors.required={0}  required\!
+ 
+login.error=Login Fail,Please Check UserName Or UserPassowrd
+
+ldap.error=ladp auth error
+
+login.error.null=user or pwd is null
+login.error.no.exist=user not exist
+login.error.nouse=user is invalid

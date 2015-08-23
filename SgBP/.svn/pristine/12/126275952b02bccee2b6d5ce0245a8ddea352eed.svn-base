@@ -1,0 +1,454 @@
+/**
+ * RsPersonTypeQo.java
+ *
+ * This file was auto-generated from WSDL
+ * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
+ */
+
+package com.gmcc.support.trade.service.provider.rcsm.rctj;
+
+public class RsPersonTypeQo  implements java.io.Serializable {
+    private int forDate;
+
+    private java.lang.String pcounty;
+
+    private java.lang.String specialtyType;
+
+    private java.lang.String technicallytype;
+
+    private int todate;
+    
+	private String unitlvl;//单位隶属
+	private String forage;//开始年龄
+	private String toage;//结束年龄
+	private String cultureType;//最高学历
+	private String psex;//性别
+	private String ptrade;//行业
+	private String pquarters;//岗位
+	private String economykind;//单位性质
+	private String harvestLevel;//成果级别
+	private String harvestassessforDate;//成果获取开始时间
+	private String harvestassesstoDate;//成果获取结束时间
+	private String technicallyLevel;//职称级别
+	private String techassessforDate;//职称获取开始时间
+	private String techassesstoDate;//职称获取结束时间
+	
+	private String isreport;//是否上报数据
+	
+	//人才需求 
+	private String needstation;//岗位
+	private String neededucation;//学历
+	private String needpost;//职称
+	private String backuptwo;//专业
+	private String needsex;//性别
+	
+	//高层次人才库,留学生人才统计条件
+	private String personKind;
+	
+	public String getUnitlvl() {
+		return unitlvl;
+	}
+
+	public void setUnitlvl(String unitlvl) {
+		this.unitlvl = unitlvl;
+	}
+
+	public String getForage() {
+		return forage;
+	}
+
+	public void setForage(String forage) {
+		this.forage = forage;
+	}
+
+	public String getToage() {
+		return toage;
+	}
+
+	public void setToage(String toage) {
+		this.toage = toage;
+	}
+
+	public String getCultureType() {
+		return cultureType;
+	}
+
+	public void setCultureType(String cultureType) {
+		this.cultureType = cultureType;
+	}
+
+	public String getPsex() {
+		return psex;
+	}
+
+	public void setPsex(String psex) {
+		this.psex = psex;
+	}
+
+	public String getPtrade() {
+		return ptrade;
+	}
+
+	public void setPtrade(String ptrade) {
+		this.ptrade = ptrade;
+	}
+
+	public String getPquarters() {
+		return pquarters;
+	}
+
+	public void setPquarters(String pquarters) {
+		this.pquarters = pquarters;
+	}
+
+	public String getEconomykind() {
+		return economykind;
+	}
+
+	public void setEconomykind(String economykind) {
+		this.economykind = economykind;
+	}
+
+	public String getHarvestLevel() {
+		return harvestLevel;
+	}
+
+	public void setHarvestLevel(String harvestLevel) {
+		this.harvestLevel = harvestLevel;
+	}
+
+
+	public String getTechnicallyLevel() {
+		return technicallyLevel;
+	}
+
+	public void setTechnicallyLevel(String technicallyLevel) {
+		this.technicallyLevel = technicallyLevel;
+	}
+
+    public RsPersonTypeQo() {
+    }
+
+    public RsPersonTypeQo(
+           int forDate,
+           java.lang.String pcounty,
+           java.lang.String specialtyType,
+           java.lang.String technicallytype,
+           int todate) {
+           this.forDate = forDate;
+           this.pcounty = pcounty;
+           this.specialtyType = specialtyType;
+           this.technicallytype = technicallytype;
+           this.todate = todate;
+    }
+
+
+    /**
+     * Gets the forDate value for this RsPersonTypeQo.
+     * 
+     * @return forDate
+     */
+    public int getForDate() {
+        return forDate;
+    }
+
+
+    /**
+     * Sets the forDate value for this RsPersonTypeQo.
+     * 
+     * @param forDate
+     */
+    public void setForDate(int forDate) {
+        this.forDate = forDate;
+    }
+
+
+    /**
+     * Gets the pcounty value for this RsPersonTypeQo.
+     * 
+     * @return pcounty
+     */
+    public java.lang.String getPcounty() {
+        return pcounty;
+    }
+
+
+    /**
+     * Sets the pcounty value for this RsPersonTypeQo.
+     * 
+     * @param pcounty
+     */
+    public void setPcounty(java.lang.String pcounty) {
+        this.pcounty = pcounty;
+    }
+
+
+    /**
+     * Gets the specialtyType value for this RsPersonTypeQo.
+     * 
+     * @return specialtyType
+     */
+    public java.lang.String getSpecialtyType() {
+        return specialtyType;
+    }
+
+
+    /**
+     * Sets the specialtyType value for this RsPersonTypeQo.
+     * 
+     * @param specialtyType
+     */
+    public void setSpecialtyType(java.lang.String specialtyType) {
+        this.specialtyType = specialtyType;
+    }
+
+
+    /**
+     * Gets the technicallytype value for this RsPersonTypeQo.
+     * 
+     * @return technicallytype
+     */
+    public java.lang.String getTechnicallytype() {
+        return technicallytype;
+    }
+
+
+    /**
+     * Sets the technicallytype value for this RsPersonTypeQo.
+     * 
+     * @param technicallytype
+     */
+    public void setTechnicallytype(java.lang.String technicallytype) {
+        this.technicallytype = technicallytype;
+    }
+
+
+    /**
+     * Gets the todate value for this RsPersonTypeQo.
+     * 
+     * @return todate
+     */
+    public int getTodate() {
+        return todate;
+    }
+
+
+    /**
+     * Sets the todate value for this RsPersonTypeQo.
+     * 
+     * @param todate
+     */
+    public void setTodate(int todate) {
+        this.todate = todate;
+    }
+
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
+        if (!(obj instanceof RsPersonTypeQo)) return false;
+        RsPersonTypeQo other = (RsPersonTypeQo) obj;
+        if (obj == null) return false;
+        if (this == obj) return true;
+        if (__equalsCalc != null) {
+            return (__equalsCalc == obj);
+        }
+        __equalsCalc = obj;
+        boolean _equals;
+        _equals = true && 
+            this.forDate == other.getForDate() &&
+            ((this.pcounty==null && other.getPcounty()==null) || 
+             (this.pcounty!=null &&
+              this.pcounty.equals(other.getPcounty()))) &&
+            ((this.specialtyType==null && other.getSpecialtyType()==null) || 
+             (this.specialtyType!=null &&
+              this.specialtyType.equals(other.getSpecialtyType()))) &&
+            ((this.technicallytype==null && other.getTechnicallytype()==null) || 
+             (this.technicallytype!=null &&
+              this.technicallytype.equals(other.getTechnicallytype()))) &&
+            this.todate == other.getTodate();
+        __equalsCalc = null;
+        return _equals;
+    }
+
+    private boolean __hashCodeCalc = false;
+    public synchronized int hashCode() {
+        if (__hashCodeCalc) {
+            return 0;
+        }
+        __hashCodeCalc = true;
+        int _hashCode = 1;
+        _hashCode += getForDate();
+        if (getPcounty() != null) {
+            _hashCode += getPcounty().hashCode();
+        }
+        if (getSpecialtyType() != null) {
+            _hashCode += getSpecialtyType().hashCode();
+        }
+        if (getTechnicallytype() != null) {
+            _hashCode += getTechnicallytype().hashCode();
+        }
+        _hashCode += getTodate();
+        __hashCodeCalc = false;
+        return _hashCode;
+    }
+
+    // Type metadata
+    private static org.apache.axis.description.TypeDesc typeDesc =
+        new org.apache.axis.description.TypeDesc(RsPersonTypeQo.class, true);
+
+    static {
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://rctj.rcsm.provider.service.trade.support.gmcc.com/", "rsPersonTypeQo"));
+        org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("forDate");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "forDate"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("pcounty");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "pcounty"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("specialtyType");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "specialtyType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("technicallytype");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "technicallytype"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("todate");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "todate"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+    }
+
+    /**
+     * Return type metadata object
+     */
+    public static org.apache.axis.description.TypeDesc getTypeDesc() {
+        return typeDesc;
+    }
+
+    /**
+     * Get Custom Serializer
+     */
+    public static org.apache.axis.encoding.Serializer getSerializer(
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
+           javax.xml.namespace.QName _xmlType) {
+        return 
+          new  org.apache.axis.encoding.ser.BeanSerializer(
+            _javaType, _xmlType, typeDesc);
+    }
+
+    /**
+     * Get Custom Deserializer
+     */
+    public static org.apache.axis.encoding.Deserializer getDeserializer(
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
+           javax.xml.namespace.QName _xmlType) {
+        return 
+          new  org.apache.axis.encoding.ser.BeanDeserializer(
+            _javaType, _xmlType, typeDesc);
+    }
+
+	public String getIsreport() {
+		return isreport;
+	}
+
+	public void setIsreport(String isreport) {
+		this.isreport = isreport;
+	}
+
+	public String getHarvestassessforDate() {
+		return harvestassessforDate;
+	}
+
+	public void setHarvestassessforDate(String harvestassessforDate) {
+		this.harvestassessforDate = harvestassessforDate;
+	}
+
+	public String getHarvestassesstoDate() {
+		return harvestassesstoDate;
+	}
+
+	public void setHarvestassesstoDate(String harvestassesstoDate) {
+		this.harvestassesstoDate = harvestassesstoDate;
+	}
+
+	public String getTechassessforDate() {
+		return techassessforDate;
+	}
+
+	public void setTechassessforDate(String techassessforDate) {
+		this.techassessforDate = techassessforDate;
+	}
+
+	public String getTechassesstoDate() {
+		return techassesstoDate;
+	}
+
+	public void setTechassesstoDate(String techassesstoDate) {
+		this.techassesstoDate = techassesstoDate;
+	}
+
+	public String getNeedstation() {
+		return needstation;
+	}
+
+	public void setNeedstation(String needstation) {
+		this.needstation = needstation;
+	}
+
+	public String getNeededucation() {
+		return neededucation;
+	}
+
+	public void setNeededucation(String neededucation) {
+		this.neededucation = neededucation;
+	}
+
+	public String getNeedpost() {
+		return needpost;
+	}
+
+	public void setNeedpost(String needpost) {
+		this.needpost = needpost;
+	}
+
+	public String getBackuptwo() {
+		return backuptwo;
+	}
+
+	public void setBackuptwo(String backuptwo) {
+		this.backuptwo = backuptwo;
+	}
+
+	public String getPersonKind() {
+		return personKind;
+	}
+
+	public void setPersonKind(String personKind) {
+		this.personKind = personKind;
+	}
+
+	public String getNeedsex() {
+		return needsex;
+	}
+
+	public void setNeedsex(String needsex) {
+		this.needsex = needsex;
+	}
+
+}

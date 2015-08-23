@@ -1,0 +1,523 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+
+<html>
+  <head>
+    <base href="<%=basePath%>"/>
+    <title>人员信息预览</title>
+	<link rel="stylesheet" type="text/css" href="themes/default/easyui.css"/>
+	<link rel="stylesheet" type="text/css" href="themes/icon.css"/>
+	<!-- <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script> -->
+	<script type="text/javascript" src="js/jquery/jquery-1.4.4.min.js"></script>
+	<script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="business/css/reset.css" />
+	<script type="text/javascript" src="locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="js/jquery/jquery.form.js"></script>
+    
+    <style type="text/css">
+    .inp { border:none; border-bottom:1px #CCC solid}
+    .inp2 { border:none; border-bottom:1px #CCC solid}
+	
+    </style>
+    
+    <script type="text/javascript">
+	    function preview(param){
+			location.href='<%=path%>/soa/previewAction.action?menuId=${menuId}&form.uuid='+param;
+		}
+		
+		var path='<%=path%>';
+		
+		function save(personId){
+		  $.ajax({
+		     url:"<%=path%>/system/screenshots!save.action?personId=" + personId + "&datestr="+new Date().getTime(),
+		     dataType:"json",
+		     success:function(data){
+		        alert("截屏成功!");
+		      }
+		   });
+		}
+
+function toJPG(){
+	var bdhtml=window.document.body.innerHTML;
+	var sprnstr="<!--startprint-->";
+	var eprnstr="<!--endprint-->";
+	var prnhtml=bdhtml.substr(bdhtml.indexOf(sprnstr)+17);
+	prnhtml=prnhtml.substring(0,prnhtml.indexOf(eprnstr));
+	
+	document.getElementById("htmlSrc").value=prnhtml;
+
+	$("#ylForm").ajaxSubmit(
+	{
+		url: "<%=path%>/soa/RsPerson!saveHtmlSrc.action?dateStr=" +(new Date()),
+		dataType:'json',
+		success: function(data, status)
+		{
+		var error='';
+		var _gdImgID = data.gdImgID;
+		if(null!=_gdImgID && "" != _gdImgID){
+			document.getElementById("rsAffix.affixId").value=_gdImgID;
+			var _src = '<a href="<%=path%>/soa/RsAffixAction!downFile.action?affixId='+_gdImgID+'" class="search2">归档下载</a>';
+			var _html = document.getElementById("gdDivID").innerHTML;
+			document.getElementById("gdDivID").innerHTML=_src;
+		}
+		try{
+			error = data.error;
+		}catch(exception){} 
+		if(error!=null&&error.length>0){
+	     	 alert(error);
+		}else{
+				alert(data.msg);
+			}
+		},
+		error:function()
+		{
+			alert("归档保存失败!");
+		}
+	});
+	 
+}
+
+// 打印
+function toPrint(){
+	var argument = "height ="+(window.screen.availHeight-40)+",width="+(window.screen.availWidth-40)+", top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=yes,location=no,status=no";
+	var _psID = document.getElementById("form.dto.personId").value;
+	var _pname = document.getElementById("form.personDetail.pname").value;
+	var _idCard = document.getElementById("form.personDetail.idCard").value;
+	var _auditstate = document.getElementById("form.personDetail.auditstate").value;
+	var _url=path+'/soa/previewAction.action?menuId=${menuId}&form.uuid='+_psID+'&ifPrint=1';
+	/* _url += '&form.personDetail.pname='+_pname;
+	_url += '&form.personDetail.idCard='+_idCard;
+	_url += '&form.personDetail.auditstate='+_auditstate; */
+	window.open(_url,"",argument); 
+}
+    </script>
+  </head>
+  
+  <body>
+    
+<div class="web_paht">
+    <div class="row_l web_paht_l">
+    您的位置：个人信息申报&nbsp;&gt;&nbsp;详细信息 
+    </div>
+    <div class="row_r web_paht_r tool">
+        <a href="javascript:window.history.go(-1);" class="prev">返回</a>
+        <!-- <a href="javascript:preview('<s:property value="form.personDetail.personId" />');" class="refresh">刷新</a> -->
+        <a href="javascript:toPrint();" class="print">打印预览</a>
+        <%--
+        <a href="javascript:toJPG();" class="save">归档保存</a>
+        <div id="gdDivID">
+		<s:if test="form.gdImg.size() > 0 ">
+			<s:iterator value="form.gdImg" id="gdID" status="st">
+				<s:if test="#gdID.affixType == \"2\"">
+	        <a href="<%=path%>/soa/RsAffixAction!downFile.action?affixId=<s:property value="#gdID.affixId" />" class="search2">归档下载</a>
+				</s:if>
+			</s:iterator>
+		</s:if>
+		<s:else>
+			<a href="javascript:alert('请先归档保存!');" class="save">归档下载</a>
+		</s:else>
+        </div>
+         --%>
+    </div>
+</div>
+
+
+
+<div class="row_r" style="margin-right:10px; line-height: 28px;margin-bottom: 10px;">
+人员状态:（
+    							<s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"63\")" id="status" status="st">
+	                                 <s:if test="form.personDetail.auditstate==key">
+	                              	  	 <font color="red"><s:property value="value"/></font>
+	                              	 </s:if>
+		                         </s:iterator>）
+</div>
+
+<form  action="RsPerson!query.action" id="ylForm" name="ylForm" method="post" >
+ <input type="hidden" id="htmlSrc" name="htmlSrc"/>
+ <input type="hidden" id="form.dto.personId" name="form.personDetail.personId" value='<s:property value="form.personDetail.personId" />' />
+ <input type="hidden" id="form.personDetail.pname" name="form.personDetail.pname" value='<s:property value="form.personDetail.pname" />' />
+ <input type="hidden" id="form.personDetail.auditstate" name="form.personDetail.auditstate" value='<s:property value="form.personDetail.auditstate" />' />
+ <input type="hidden" id="form.personDetail.idCard" name="form.personDetail.idCard" value='<s:property value="form.personDetail.idCard" />' />
+ <input type="hidden" id="rsAffix.affixId" name="rsAffix.affixId" value='<s:property value="form.gdImg[0].affixId" />' />
+</form>
+
+
+        
+<!--startprint-->
+              <div class="table_yl">
+                  <div class="table_t"><h2>韶关市人才信息采集表</h2></div>
+                  <div class="table_info">
+                      <div class="row_l">单位(盖章)：</div>
+                      <div class="row_r">填表日期：<s:property value="form.personDetail.operationalDate" /></div>
+                  </div>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="8" nowrap="nowrap"><h3>个人基本信息</h3></th></tr>
+                          <tr>
+                              <th width="90px">姓名：</th>
+                              <td width="10%"><s:property value="form.personDetail.pname" /></td>
+                              <td>
+                              	<s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"16\")" var="var" >
+		                  				<s:if test="form.personDetail.psex == key">
+		                  					<s:property value="value" />
+		                  				</s:if>
+	                  			</s:iterator>
+                              </td>
+                              <th width="90px" nowrap="nowrap">民族：</th>
+                              <td width="10%">
+                              	<s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"2\")" var="var" >
+		                  				<s:if test="form.personDetail.pnation== key">
+		                  					<s:property value="value" />
+		                  				</s:if>
+	                  			</s:iterator>
+                              </td>
+                              
+                              <th width="90px" nowrap="nowrap">党派：</th>
+                              <td colspan="1" width="180">
+	                  			<s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"3\")" var="var" >
+		                  				<s:if test="form.personDetail.ppolityvisage == key">
+		                  					<s:property value="value"/>
+		                  				</s:if>
+	                  			</s:iterator>
+                              </td>
+                              
+                              <td rowspan="4" style="width:180px; vertical-align:middle; text-align:center">
+                              	<s:if test="form.affixList.size() > 0 ">
+			                       <s:iterator value="form.affixList" id="affix" status="st">
+                              	   	<s:if test="#affix.affixType == \"1\"">
+	                              	<input type="hidden" value="<s:property value="#affix.affixId"/>" name="rsAffix.affixId"/>
+                              	   	<img id="showPic" style="width: 170px;height: 130px;" src="<%=path%>/soa/RsAffixAction!showImage.action?affixId=<s:property value="#affix.affixId" />" />
+                              	   	</s:if>
+                              	   </s:iterator>
+                              	</s:if>
+                              </td>
+                          </tr>
+                          
+                          <tr>
+                              <th nowrap="nowrap" nowrap="nowrap">公民身份号码：</th>
+                              <td colspan="6"><p align="left"><s:property value="form.personDetail.idCard" /></p></td>
+                          </tr>
+                          
+                          <tr>
+                              <th rowspan="1" nowrap="nowrap">毕业院校：</th>
+                              <td rowspan="1" colspan="3">
+		                  			<s:property value="form.personDetail.graduatecollege" />
+                              </td>
+                              <th nowrap="nowrap">专业名称：</th>
+                              <td colspan="2"><s:property value="form.personDetail.specialtyName" /></td>
+                          </tr>
+                          
+                          <tr>
+                          	  <th rowspan="1" nowrap="nowrap">最高学历：</th>
+                          	  <td rowspan="1" colspan="3">
+                          	   <s:if test="form.personDetail.cultureType==6">
+						         	<s:property value="#application._WEB_SYS_CONF_KEY_.get(\"4\").get(\"6\")"/>:<s:property value="form.personDetail.culturetypeother"/>
+						         </s:if>	
+						         <s:else>
+			                  			<s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"4\")" id="status" status="st">
+			                  				<s:if test="form.personDetail.cultureType == key">
+			                  					<s:property value="value"/>
+			                  				</s:if>
+			                  			</s:iterator>
+						         </s:else>
+						      </td>
+                              <th nowrap="nowrap">专业类别：</th>
+                              <td colspan="2">
+                              	  <s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"5\")" id="status" status="st">
+		                  				<s:if test="form.personDetail.specialtytype == key">
+		                  					<s:property value="value"/>
+		                  				</s:if>
+		                  		  </s:iterator>
+                              </td>
+                          </tr>
+                          
+                          <tr>
+                            <th>通讯住址：</th>
+                            <td colspan="5"><s:property value="form.personDetail.messageAddr" /></td>
+                              <th nowrap="nowrap" width="100px">现户口所在地：</th>
+                            <td>
+                            <s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"6\")" id="status" status="st">
+					           	<s:if test="form.personDetail.registeraddrprov == key">
+					            	<s:property value="value"/>
+					            </s:if>
+					        </s:iterator>	
+					        /
+					        <s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"7\")" id="status" status="st">
+					           	<s:if test="form.personDetail.registeraddrcity == key">
+					            	<s:property value="value"/>
+					            </s:if>
+					        </s:iterator>
+					        </td>	
+                          </tr>
+                          
+                          <tr>
+                              <th>联系电话：</th>
+                              <td colspan="3"><s:property value="form.personDetail.pphone" /></td>
+                              <th>电子邮箱：</th>
+                              <td><s:property value="form.personDetail.pemail" /></td>
+                              <th width="100px">邮编：</th>
+                              <td><s:property value="form.personDetail.ppost" /></td>
+                          </tr>
+                          
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="4"><h3>职业现状</h3></th></tr>
+                          <tr>
+                              <th width="90px" nowrap="nowrap">现所在行业：</th>
+                              <td>
+						         <s:if test="form.personDetail.ptrade==13">
+                                 	<s:property value="#application._WEB_SYS_CONF_KEY_.get(\"8\").get(\"13\")"/>:<s:property value="form.personDetail.ptradeother"/>
+                                 </s:if>
+                                 <s:else>
+	                                 <s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"8\")" id="status" status="st">
+								         <s:if test="form.personDetail.ptrade == key">
+								            <s:property value="value"/>
+								         </s:if>
+							         </s:iterator>	
+                                 </s:else>
+                              </td>
+                              <th nowrap="nowrap">现从事岗位：</th>
+                              <td>
+						         <s:if test="form.personDetail.pquarters==6">
+						         	<s:property value="#application._WEB_SYS_CONF_KEY_.get(\"9\").get(\"6\")"/>:<s:property value="form.personDetail.pquartersother"/>
+						         </s:if>	
+						         <s:else>
+						         	 <s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"9\")" id="status" status="st">
+								         <s:if test="form.personDetail.pquarters == key">
+								            <s:property value="value"/>
+								         </s:if>
+						         	</s:iterator>
+						         </s:else>
+                              </td>
+                          </tr>
+                          <tr>
+                              <th nowrap="nowrap">单位性质：</th>
+                              <td>
+						          <s:if test="form.personDetail.economyKind==9">
+                                 	 <s:property value="#application._WEB_SYS_CONF_KEY_.get(\"10\").get(\"9\")"/>:<s:property value="form.personDetail.economykindother"/>
+                                  </s:if>
+                                  <s:else>
+	                                   <s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"10\")" id="status" status="st">
+								         <s:if test="form.personDetail.economyKind == key">
+								            <s:property value="value"/>
+								         </s:if>
+							         </s:iterator>	
+                                  </s:else>
+                              </td>
+                              <th nowrap="nowrap">所在县区：</th>
+                              <td>
+                                  	韶关市/
+                                    <s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"15\")" id="status" status="st">
+								         <s:if test="form.personDetail.pcounty == key">
+								            <s:property value="value"/>
+								         </s:if>
+							        </s:iterator>
+                              </td>
+                          </tr>
+                          <tr>
+                              <th nowrap="nowrap">现就业单位<br />名称：</th>
+                              <td>
+                                  <s:property value="form.personDetail.workCompany" />
+                              </td>
+                              <th nowrap="nowrap">担任行政（技术）<br />职务或级别：</th>
+                              <td>
+                                  <s:property value="form.personDetail.dutylevel" />
+                              </td>
+                          </tr>
+                          <tr>
+                              <th nowrap="nowrap">人才类型：</th>
+                              <td colspan="3">
+                          		<%
+                          			Map typeMap = (Map) ((Map) application.getAttribute("_WEB_SYS_CONF_KEY_")).get("11");
+                          			Map pMap = (Map) request.getAttribute("_PERSON_TYPE");
+                          			if(pMap == null || pMap.size() < 1) {
+                          				pMap = new HashMap();
+                          			}
+                        			if(typeMap != null && typeMap.size() > 0) {
+                        				for(Object obj : typeMap.keySet()) {
+                        					Object flag = pMap.get(obj.toString().trim());
+                        					if(flag != null && flag.toString().trim().length() > 0) {
+                          		%>
+                          			<%=typeMap.get(obj)%>
+                          		<%
+                          					}
+	                          			}
+                          			}
+                          		%>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="3" nowrap="nowrap"><h3>职称/技能信息</h3><h4>&nbsp;（职称级别选项：初级、中级、高级、副高、正高；技能级别选项：初级、中级、高级）</h4></th></tr>
+                          <tr>
+                              <th nowrap="nowrap"><p align="center">取得时间</p></th>
+                              <th nowrap="nowrap"><p align="center">职称/技能专业名称</p></th>
+                              <th nowrap="nowrap"><p align="center">职称/技能级别</p></th>
+                          </tr>
+                          <s:if test="form.techMessList.size() > 0 ">
+		                      <s:iterator value="form.techMessList" id="status" status="st">
+		                      	 <tr>
+		                              <td nowrap="nowrap"><s:property value="#status.assessDate" /></td>
+		                              <td style="word-wrap:break-word;word-break:break-all;">
+		                              	  <s:property value="#status.technicallyType" />
+		                              </td>
+		                              <td>
+			                              <s:iterator value="#application._WEB_SYS_CONF_KEY_.get('12')" id="sta">
+			                              	  <s:if test="#status.technicallyLevel == key">
+			                              	 	 <s:property value="value" />
+			                              	  </s:if>
+			                              </s:iterator>
+		                              </td>
+		                         </tr>
+		                      </s:iterator>
+	                      </s:if>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="4" nowrap="nowrap"><h3>教育简历</h3><h4>&nbsp;（请从大学或技工学校开始填写直至最近进修的学历）</h4></th></tr>
+                          <tr>
+                              <th nowrap="nowrap"><p align="center">从何年何月</p></th>
+                              <th nowrap="nowrap"><p align="center">至何年何月</p></th>
+                              <th nowrap="nowrap"><p align="center">毕业院校</p></th>
+                              <th nowrap="nowrap"><p align="center">所学专业</p></th>
+                          </tr>
+                          <s:if test="form.eduExpList.size() > 0 ">
+		                      <s:iterator value="form.eduExpList" id="status" status="st">
+		                      	 <tr>
+		                              <td nowrap="nowrap"><s:property value="#status.fromDate" /></td>
+		                              <td nowrap="nowrap"><s:property value="#status.toDate" /></td>
+		                              <td style="word-wrap:break-word;word-break:break-all;"><s:property value="#status.pcollege" /></td>
+		                              <td style="word-wrap:break-word;word-break:break-all;"><s:property value="#status.specialtyName" /></td>
+		                         </tr>
+		                      </s:iterator>
+	                      </s:if>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="4" nowrap="nowrap"><h3>工作简历</h3><h4>&nbsp;（工作经历务必仔细填写到最近单位； 从事岗位选项：管理、技术、其他）</h4></th></tr>
+                          <tr>
+                              <th nowrap="nowrap"><p align="center">从何年何月</p></th>
+                              <th nowrap="nowrap"><p align="center">至何年何月</p></th>
+                              <th nowrap="nowrap"><p align="center">单位名称</p></th>
+                              <th nowrap="nowrap"><p align="center">从事岗位</p></th>
+                          </tr>
+                          <s:if test="form.workexpList.size() > 0 ">
+		                      <s:iterator value="form.workexpList" id="status" status="st">
+		                      	 <tr>
+		                              <td nowrap="nowrap"><s:property value="#status.fromDate" /></td>
+		                              <td nowrap="nowrap"><s:property value="#status.toDate" /></td>
+		                              <td style="word-wrap:break-word;word-break:break-all;"><s:property value="#status.companyName" /></td>
+		                              <td>
+		                                <s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"9\")" id="sta" status="st">
+			                              	  <s:if test="#status.pposition == key">
+			                              	 	 <s:property value="value" />
+			                              	  </s:if>
+			                              </s:iterator>
+			                           </td>
+		                         </tr>
+		                      </s:iterator>
+	                      </s:if>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="5" nowrap="nowrap"><h3>科技成果、专利、论文著作、奖项</h3><h4>&nbsp;（成果级别分：国家级、省部级、市级、县（区）级）</h4></th></tr>
+                          <tr>
+                              <th nowrap="nowrap"><p align="center">获取日期</p></th>
+                              <th nowrap="nowrap"><p align="center">成果级别</p></th>
+                              <th nowrap="nowrap"><p align="center">科技成果名称</p></th>
+                              <th nowrap="nowrap"><p align="center">发证单位</p></th>
+                              <th nowrap="nowrap"><p align="center">备注</p></th>
+                          </tr>
+                          <s:if test="form.techHarvestList.size() > 0 ">
+		                      <s:iterator value="form.techHarvestList" id="status" status="st">
+		                      	 <tr>
+		                              <td nowrap="nowrap"><s:property value="#status.assessDate" /></td>
+		                              <td>
+		                                 <s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"13\")" id="sta" status="st">
+			                              	  <s:if test="#status.harvestLevel == key">
+			                              	 	 <s:property value="value" />
+			                              	  </s:if>
+			                              </s:iterator>
+		                              </td>
+		                              <td style="word-wrap:break-word;word-break:break-all;"><s:property value="#status.harvestName" /></td>
+		                              <td style="word-wrap:break-word;word-break:break-all;"><s:property value="#status.assessDep" /></td>
+		                              <td style="word-wrap:break-word;word-break:break-all;"><s:property value="#status.pdemo" /></td>
+		                         </tr>
+		                      </s:iterator>
+	                      </s:if>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" colspan="6" nowrap="nowrap"><h3>项目经验</h3></th></tr>
+                          <tr>
+                              <th nowrap="nowrap"><p align="center">从何年何月</p></th>
+                              <th nowrap="nowrap"><p align="center">至何年何月</p></th>
+                              <th nowrap="nowrap"><p align="center">团队人数</p></th>
+                              <th nowrap="nowrap"><p align="center">项目名称</p></th>
+                              <th nowrap="nowrap"><p align="center">项目金额</p></th>
+                              <th nowrap="nowrap"><p align="center">项目中担任<br />的角色</p></th>
+                          </tr>
+                          <s:if test="form.proExpList.size() > 0 ">
+                              <s:iterator value="form.proExpList" id="status" status="st">
+		                      	 <tr>
+		                              <td nowrap="nowrap"><s:property value="#status.fromDate" /></td>
+		                              <td nowrap="nowrap"><s:property value="#status.toDate" /></td>
+		                              <td nowrap="nowrap"><s:property value="#status.personnum" /></td>
+		                              <td style="word-wrap:break-word;word-break:break-all;"><s:property value="#status.projname" /></td>
+		                              <td nowrap="nowrap"><s:property value="#status.projmoney" /></td>
+		                              <td nowrap="nowrap"><s:property value="#status.projresponsibility" /></td>
+		                         </tr>
+		                      </s:iterator>
+	                      </s:if>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr><th class="tbody_t" nowrap="nowrap"><h3>其他专长、技术技能描述</h3></th></tr>
+                          <tr>
+                              <td>
+	                              <textarea style="width: 98%;" readonly="readonly">
+	                              	<s:property value="form.personDetail.specialtyStrong" />
+	                              </textarea>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <table>
+                      <tbody>
+                          <tr>
+                              <td>
+                              <div padding="10px 0 10px 0">
+                                  <h3 style=" font-size:14px;line-height:30px;" align="center">申  明</h3>
+                                  <p style="text-indent:24px;" align="left">本人所填以上资料均为真实、准确的个人信息。</p>
+                                  <p align="right">签名：<input name="" type="text" value="<s:property value="form.personDetail.pname" />" class="inp2" style="width:100px;" /></p>
+                              </div>
+                              </td>
+                          </tr>
+                      </tbody>
+                      
+                  </table>
+                  
+                  <p class="table_info_b">填表说明：  1、填写时请注意字迹清晰，内容真实无误。</p> 
+                  
+             </div>
+<!--endprint-->
+              
+    
+
+  </body>
+</html>

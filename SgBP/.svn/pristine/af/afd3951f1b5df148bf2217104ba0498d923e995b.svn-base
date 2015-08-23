@@ -1,0 +1,42 @@
+/**
+ * 
+ */
+package com.gzepro.internal.query.soa.service.user.impl;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.gzepro.internal.query.system.base.SystemBaseService;
+import com.gzepro.internal.query.system.model.RsRcgzkhpfb;
+import com.gzepro.internal.query.system.model.RsRczytjnr;
+
+/**
+ * @author SgBP 广州易宝信息技术有限公司
+ * @since  2013-3-21
+ * @version 1.0
+ */
+@Service("rsRczytjnrService")
+public class RsRczytjnrService extends SystemBaseService{
+	
+	public RsRczytjnr saveOrUpdate(RsRczytjnr object){
+		return (RsRczytjnr)baseDao.create(object);
+	}	
+	/**
+	* 通过ID查找一条数据
+	* @param id
+	* @return
+	*/
+	public RsRczytjnr findById(String id){
+	return (RsRczytjnr) baseDao.get(RsRczytjnr.class, id);
+	}
+	/**
+	 * 根据参数查询
+	 * @param hql
+	 * @param obj
+	 * @return
+	 */
+	public List<RsRczytjnr> find(String year) {
+		return (List<RsRczytjnr>)baseDao.find("from RsRczytjnr where year = ? ", new String[]{year});
+	}
+}

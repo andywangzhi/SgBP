@@ -1,0 +1,43 @@
+﻿/* Reset样式重设*/
+html,body,div,p,h1,h2,h3,h4,h5,h6,dl,dt,dd,ol,ul,li,a,span,img,table,caption,tbody,tfoot,thead,tr,th,td,form,iframe {margin:0;padding:0;border:0; }
+ol, ul {list-style: none;}
+img { vertical-align:-2px;}
+input, textarea, select {margin:0;padding:0; vertical-align:1px}
+button {vertical-align:middle}
+
+/* body */
+body {font: 12px SimSun,"Microsoft YaHei",SimHei,Verdana,sans-serif; color:#111; }
+span, small { font-weight:normal; font-size:12px}
+
+
+/* Links★★★★★ */
+a {color: #333; text-decoration:none; cursor:pointer; }
+a:hover {color: #f60; }
+
+/* body */
+body {background: #043779 url(../images/login_bg.jpg) center 0 repeat-x ; overflow:hidden}
+
+.user_login { position:absolute;width:1003px; left:50%;margin-left:-501px;height:678px; top:50%; margin-top:-339px;background: url(../images/login_main.jpg) center 0 no-repeat ; overflow:hidden; clear:both}
+
+.ul_input { width:600px; margin:325px auto 0 auto}
+.ul_input li { margin-top:5px; margin-left:280px;overflow:hidden}
+.ul_input span { display:inline-block;width:90px; font-size:14px;text-align:right; color:#014475}
+.ul_input .dl_input { height:24px; line-height:20px; text-indent:5px; vertical-align:middle}
+
+
+
+.btn_loing_ok {
+	width:79px; height:34px; line-height:28px;margin:0; padding:0; border:0;
+	font-size:14px; color:#f1f1f1;
+	background: url(../images/btn_loing_ok.gif) 0px 0; 
+	vertical-align:middle;overflow:hidden;cursor:pointer;}
+.btn_loing_ok:hover {color:#fff; background: url(../images/btn_loing_ok.gif) 79px 0; }
+
+.btn_loing_no {
+	width:79px; height:34px; line-height:28px;margin:0; padding:0; border:0;
+	font-size:14px; color:#efefef;
+	background: url(../images/btn_loing_no.gif) 0px 0; 
+	vertical-align:middle;overflow:hidden;cursor:pointer;}
+.btn_loing_no:hover {color:#9b0738; background: url(../images/btn_loing_no.gif) 79px 0; }
+
+.login_footer { position:absolute; bottom:0px;width:100%;height:26px; line-height:26px; background: #055995; font-family:Verdana, Geneva, sans-serif;color:#dedede;text-align:center;}

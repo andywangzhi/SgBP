@@ -1,0 +1,107 @@
+body {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+form{ margin:0; padding:0;}
+body,td,th {
+	font-size: 12px;
+}
+
+.style1 {
+	color: #FFFFFF;
+	font-weight: bold;
+}
+.style2 {
+	color: #FFFFFF;
+	font-weight: bold;
+}
+.table_l {
+	background-image: url(../images/table_L_bg.jpg);
+	background-repeat: no-repeat;
+	background-position: left;
+}
+
+.table_l_2 {
+	background-image: url(../images/table_L_bg10.jpg);
+	background-repeat: no-repeat;
+	background-position: left;
+}
+
+.table_r {
+	background-image: url(../images/table_R_bg.jpg);
+	background-repeat: no-repeat;
+	background-position: left;
+}
+.top_bg {
+	background-image: url(../images/top2.jpg);
+	background-repeat: no-repeat;
+	background-position: top;
+}
+.table_bg {
+	background-image: url(../images/table_bg.jpg);
+	background-repeat: repeat-x;
+	background-position: top;
+	background-color:#FFFFFF;
+}
+.table_l {
+	background-image: url(../images/table_L_bg.jpg);
+	background-repeat: no-repeat;
+	background-position: left;
+}
+.table_r {
+	background-image: url(../images/table_R_bg.jpg);
+	background-repeat: no-repeat;
+	background-position: left;
+}
+.top_bg .table_bg input {
+	font-size: 14px;
+	background-image: url(../images/text_bg.jpg);
+	background-repeat: repeat-x;
+	height: auto;
+	border: 1px solid #CCCCCC;
+	line-height: 150%;
+}
+.searchkeyword{
+	color:#cccccc;
+	font-size:9px;
+	font-family:Arial, Helvetica, sans-serif;
+}
+
+.login_bg {
+	background-image: url(../images/login_bg.jpg);
+	background-repeat:repeat-x;
+	width: 195px;
+	height:21px;
+	border: 1px solid #cccccc;
+}
+
+.query{
+	font-size:12px; 
+	height:16px; 
+	color:#000000;
+	}	
+	
+.table_l2 {
+	background-image: url(../images/table_L_bg2.jpg);
+	background-repeat: no-repeat;
+	background-position: left;
+}
+.table_r2 {
+	background-image: url(../images/table_R_bg2.jpg);
+	background-repeat: no-repeat;
+	background-position: left;
+}
+.table_l3 {
+	background-color:#e1f1ff;
+}
+.tabInput{height:16px;}
+.alink a{ color:#000; text-decoration:none;}
+.alink a:hover{ color:#000; text-decoration:underline;}
+.backbutton{ text-align:center; margin-top:10px;}
+.backbutton input{ background-image:url(../images/back2_btn.png); width:68px; height:28px; border:0; cursor:pointer; background-color:#FFF;}
+.divtab{margin:auto; padding:0px; width:94%;}
+.divInit{margin:auto; padding:0px; width:97%; height:expression(document.documentElement.clientHeight-24);}
+.divscroll{height:expression(document.documentElement.clientHeight-64); width:100%; overflow:auto;}
+.queryBn{background-image:url(../images/bt2.jpg); font-size:14px; color:#ffffff;letter-spacing:7px;padding-top:2px; width:71px; height:22px; border:0;  cursor:pointer; background-color:#FFF;}

@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%
+  String path = request.getContextPath();
+%>
+<html>
+<head>
+    <title>教育简历</title>
+	<link rel="stylesheet" type="text/css" href="<%=path%>/themes/default/easyui.css"/>
+	<link rel="stylesheet" type="text/css" href="<%=path%>/themes/icon.css" />
+	<script type="text/javascript" src="<%=path%>/js/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="<%=path%>/js/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="<%=path%>/locale/easyui-lang-zh_CN.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=path%>/business/css/reset.css" />
+	<script type="text/javascript" src="<%=path%>/js/query/public/checkboxDate.js"></script>
+	<script type="text/javascript" src="<%=path%>/js/query/rcsm/jyjl/input.js"></script>
+	<script type="text/javascript" src="<%=path%>/js/jquery-form-3.14.js"></script>
+
+<script type="text/javascript"> 
+var path = '<%=path%>'; 
+var entrance='<%=request.getParameter("entrance")%>';
+var clicked=true;
+var _listSize = "0";
+<s:if test="form.dtoList.size() > 0 ">
+_listSize=<s:property value="form.dtoList.size()" />;
+</s:if>
+function preview(param,p1,p2,p3){
+	var pnameEnCode=encodeURI(p1);
+	location.href=path+'/soa/previewAction.action?menuId='+<%=request.getParameter("menuId")%>+'&form.uuid='+param+'&form.personDetail.pname='+pnameEnCode+'&form.personDetail.idCard='+p2+'&form.personDetail.auditstate='+p3;
+}
+
+//新增一空行
+function  add(){
+	var trcomp='<tr class="table_l3" align="center" id="trID'+_listSize+'">';
+	
+	trcomp+='<td><input type="checkbox" name="educationId" value="">';
+	trcomp+='<input type="hidden" name="form.dtoList['+_listSize+'].personId" value="'+$("#personid").val()+'"/>';
+	trcomp+='<input type="hidden" name="form.dtoList['+_listSize+'].educationId" id="form.dtoList['+_listSize+'].educationId"/>';
+	trcomp+='</td>';
+	
+	trcomp+='<td nowrap="nowrap"><input id="form.dtoList['+_listSize+'].fromDate" name="form.dtoList['+_listSize+'].fromDate" type="hidden" value="'+getFirstDay()+'"/>';
+	trcomp+='<input id="form.dtoList['+_listSize+'].toDate" name="form.dtoList['+_listSize+'].toDate" type="hidden" value="'+getEndDay()+'"/>';
+	
+	var _change1 = "selectChange(this,'"+_listSize+"','year','fromMonth','fromDate','start','form.dtoList');";
+	trcomp+='<select id="fromYear'+_listSize+'" name="fromYear'+_listSize+'" onchange="'+_change1+'"></select>&nbsp;年&nbsp;';
+
+	var _change2 = "selectChange(this,'"+_listSize+"','month','fromYear','fromDate','start','form.dtoList');";
+	trcomp+='<select id="fromMonth'+_listSize+'" name="fromMonth'+_listSize+'" onchange="'+_change2+'"></select>&nbsp;月&nbsp';
+	trcomp+='&nbsp;-&nbsp;&nbsp;';
+
+	var _change3 = "selectChange(this,'"+_listSize+"','year','toMonth','toDate','end','form.dtoList');";
+	trcomp+='<select id="toYear'+_listSize+'" name="toYear'+_listSize+'" onchange="'+_change3+'"></select>&nbsp;年&nbsp;';
+	
+	var _change4 = "selectChange(this,'"+_listSize+"','month','toYear','toDate','end','form.dtoList');";
+	trcomp+='<select id="toMonth'+_listSize+'" name="toMonth'+_listSize+'" onchange="'+_change4+'"></select>&nbsp;月';
+	trcomp+='</td>';
+	trcomp+='<td><input style="width: 200px;" id="form.dtoList['+_listSize+'].pcollege" name="form.dtoList['+_listSize+'].pcollege" type="text"  maxlength="100" /></td>';
+	trcomp+='<td nowrap="nowrap">';
+	trcomp+='	<select name="form.dtoList['+_listSize+'].xxlx" class="inp">';
+	trcomp+='		<s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"77\")" id="status" status="st">';
+	trcomp+='			 <option value="<s:property value="key"/>"><s:property value="value"/></option>';
+	trcomp+='		</s:iterator>';
+	trcomp+='	</select>';
+	trcomp+='</td>';
+	
+	trcomp+='<td><input id="form.dtoList['+_listSize+'].specialtyName" name="form.dtoList['+_listSize+'].specialtyName" type="text"  maxlength="100"/></td>';
+	//trcomp+='<td><input id="form.dtoList['+_listSize+'].certificateNo" name="form.dtoList['+_listSize+'].certificateNo" type="text"/></td>';
+	
+	trcomp+="</tr>";
+	$("#allDatas").append(trcomp);
+	
+	if(document.getElementById('fromYear'+_listSize)){addYearOpts('fromYear'+_listSize);}
+	if(document.getElementById('fromMonth'+_listSize)){	addMonthOpts('fromMonth'+_listSize);}
+	if(document.getElementById('toYear'+_listSize)){	addYearOpts('toYear'+_listSize);}
+	if(document.getElementById('toMonth'+_listSize)){
+		addMonthOpts('toMonth'+_listSize);
+	}
+	
+	_listSize ++;
+}
+</script>
+
+</head>
+<body>
+
+<form id="frm" name="frm" action="<%=path%>/soa/jyjl.action" method="post" >  
+
+<div class="web_paht">
+    <div class="row_l web_paht_l">您的位置：个人信息<script type="text/javascript">if(entrance==1){document.write("申报");}else{document.write("维护");}</script>&nbsp;&gt;&nbsp;教育简历
+    <font style="color: blue;">（${personName}-${personIdCard}）</font>
+    </div>
+    <div class="row_r web_paht_r tool">
+      状态:<s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"63\")" id="status" status="st">
+	         <s:if test="form.auditstate==key">
+	           <font color="red"><s:property value="value"/></font>
+	         </s:if>
+		 </s:iterator>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </div>
+</div>
+
+<input type="hidden" id="personid" name="form.dto.personId" value='<s:property value="form.dto.personId" />'/>
+<div id="delIDs"></div>
+<div style="text-align: center; font-weight:bold; font-size:25px; margin-top: 10px;">教 育 简 历</div>
+<div class="row_l web_paht_l tool" style="height:20px; text-align: left;margin: 0px 15px;">
+  <a href="<%=path%>/soa/jyjl.action?menuId=<%=request.getParameter("menuId")%>" class="refresh" style="margin-left: 0px;">刷新</a>
+  <a href="javascript:preview('<%=session.getAttribute("personId")%>','<%=session.getAttribute("personName")%>','<%=session.getAttribute("personIdCard")%>','<%=session.getAttribute("auditstate")%>');" class="msn" >预览</a>
+  <s:if test="form.auditstate=='000'||form.auditstate=='200'||form.auditstate=='100'">
+	 <a class="plus" onclick="add();">新增</a>
+	 <a class="delete" onclick="del(<%=request.getParameter("menuId")%>);">删除</a>
+  </s:if>
+</div>
+<div class="main_in">
+
+              <div class="table_edit"  style="height: 294px;">
+                  <table id="allDatas">
+                      <thead>
+                          <th nowrap="nowrap"><p align="center">选择</p></th>
+                          <th nowrap="nowrap"><p align="center">起止年月</p></th>
+                          <th nowrap="nowrap"><p align="center">学校、机构名称</p></th>
+                          <th nowrap="nowrap"><p align="center">学校类型</p></th>
+                          <th nowrap="nowrap"><p align="center">所学专业</p></th>
+                      </thead>
+                      <tbody>
+                      
+		<s:if test="form.dtoList.size() > 0 ">
+            <s:iterator value="form.dtoList" id="status" status="st">
+              <s:if test="#st.odd"> 
+				  <tr align="center"  bgcolor="#FFFFFF" id="trID<s:property value="#st.index" />">
+			  </s:if>	
+			  <s:else>
+				  <tr align="center" class="table_l3" id="trID<s:property value="#st.index" />">
+			  </s:else>
+                  <td>
+                  	<input type="checkbox" name="educationId" value="<s:property value="#status.educationId" />"/>
+                  	
+					<input type="hidden" name="form.dtoList[<s:property value="#st.index" />].personId" value="<s:property value="#status.personId" />"/>
+					<input type="hidden" name="form.dtoList[<s:property value="#st.index" />].adduser" value="<s:property value="#status.adduser" />"/>
+					<input type="hidden" name="form.dtoList[<s:property value="#st.index" />].adddate" value="<s:property value="#status.adddate" />"/>
+					<input type="hidden" name="form.dtoList[<s:property value="#st.index" />].educationId" value="<s:property value="#status.educationId" />" id="form.dtoList[<s:property value="#st.index" />].educationId"/>
+                  </td>
+                  <td nowrap="nowrap">
+                  	<%-- <input id='form.dtoList[<s:property value="#st.index" />].fromDate' name='form.dtoList[<s:property value="#st.index" />].fromDate' type="text" value='<s:property value="#status.fromDate"/>' />&nbsp;-&nbsp;
+                  	
+                  	<input id="form.dtoList[<s:property value="#st.index" />].toDate" name="form.dtoList[<s:property value="#st.index" />].toDate" type="text" value='<s:property value="#status.toDate"/>' />
+                  	
+                  	<br/>      --%>  
+                  	<input id='form.dtoList[<s:property value="#st.index" />].fromDate' name='form.dtoList[<s:property value="#st.index" />].fromDate' type="hidden" value='<s:property value="#status.fromDate"/>' />
+                  	<input id="form.dtoList[<s:property value="#st.index" />].toDate" name="form.dtoList[<s:property value="#st.index" />].toDate" type="hidden" value='<s:property value="#status.toDate"/>' />
+                  	<select id='fromYear<s:property value="#st.index" />' name='fromYear<s:property value="#st.index" />' 
+                  	onchange="selectChange(this,'<s:property value="#st.index" />','year','fromMonth','fromDate','start','form.dtoList');" 
+                  	></select>&nbsp;年
+                  	<select id='fromMonth<s:property value="#st.index" />' name='fromMonth<s:property value="#st.index" />' 
+                  	onchange="selectChange(this,'<s:property value="#st.index" />','month','fromYear','fromDate','start','form.dtoList');" 
+                  	></select>&nbsp;月&nbsp;
+					<script type="text/javascript">
+						var _v='<s:property value="#status.fromDate"/>';
+	                  	addYearOpts('fromYear<s:property value="#st.index" />');
+	                  	addMonthOpts('fromMonth<s:property value="#st.index" />');
+	                  	var myDate= new Date(Date.parse(_v.replace(/-/g, "/")));
+	                  	var _yyyy = myDate.getFullYear();
+	                  	var _MM = myDate.getMonth() + 1;
+	                  	_MM = (_MM<10?("0"+_MM):_MM)
+			            document.getElementById('fromYear<s:property value="#st.index" />').value = _yyyy;
+			            document.getElementById('fromMonth<s:property value="#st.index" />').value = _MM;
+			            //document.getElementById('form.dtoList[<s:property value="#st.index" />].fromDate').value = _yyyy + "-" + _MM;
+                  	</script>
+                  	-&nbsp;&nbsp;<select id='toYear<s:property value="#st.index" />' name='toYear<s:property value="#st.index" />' 
+                  	onchange="selectChange(this,'<s:property value="#st.index" />','year','toMonth','toDate','end','form.dtoList');" 
+                  	></select>&nbsp;年
+                  	<select id='toMonth<s:property value="#st.index" />' name='toMonth<s:property value="#st.index" />' 
+                  	onchange="selectChange(this,'<s:property value="#st.index" />','month','toYear','toDate','end','form.dtoList');" 
+                  	></select>&nbsp;月
+                  	<script type="text/javascript">
+						var _v='<s:property value="#status.toDate"/>';
+	                  	addYearOpts('toYear<s:property value="#st.index" />');
+	                  	addMonthOpts('toMonth<s:property value="#st.index" />');
+	                  	var myDate= new Date(Date.parse(_v.replace(/-/g, "/")));
+	                  	var _yyyy = myDate.getFullYear();
+	                  	var _MM = myDate.getMonth() + 1;
+	                  	_MM = (_MM<10?("0"+_MM):_MM)
+			            document.getElementById('toYear<s:property value="#st.index" />').value=_yyyy;
+			            document.getElementById('toMonth<s:property value="#st.index" />').value=_MM;
+			            //document.getElementById('form.dtoList[<s:property value="#st.index" />].toDate').value = _yyyy + "-" + _MM;
+                  	</script>
+                  </td>
+                  <td><input style="width: 200px;" id='form.dtoList[<s:property value="#st.index" />].pcollege' name='form.dtoList[<s:property value="#st.index" />].pcollege' type="text" value='<s:property value="#status.pcollege" />' maxlength="100"/></td>
+                  <td>
+                  <select id="xxlx" name="form.dtoList[<s:property value="#st.index" />].xxlx" class="inp" style="width: 97%; " >
+                   	  <s:iterator value="#application._WEB_SYS_CONF_KEY_.get(\"77\")" id="stt" status="stt1">
+                   	  	  <s:if test="#status.xxlx==key">
+                   	  	  	 <option value="<s:property value="key"/>" selected="selected"><s:property value="value"/></option>
+                   	  	  </s:if>
+                   	  	  <s:else>
+                   	  	     <option value="<s:property value="key"/>"><s:property value="value"/></option>
+                   	  	  </s:else>
+                      </s:iterator>	
+                  </select>
+                  </td>
+                  <td><input id="form.dtoList[<s:property value="#st.index" />].specialtyName" name="form.dtoList[<s:property value="#st.index" />].specialtyName" type="text" value='<s:property value="#status.specialtyName" />' maxlength="100"/></td>
+                </tr>
+            </s:iterator>
+          </s:if>
+	</tbody>
+	<tfoot>
+                          <tr><td colspan="5">
+                          		<s:if test="form.auditstate=='000'||form.auditstate=='200'||form.auditstate=='100'">
+									<a id="save" onclick="save(<%=request.getParameter("menuId")%>,1);" class="btn_search" >保 存</a>
+									<a id="saveAndNext" onclick="save(<%=request.getParameter("menuId")%>,2);" class="btn_search" >保存并下一步</a>
+								</s:if>
+                          </td></tr>
+                      </tfoot>
+                      
+                  </table>
+              </div>
+
+    
+</div>
+</form>
+<script type="text/javascript">
+
+</script>
+</body>
+</html>
+

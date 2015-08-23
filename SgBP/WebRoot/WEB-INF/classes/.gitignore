@@ -1,0 +1,7 @@
+/com/
+/config/
+/globalMessages_en_US.properties
+/globalMessages_zh_CN.properties
+/log4j.properties
+/quartz.properties
+/struts.xml

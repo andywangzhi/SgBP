@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="page.soa" extends="base" namespace="/soa">
+        <global-results>
+        	<!-- <result name="out"  type="redirectAction">RsPerson!query.action?menuId=${menuId}</result> -->
+        	<result name="out">/page/query/soa/rcsm/base/redirect.jsp</result>
+        </global-results>
+        
+        <!-- 用户基本信息 -->
+        <action name="user" class="soa.user">
+            <result name="success">/page/query/soa/user/find.jsp</result>
+            <result name="list">/page/query/soa/user/list.jsp</result>
+            <result name="view">/page/query/soa/user/view.jsp</result>
+            <result name="input">/page/query/soa/user/input.jsp</result>
+            <result name="save"  type="redirectAction">user!viewFind.action?menuId=${menuId}</result>
+            <result name="delete"  type="redirectAction">user!viewFind.action?menuId=${menuId}</result>
+        </action>
+        <!-- 职称信息 -->
+        <action name="tech" class="soa.Technicallymess">
+        	<result name="list">/page/query/soa/rcsm/zcxx/list.jsp</result>
+        	<result name="query"  type="redirectAction">tech!query.action?menuId=${menuId}&amp;message=${message}</result>
+        </action>
+        <!-- 统计人才信息 -->
+        <action name="rctj" class="soa.PcountyRctj">
+        	<result name="pcounty">/page/query/soa/rcsm/rctj/pcounty.jsp</result>
+        	<result name="pcountyforgcc">/page/query/soa/rcsm/rctj/pcountyforgcc.jsp</result>
+        	<result name="pcountyforlxs">/page/query/soa/rcsm/rctj/pcountyforlxs.jsp</result>
+        	<result name="input">/page/query/soa/rcsm/rctj/pcounty.jsp</result>
+        	<result name="specialtyType">/page/query/soa/rcsm/rctj/specialtyType.jsp</result>
+        	<result name="technicallytype">/page/query/soa/rcsm/rctj/technicallytype.jsp</result>
+        	<result name="needspecialtyType">/page/query/soa/rcsm/need/pcountyforneed.jsp</result>
+        	<result name="pcountyforReport">/page/query/soa/rcsm/rctj/pcountyforReport.jsp</result>
+        </action>
+          <!-- 统计人才信息 -->
+        <action name="stat" class="soa.Rctj">
+        	<result name="pcounty">/page/query/soa/rcsm/rctj/pcounty.jsp</result>
+        	<result name="input">/page/query/soa/rcsm/rctj/pcounty.jsp</result>
+        	<result name="specialtyType">/page/query/soa/rcsm/rctj/specialtyType.jsp</result>
+        	<result name="technicallytype">/page/query/soa/rcsm/rctj/technicallytype.jsp</result>
+        </action>
+        <!-- 项目经历 -->
+        <action name="proj" class="soa.ProjectExperience">
+        	<result name="list">/page/query/soa/rcsm/xmjy/list.jsp</result>
+        	<result name="query"  type="redirectAction">proj!query.action?menuId=${menuId}&amp;message=${message}</result>
+        </action>
+        
+		<!-- 教育经历 -->
+		<action name="jyjl" class="soa.jyjl">
+			<result name="input">/page/query/soa/rcsm/jyjl/input.jsp</result>
+			<result name="init" type="redirectAction">jyjl.action?menuId=${menuId}&amp;message=${message}</result>
+		</action>
+		
+		<!-- 科技成果 -->
+        <action name="kjcg" class="soa.kjcg">
+        	<result name="list">/page/query/soa/rcsm/kjcg/list.jsp</result>
+        	<result name="save" type="redirectAction">kjcg!queryByPerId.action?menuId=${menuId}&amp;message=${message}</result>
+        	<result name="delete" type="redirectAction">kjcg!queryByPerId.action?menuId=${menuId}&amp;message=${message}</result>
+        </action>
+        
+        <!-- 个人信息查询、审核-->
+        <action name="RsPerson" class="soa.RsPerson">
+         	<interceptor-ref name="fileUpload">
+		      <param name="maximumSize">1024000</param>
+		    </interceptor-ref>
+			<interceptor-ref name="defaultStack" />
+        	<result name="query">/page/query/soa/rcsm/base/query.jsp</result>
+        	<result name="mhquery">/page/query/soa/rcsm/base/mhQuery.jsp</result>
+        	<result name="gwquery">/page/query/soa/rcsm/base/gwQuery.jsp</result>
+        	<result name="yzquery">/page/query/soa/rcsm/base/yzQuery.jsp</result>
+        	<result name="dbquery">/page/query/soa/rcsm/base/dbQuery.jsp</result>
+        	<result name="shquery">/page/query/soa/rcsm/base/shQuery.jsp</result>
+        	<result name="qyquery">/page/query/soa/rcsm/base/qyQuery.jsp</result>
+        	
+         	<result name="input">/page/query/soa/rcsm/base/jbxx_add.jsp</result>
+         	<result name="toaddPage">/page/query/soa/rcsm/base/jbxx_add.jsp</result> 
+         	<result name="save" type="redirectAction">RsPerson!toEditPage.action?menuId=${menuId}&amp;form.flag=${form.flag}&amp;form.retrieveSO.personId=${form.dto.personId}</result> 
+         	<result name="error">/page/query/soa/rcsm/base/jbxx_search.jsp</result>
+            <result name="list">/page/query/soa/rcsm/base/jbxx_search.jsp</result>
+            <result name="search">/page/query/soa/rcsm/base/jbxx_search.jsp</result>
+            <result name="test">/page/query/soa/rcsm/base/test.jsp</result>
+            
+        </action>
+        
+        <!-- 工作简历 -->
+        <action name="workexperience" class="soa.Workexperience">
+         	<result name="success" type="redirectAction">workexperience.action?menuId=${menuId}</result> 
+         	<result name="save" type="redirectAction">workexperience.action?menuId=${menuId}&amp;form.flag=${form.flag}</result> 
+         	<result name="error">/page/query/soa/rcsm/gzjl/gzjl_add.jsp</result>
+         	<result name="delete" type="redirectAction">workexperience.action?menuId=${menuId}&amp;form.flag=${form.flag}</result> 
+            <result name="list">/page/query/soa/rcsm/gzjl/gzjl_add.jsp</result>
+         </action>
+        
+        <!-- 预览 -->
+         <action name="previewAction" class="soa.PreviewAction">
+         	<result name="view">/page/query/soa/rcsm/base/yl.jsp</result> 
+         	<result name="print">/page/query/soa/rcsm/base/ylPrint.jsp</result> 
+         	<result name="error">/page/query/soa/rcsm/base/yl.jsp</result>
+         	<result name="update">/page/query/soa/rcsm/base/yl.jsp</result>
+         </action>
+         
+         <!-- 人才需求管理 -->
+		<action name="rsPersonneed" class="soa.rsPersonneed">
+			<result name="needlistforadmin">/page/query/soa/rcsm/need/needlistforadmin.jsp</result>
+			<result name="neededitforadmin">/page/query/soa/rcsm/need/neededitforadmin.jsp</result>
+		</action>
+         
+         <!-- 附件 -->
+         <action name="RsAffixAction" class="soa.RsAffixAction">
+         </action>
+	</package>
+</struts>

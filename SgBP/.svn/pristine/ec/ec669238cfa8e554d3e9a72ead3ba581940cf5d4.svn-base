@@ -1,0 +1,484 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%
+  String path = request.getContextPath();
+%>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Insert title here</title>
+	    <link rel="stylesheet" type="text/css" href="<%=path%>/themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="<%=path%>/css/icon/icon.css" />
+		<script type="text/javascript" src="<%=path%>/js/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="<%=path%>/js/jquery.easyui.min.js"></script>
+	<script language="JavaScript" src="<%=path%>/images/FusionCharts.js"></script>
+		<script type="text/javascript" src="<%=path%>/js/query/date.js" charset="UTF-8"></script>
+
+<link rel="stylesheet" type="text/css" href="<%=path%>/business/css/reset.css" />
+
+	    <script type="text/javascript">
+	    var forage = "<s:property value="form.year"/>";
+		var year = "<s:property value="form.rsRczytjnr.year"/>";
+    	
+	    // 产生所有的年份
+		function addOptsCountAbc(_id,start,count){
+			var c = document.getElementById(_id);
+			var opt = new Option("请选择","");
+			c.options.add(opt);
+			for(var i=start;i<=count+start;i++){
+				opt = new Option(i,i);
+				c.options.add(opt);
+			}
+		}
+		$(function(){
+    		addOptsCountAbc("forage",2000,60);
+    		$("#forage").val(forage);
+    		addOptsCountAbc("year",2000,60);
+    		$("#year").val(year);
+		});
+    	function find(){
+				$("#frm").attr("action","<%=path%>/soa/rcgzkh!queryTJ.action?menuId=");
+    			$("#frm").submit();
+	    }
+
+    	function getDate(date){
+    		 var dates = date.split("-");
+    		 var dateReturn = '';
+    		 
+    		 for(var i=0; i<dates.length; i++){
+    		 if(dates[i].length<2){
+    		 	dates[i]="0"+dates[i];
+    		 }
+    		  dateReturn+=dates[i];
+    		 }
+    		 return dateReturn;
+    	}
+    	function getRest() {
+    		document.getElementById('fromDate').value = '';
+    		document.getElementById('todate').value = '';
+    		document.getElementById('form.retrieveSO.pcounty').value = '';
+    	}
+    	function ExportPcountyExecl(){
+			$("#frm").attr("action","<%=path%>/soa/rcgzkh!ExportRczytjnrExecl.action?menuId=");
+    		$("#frm").submit();
+		}
+		function addOrUpdateRecord(){
+			var year = $("#year").val();
+			if(year == ""){
+				alert("请选择年份");
+				return;
+			}
+			var value = $("#rczyzl").val();
+			if(value == ""){
+				alert("请录入人才资源总量");
+				return;
+			}
+			value = $("#rlzyzl").val();
+			if(value == ""){
+				alert("请录入人力资源总量");
+				return;
+			}
+			value = $("#rlzyzl").val();
+			if(value == ""){
+				alert("请录入人力资源总量");
+				return;
+			}
+			$("#frm").attr("action","<%=path%>/soa/rcgzkh!saveOrUpdateTJ.action?menuId=");
+    		$("#frm").submit();
+		}
+		function checkData(obj){
+			var value = $(obj).val();
+			if(value == ""){
+				return ;
+			}
+			if(!isFloat(value)){
+				alert("请输入数字！");
+				$(obj).attr("value","");
+				return ;
+			}		
+		}
+			
+		function isFloat(str)   
+		{   
+		    if(/^(-?\d+)(\.\d+)?$/.test(str))   
+		   {   
+		        return true;   
+		   }   
+		    return false;   
+		} 
+	    </script>
+	</head>
+<body>
+
+<div class="web_paht">
+    <div class="row_l web_paht_l">您的位置：人才考核&nbsp;&gt;&nbsp;人才考核评分表
+    </div>
+    <div class="row_r web_paht_r tool">
+          <a class="refresh" href="<%=path%>/soa/rcgzkh!query.action?menuId=">刷新</a>
+          <a class="up" href="javascript:ExportPcountyExecl();">导出统计信息</a>
+    </div>
+</div>
+
+<div class="main_in">
+
+         <form action="<%=path%>/soa/rcgzkh!saveOrUpdateTJ.action?menuId=" method="post" name="frm" id="frm">
+              <div class="table_edit">              
+                  <table>
+                      <tbody>
+                       		<tr align="center">
+                       			<td nowrap="nowrap" width="100px">年份</td>
+                       			<td align="left"><select style="width:90px" id="forage" name="form.year">
+                    			</td>                      			
+                       		</tr>
+                      </tbody>
+                      <tfoot>
+                          <tr><td colspan="2">
+                          <a href="javascript:find();" class="btn_search" >搜 索</a>
+                          <a href="javascript:getRest();" class="btn_search" >重 置</a>
+                          </td></tr>
+                      </tfoot>
+                  </table>
+              </div>
+              <div class="table_yl"">              
+              <table style="font-size: 15">
+              	<thead>
+              	<td width="90px" nowrap="nowrap">年份：</td>
+                <td colspan="3" align="left"><select style="width:90px" id="year" name="form.rsRczytjnr.year"></select></td>                       
+              	<tr><td colspan="4"><h2>2012年全市人才资源统计内容及任务分工</h2></td></tr>
+              	<tr>
+	              	<td nowrap="nowrap" width="50px">序号</td>
+	              	<td nowrap="nowrap" colspan="2">指标</td>
+	              	<td nowrap="nowrap" width="100px">责任单位</td>
+              	</tr>
+              	</thead>
+	            <tbody>
+	            <input id="pk" type="hidden" name="form.rsRczytjnr.pk" value="<s:property value="form.rsRczytjnr.pk"/>"/>
+		            
+	            	<tr>
+		            	<td nowrap="nowrap" colspan="4">一、核心指标</td>
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">1</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">人力资源综合实力指数</td>
+		            	<td nowrap="nowrap"><input id="rlzyzhslzs" onblur="checkData(this);" name="form.rsRczytjnr.rlzyzhslzs" type="text"  value="<s:property value="form.rsRczytjnr.rlzyzhslzs"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">2</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">人力资本贡献率</td>
+		            	<td nowrap="nowrap"><input id="rlzbgxl" onblur="checkData(this);"  name="form.rsRczytjnr.rlzbgxl" type="text"  value="<s:property value="form.rsRczytjnr.rlzbgxl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">3</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">人才贡献率</td>
+		            	<td nowrap="nowrap"><input id="rcgxl" onblur="checkData(this);"  name="form.rsRczytjnr.rcgxl" type="text"  value="<s:property value="form.rsRczytjnr.rcgxl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap" colspan="4">二、规模与素质</td>
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">4</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">人才资源总量</td>
+		            	<td nowrap="nowrap"><input id="rczyzl" name="form.rsRczytjnr.rczyzl" type="text"  value="<s:property value="form.rsRczytjnr.rczyzl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            
+		            <tr>
+		            	<td nowrap="nowrap">5</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">人力资源总量</td>
+		            	<td nowrap="nowrap"><input id="rlzyzl" name="form.rsRczytjnr.rlzyzl" type="text"  value="<s:property value="form.rsRczytjnr.rlzyzl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">6</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">人才资源总量占人力资源总量比例</td>
+		            	<td nowrap="nowrap"><input id="rczybl" readonly="readonly" name="form.rsRczytjnr.rczybl" type="text"  value="<s:property value="form.rsRczytjnr.rczybl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">7</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">党政、企业经营管理和专业技术人才中大学本科及以上学历<br />人员所占比例</td>
+		            	<td nowrap="nowrap"><input id="bkysxlbl" readonly="readonly" name="form.rsRczytjnr.bkysxlbl" type="text"  value="<s:property value="form.rsRczytjnr.bkysxlbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">8</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">高技能人才占技能劳动者比例</td>
+		            	<td nowrap="nowrap"><input id="gjnrcbl" readonly="readonly" name="form.rsRczytjnr.gjnrcbl" type="text"  value="<s:property value="form.rsRczytjnr.gjnrcbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">9</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">农村实用人才平均受教育年限</td>
+		            	<td nowrap="nowrap"><input id="ncsyrcjynx" readonly="readonly" name="form.rsRczytjnr.ncsyrcjynx" type="text"  value="<s:property value="form.rsRczytjnr.ncsyrcjynx"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">10</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">国民平均受教育年限</td>
+		            	<td nowrap="nowrap"><input id="gnpjsjynx" onblur="checkData(this);"  name="form.rsRczytjnr.gnpjsjynx" type="text"  value="<s:property value="form.rsRczytjnr.gnpjsjynx"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">11</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">新增劳动人口平均受教育年限</td>
+		            	<td nowrap="nowrap"><input id="xzldsjynx"  onblur="checkData(this);" name="form.rsRczytjnr.xzldsjynx" type="text"  value="<s:property value="form.rsRczytjnr.xzldsjynx"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">12</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">主要劳动年龄人口受过高等教育的比例</td>
+		            	<td nowrap="nowrap"><input id="zyldnlrksjy"  onblur="checkData(this);" name="form.rsRczytjnr.zyldnlrksjy" type="text"  value="<s:property value="form.rsRczytjnr.zyldnlrksjy"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">13</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">每万劳动力中研发（R＆D）人员</td>
+		            	<td nowrap="nowrap"><input id="mwldlzyfry" onblur="checkData(this);"  name="form.rsRczytjnr.mwldlzyfry" type="text"  value="<s:property value="form.rsRczytjnr.mwldlzyfry"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">14</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">每百万人口中科学家与工程师人数</td>
+		            	<td nowrap="nowrap"><input id="mbwrkkxjrs" onblur="checkData(this);"  name="form.rsRczytjnr.mbwrkkxjrs" type="text"  value="<s:property value="form.rsRczytjnr.mbwrkkxjrs"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">15</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">年末从业人员数</td>
+		            	<td nowrap="nowrap"><input id="nmcyrys" onblur="checkData(this);"  name="form.rsRczytjnr.nmcyrys" type="text"  value="<s:property value="form.rsRczytjnr.nmcyrys"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">16</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">从业人员在三次产业中所占比例</td>
+		            	<td nowrap="nowrap"><input id="cyryszbl" onblur="checkData(this);"  name="form.rsRczytjnr.cyryszbl" type="text"  value="<s:property value="form.rsRczytjnr.cyryszbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap" colspan="4">三、投入与效能</td>
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">17</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">人力资本投资占GDP的比例</td>
+		            	<td nowrap="nowrap"><input id="rlzbtzzbl" onblur="checkData(this);"  name="form.rsRczytjnr.rlzbtzzbl" type="text"  value="<s:property value="form.rsRczytjnr.rlzbtzzbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">18</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">本级财政投入的人才专项资金占一般预算支出的比例</td>
+		            	<td nowrap="nowrap"><input id="rczxzjzbl" onblur="checkData(this);"  name="form.rsRczytjnr.rczxzjzbl" type="text"  value="<s:property value="form.rsRczytjnr.rczxzjzbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">19</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">本级财政性人力资本投资占一般预算支出的比例</td>
+		            	<td nowrap="nowrap"><input id="czrlzbtzzbl" onblur="checkData(this);"  name="form.rsRczytjnr.czrlzbtzzbl" type="text"  value="<s:property value="form.rsRczytjnr.czrlzbtzzbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            
+		            <tr>
+		            	<td nowrap="nowrap">20</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">全市发明专利授权量</td>
+		            	<td nowrap="nowrap"><input id="qsfmzlsql" onblur="checkData(this);"  name="form.rsRczytjnr.qsfmzlsql" type="text"  value="<s:property value="form.rsRczytjnr.qsfmzlsql"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">21</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">全市PCT国际专利申请量</td>
+		            	<td nowrap="nowrap"><input id="qsgjzlsql" onblur="checkData(this);"  name="form.rsRczytjnr.qsgjzlsql" type="text"  value="<s:property value="form.rsRczytjnr.qsgjzlsql"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">22</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">国际科技论文收录量</td>
+		            	<td nowrap="nowrap"><input id="gjkjlwsll" onblur="checkData(this);"  name="form.rsRczytjnr.gjkjlwsll" type="text"  value="<s:property value="form.rsRczytjnr.gjkjlwsll"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">23</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">国际科技论文被引用量</td>
+		            	<td nowrap="nowrap"><input id="gjkjlwyyl" onblur="checkData(this);"  name="form.rsRczytjnr.gjkjlwyyl" type="text"  value="<s:property value="form.rsRczytjnr.gjkjlwyyl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">24</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">获得国家级、省级科学技术奖励数量</td>
+		            	<td nowrap="nowrap"><input id="hdgjjjlsl" readonly="readonly" onblur="checkData(this);"  name="form.rsRczytjnr.hdgjjjlsl" type="text"  value="<s:property value="form.rsRczytjnr.hdgjjjlsl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap" colspan="4">四、人才队伍状况</td>
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">25</td>
+		            	<td nowrap="nowrap" rowspan="4">党政<br />人才</td>
+		            	<td nowrap="nowrap" align="left">总量</td>
+		            	<td nowrap="nowrap"><input id="dzrczl" onblur="checkData(this);" name="form.rsRczytjnr.dzrczl" type="text"  value="<s:property value="form.rsRczytjnr.dzrczl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">26</td>
+		            	<td nowrap="nowrap" align="left">副科以上干部人数</td>
+		            	<td nowrap="nowrap"><input id="dzrcfkjzl" onblur="checkData(this);"  name="form.rsRczytjnr.dzrcfkjzl" type="text"  value="<s:property value="form.rsRczytjnr.dzrcfkjzl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">27</td>
+		            	<td nowrap="nowrap" align="left">大学本科及以上学历人数及比例</td>
+		            	<td nowrap="nowrap"><input id="dzbkysrsbl"  onblur="checkData(this);" name="form.rsRczytjnr.dzbkysrsbl" type="text"  value="<s:property value="form.rsRczytjnr.dzbkysrsbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">28</td>
+		            	<td nowrap="nowrap" align="left">新录用公务员中有基层工作经历人员所占比例</td>
+		            	<td nowrap="nowrap"><input id="xlygwyszbl"  onblur="checkData(this);" name="form.rsRczytjnr.xlygwyszbl" type="text"  value="<s:property value="form.rsRczytjnr.xlygwyszbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">29</td>
+		            	<td nowrap="nowrap" rowspan="6">企业经<br />营管理<br />人才</td>
+		            	<td nowrap="nowrap" align="left">总量</td>
+		            	<td nowrap="nowrap"><input id="qyrczl" readonly="readonly" name="form.rsRczytjnr.qyrczl" type="text"  value="<s:property value="form.rsRczytjnr.qyrczl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">30</td>
+		            	<td nowrap="nowrap" align="left">大学本科及以上学历人数及比例</td>
+		            	<td nowrap="nowrap"><input id="qybkysszbl" readonly="readonly" name="form.rsRczytjnr.qybkysszbl" type="text"  value="<s:property value="form.rsRczytjnr.qybkysszbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">31</td>
+		            	<td nowrap="nowrap" align="left">有境外工作经历人员所占比例</td>
+		            	<td nowrap="nowrap"><input id="qyyjwgzszbl"  onblur="checkData(this);"  name="form.rsRczytjnr.qyyjwgzszbl" type="text"  value="<s:property value="form.rsRczytjnr.qyyjwgzszbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">32</td>
+		            	<td nowrap="nowrap" align="left">市场化方式选聘人才数</td>
+		            	<td nowrap="nowrap"><input id="schfsxprcs"  onblur="checkData(this);"  name="form.rsRczytjnr.schfsxprcs" type="text"  value="<s:property value="form.rsRczytjnr.schfsxprcs"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">33</td>
+		            	<td nowrap="nowrap" align="left">全市非公经济领域企业经营管理人才数量</td>
+		            	<td nowrap="nowrap"><input id="fgyjjqyrcsl"  onblur="checkData(this);"  name="form.rsRczytjnr.fgyjjqyrcsl" type="text"  value="<s:property value="form.rsRczytjnr.fgyjjqyrcsl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">34</td>
+		            	<td nowrap="nowrap" align="left">占从业人员的比例</td>
+		            	<td nowrap="nowrap"><input id="qyzcyrcbl"  onblur="checkData(this);" name="form.rsRczytjnr.qyzcyrcbl" type="text"  value="<s:property value="form.rsRczytjnr.qyzcyrcbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">35</td>
+		            	<td nowrap="nowrap" rowspan="5"  width="50px">专业技<br />术人才</td>
+		            	<td nowrap="nowrap"  width="150px" align="left">总量</td>
+		            	<td nowrap="nowrap"><input id="zyjszl" readonly="readonly" name="form.rsRczytjnr.zyjszl" type="text"  value="<s:property value="form.rsRczytjnr.zyjszl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">36</td>
+		            	<td nowrap="nowrap" align="left">全市非公经济领域专业技术人才数量</td>
+		            	<td nowrap="nowrap"><input id="zyfjjrczl"  onblur="checkData(this);"  name="form.rsRczytjnr.zyfjjrczl" type="text"  value="<s:property value="form.rsRczytjnr.zyfjjrczl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		             <tr>
+		            	<td nowrap="nowrap">37</td>
+		            	<td nowrap="nowrap" align="left">大学本科及以上学历人数及比例</td>
+		            	<td nowrap="nowrap"><input id="zybkjysbl" readonly="readonly" name="form.rsRczytjnr.zybkjysbl" type="text"  value="<s:property value="form.rsRczytjnr.zybkjysbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		             <tr>
+		            	<td nowrap="nowrap">38</td>
+		            	<td nowrap="nowrap" align="left">占从业人员的比例及</td>
+		            	<td nowrap="nowrap"><input id="zyzcyrcbl"  onblur="checkData(this);"  name="form.rsRczytjnr.zyzcyrcbl" type="text"  value="<s:property value="form.rsRczytjnr.zyzcyrcbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		             <tr>
+		            	<td nowrap="nowrap">39</td>
+		            	<td nowrap="nowrap" align="left">企业专业技术人员占专业技术人员的比例</td>
+		            	<td nowrap="nowrap"><input id="qyzyjsrsbl" onblur="checkData(this);" name="form.rsRczytjnr.qyzyjsrsbl" type="text"  value="<s:property value="form.rsRczytjnr.qyzyjsrsbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		             <tr>
+		            	<td nowrap="nowrap">40</td>
+		            	<td nowrap="nowrap" rowspan="2">高技<br />能人才</td>
+		            	<td nowrap="nowrap" align="left">总量</td>
+		            	<td nowrap="nowrap"><input id="rlzyzhslzs" readonly="readonly" name="form.rsRczytjnr.rlzyzhslzs" type="text"  value="<s:property value="form.rsRczytjnr.rlzyzhslzs"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		             <tr>
+		            	<td nowrap="nowrap">41</td>
+		            	<td nowrap="nowrap" align="left">全市非公经济领域高技能人才数量</td>
+		            	<td nowrap="nowrap"><input id="gjnfgjjsl" name="form.rsRczytjnr.gjnfgjjsl" type="text"  value="<s:property value="form.rsRczytjnr.gjnfgjjsl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		             <tr>
+		            	<td nowrap="nowrap">42</td>
+		            	<td nowrap="nowrap" rowspan="2">农村实<br />用人才</td>
+		            	<td nowrap="nowrap" align="left">总量</td>
+		            	<td nowrap="nowrap"><input id="ncrczl" readonly="readonly" name="form.rsRczytjnr.ncrczl" type="text"  value="<s:property value="form.rsRczytjnr.ncrczl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		             <tr>		   
+		            	<td nowrap="nowrap">43</td>
+		            	<td nowrap="nowrap" align="left">占农村劳动力的比例</td>
+		            	<td nowrap="nowrap"><input id="nczldlbl"  onblur="checkData(this);"  name="form.rsRczytjnr.nczldlbl" type="text"  value="<s:property value="form.rsRczytjnr.nczldlbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		             <tr>
+		            	<td nowrap="nowrap">44</td>
+		            	<td nowrap="nowrap" rowspan="3">社会工<br />作人才</td>
+		            	<td nowrap="nowrap" align="left">总量</td>
+		            	<td nowrap="nowrap"><input id="shgzzl" readonly="readonly" name="form.rsRczytjnr.shgzzl" type="text"  value="<s:property value="form.rsRczytjnr.shgzzl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		             <tr>
+		            	<td nowrap="nowrap">45</td>
+		            	<td nowrap="nowrap" align="left">每万人拥有社会工作从业人员数量</td>
+		            	<td nowrap="nowrap"><input id="shgsysl" onblur="checkData(this);" name="form.rsRczytjnr.shgsysl" type="text"  value="<s:property value="form.rsRczytjnr.shgsysl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		             <tr>
+		            	<td nowrap="nowrap">46</td>
+		            	<td nowrap="nowrap" align="left">取得社会工作者职业水平证书人员所占比例</td>
+		            	<td nowrap="nowrap"><input id="shgszbl" name="form.rsRczytjnr.shgszbl" type="text"  value="<s:property value="form.rsRczytjnr.shgszbl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		             <tr>
+		            	<td nowrap="nowrap">47</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">具有副高以上职称人才数量</td>
+		            	<td nowrap="nowrap"><input id="jyfgrcsl" readonly="readonly" name="form.rsRczytjnr.jyfgrcsl" type="text"  value="<s:property value="form.rsRczytjnr.jyfgrcsl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">48</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">具有博士学位人才数量</td>
+		            	<td nowrap="nowrap"><input id="jybsrcsl" readonly="readonly" name="form.rsRczytjnr.jybsrcsl" type="text"  value="<s:property value="form.rsRczytjnr.jybsrcsl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">49</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">在站及出站博士后数量</td>
+		            	<td nowrap="nowrap"><input id="zzbshrcsl"  onblur="checkData(this);"  name="form.rsRczytjnr.zzbshrcsl" type="text"  value="<s:property value="form.rsRczytjnr.zzbshrcsl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">50</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">本年度各县（市、区）实施的高层次人才引进计划（工程）<br />引进的人才数量</td>
+		            	<td nowrap="nowrap"><input id="yjgccrcsl" onblur="checkData(this);"  name="form.rsRczytjnr.yjgccrcsl" type="text"  value="<s:property value="form.rsRczytjnr.yjgccrcsl"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap" colspan="4">五、人才载体建设</td>
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">51</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">新增高新技术企业（名单）</td>
+		            	<td nowrap="nowrap"><input id="xzgxqymd" name="form.rsRczytjnr.xzgxqymd" type="text"  value="<s:property value="form.rsRczytjnr.xzgxqymd"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">52</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">新增国家级、省级工程研究中心（名单）</td>
+		            	<td nowrap="nowrap"><input id="xzgjjyjzx" name="form.rsRczytjnr.xzgjjyjzx" type="text"  value="<s:property value="form.rsRczytjnr.xzgjjyjzx"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">53</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">新增国家级、省级企业技术中心（名单）</td>
+		            	<td nowrap="nowrap"><input id="xzgjjqyzx" name="form.rsRczytjnr.xzgjjqyzx" type="text"  value="<s:property value="form.rsRczytjnr.xzgjjqyzx"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">54</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">新增国家级、省级重点实验室（名单）</td>
+		            	<td nowrap="nowrap"><input id="xzgjjsys" name="form.rsRczytjnr.xzgjjsys" type="text"  value="<s:property value="form.rsRczytjnr.xzgjjsys"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">55</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">新增国家级、省级工程实验室（名单）</td>
+		            	<td nowrap="nowrap"><input id="xzgcsys" name="form.rsRczytjnr.xzgcsys" type="text"  value="<s:property value="form.rsRczytjnr.xzgcsys"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+		            <tr>
+		            	<td nowrap="nowrap">56</td>
+		            	<td nowrap="nowrap" colspan="2" align="left">新增博士后科研流动站、工作站（名单）</td>
+		            	<td nowrap="nowrap"><input id="xzkygzz" name="form.rsRczytjnr.xzkygzz" type="text"  value="<s:property value="form.rsRczytjnr.xzkygzz"/>" class="inp" style="width:98%;" /></td>	              	
+		            </tr>
+	            </tbody>  	
+              	<tfoot>
+                    <tr><td colspan="6">
+                    <a id="save" href="javascript:addOrUpdateRecord();" class="btn_search" >保存</a>
+                    </td></tr>
+                </tfoot>
+              </table>
+              </div>
+              </form>
+                  
+</div>
+
+
+</body>
+<script type="text/javascript">
+$(document).ready(function(){ 
+            var color="#fbfdfe"
+            $(".bg_x tr:odd td").css("background-color",color);  //改变偶数行背景色
+            $(".data_list tr:odd").attr("bg",color);
+            $(".data_list tr:even").attr("bg","#fff");
+      })
+</script>
+
+</html>

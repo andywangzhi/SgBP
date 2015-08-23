@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="MyPro" default="compile" basedir=".">
+    <property name="webapp.name"    value="MyPro"/>
+    <property name="src.dir"   value="${basedir}/src"/>
+    <property name="lib.dir"    value="${basedir}/external_lib"/>
+    <property name="class.dir"    value="${basedir}/WebRoot/WEB-INF/classes"/>
+    <property name="web.dir"    value="${basedir}/WebRoot"/>
+     <property name="war.dir"    value="${basedir}/war"/>
+    <property name="lib.temp"    value="${basedir}/lib_temp"/>
+    <!-- **********************************设置jar包和关联类库的路径********************************** -->
+	<path id="compile.classpath">
+    	<pathelement location="${class.dir}"/>
+    	<fileset dir="${lib.dir}">
+          <include name="**/*.jar"/>
+        </fileset>
+    </path>
+    <!-- **********************************初始化目录********************************** -->   
+    <target name="init">
+        <mkdir dir="${src.dir}"/>   
+        <mkdir dir="${lib.dir}"/>  
+        <mkdir dir="${class.dir}"/> 
+        <mkdir dir="${war.dir}"/> 
+    </target>   
+
+    <!-- **********************************清空之前编译的类********************************** -->   
+    <target name="clean" description="清空之前编译的类和目录" depends="init">   
+        <delete dir="${class.dir}" includes="**/*.class"/>    
+    </target>
+    <!-- **********************************编译java类********************************** -->   
+    <target name="compile" description="编译java类" depends="clean">   
+        <mkdir dir="${class.dir}"/>   
+        <javac srcdir="${src.dir}" 
+              destdir="${class.dir}">
+              <compilerarg line="-encoding UTF-8 "/>
+            <classpath refid="compile.classpath"/>
+        </javac>
+        <copy todir="${class.dir}">   
+          <fileset dir="${src.dir}" excludes="**/*.java"/>   
+        </copy>    
+    </target>
+    <!-- **********************************打包web应用(weblogic)********************************** -->
+    <target name="deploy" description="部署应用到系统目录" depends="compile">
+    	<delete dir="${war.dir}" includes="**/*.war"/>
+    	<mkdir dir="${war.dir}"/>
+    	<mkdir dir="${lib.temp}"/>
+    	<copy todir="${lib.temp}">
+    		<fileset dir="${lib.dir}" includes="*.jar" />
+    		<fileset dir="${lib.dir}/axis" includes="*.jar" />
+    		<fileset dir="${lib.dir}/common" includes="*.jar" />
+    		<fileset dir="${lib.dir}/hibernate" includes="*.jar" />
+    		<fileset dir="${lib.dir}/j2ee" includes="*.jar" />
+    		<fileset dir="${lib.dir}/jdbc" includes="*.jar" />
+    		<fileset dir="${lib.dir}/log4j" includes="*.jar" />
+    		<fileset dir="${lib.dir}/spring" includes="*.jar" />
+    		<fileset dir="${lib.dir}/wsclient" includes="*.jar" />
+    	</copy>
+        <war destfile ="${war.dir}/${webapp.name}.war" webxml ="${basedir}/WebRoot/WEB-INF/web.xml"> 
+            <fileset dir="${web.dir}" />
+            <lib dir="${lib.temp}" />
+        </war>
+        <delete dir="${lib.temp}"/>
+    </target>
+</project> 
+

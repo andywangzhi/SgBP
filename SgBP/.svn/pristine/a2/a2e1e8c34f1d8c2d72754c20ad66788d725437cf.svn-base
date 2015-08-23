@@ -1,0 +1,263 @@
+package com.gzepro.internal.query.soa.action.rcsm.jyjl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import net.sf.json.JSONObject;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.gzepro.internal.query.common.Constants;
+import com.gzepro.internal.query.common.exception.ValidateException;
+import com.gzepro.internal.query.soa.base.SoaBaseJsonAction;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.base.RsPersonDetailDTO;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.jyjl.EducationexperienceDetaiDTO;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.jyjl.EducationexperienceForm;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.jyjl.EducationexperienceListDTO;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.jyjl.QueryEducationexperienceListSO;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.jyjl.RetrieveEducationexperienceSO;
+import com.gzepro.internal.query.soa.service.user.impl.EducationexperienceService;
+import com.gzepro.internal.query.soa.service.user.impl.RsPersonService;
+
+/**
+ * 
+ * @ClassName: EducationexperienceAction
+ * @Description: TODO(后台业务系统教育经历Action类)
+ * @author 张建薇
+ * @date Jul 25, 2012 10:31:10 AM
+ * 
+ */
+@SuppressWarnings("serial")
+@Scope("prototype")
+@Component("soa.jyjl")
+public class EducationexperienceAction extends SoaBaseJsonAction {
+	@Resource
+	private EducationexperienceService educationexperienceService;// 通过spring注入业务实例
+	private EducationexperienceForm form = new EducationexperienceForm();// 查询表单封装对象
+	private String message;
+	@Resource
+	private RsPersonService rsPersonService;
+	/**
+	 * 根据人员ID查询教育经验信息
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public String execute(){
+		List<EducationexperienceListDTO> dtoList = null;	// 经验经历信息
+		try {
+			String pesonid = (String) this.getSession().get("personId");
+			if(pesonid == null || pesonid.trim().length() < 1) {
+				return "out";
+			}
+			
+			if(null!=pesonid && pesonid.trim().length()>0){
+				form.getDto().setPersonId(pesonid);
+				dtoList = (List<EducationexperienceListDTO>) educationexperienceService.findAll(pesonid, menuId, this.getAccount().getId());
+				if(dtoList!=null&&dtoList.size()>0){
+					form.setDtoList(dtoList);
+				}else{
+					form.setDtoList(new ArrayList<EducationexperienceListDTO>());
+				}
+			}
+			if(this.getSession().get("auditstate")!=null){
+				form.setAuditstate(this.getSession().get("auditstate").toString());
+			}
+			return "input";
+			
+		} catch (Exception ex) {
+			// 统一异常处理类
+			ex.printStackTrace();
+			this.handleException(queryInputParameter,Constants.SOA_EDU, ex);
+			return "input";
+		}
+	}
+	
+	/**
+	 * 保存教育经历信息
+	 * return: init保存后进入
+	 */
+	public String saveOrUpdate() {
+		JSONObject json=new	JSONObject();
+		try{
+			this.resetPromptMessage();// 清空错误提示信息 做一个reset方法，设置tip为空
+			this.saveSysLog(Constants.SOA_EDU, form.getDto().getEducationId());//保存查询日志
+
+			int result = educationexperienceService.saveOrUpdateBatch(form.getDtoList());
+			json.put("flag", 1);
+		}catch (Exception ex) {
+			// 统一异常处理类
+			json.put("flag", 2);
+			//ex.printStackTrace();
+			this.handleException(form.getDto().getEducationId(),Constants.SOA_EDU, ex);
+		}
+		outputJson(json);
+		return this.NONE;
+	}
+	
+	/**
+	 * 删除教育经历信息
+	 */
+	public String delete() {
+		JSONObject json=new	JSONObject();
+		try{
+			this.resetPromptMessage();// 清空错误提示信息 做一个reset方法，设置tip为空
+			this.saveSysLog(Constants.SOA_EDU, form.getRetrieveSO().getEducationId());//保存查询日志
+
+			for(EducationexperienceListDTO _dto:form.getDtoList()){
+				if(null != _dto && null != _dto.getEducationId() && (null == _dto.getPersonId() || _dto.getPersonId().trim().length()==0)){
+					if(_dto.getEducationId().trim().length()>0){
+						int result = educationexperienceService.delete(_dto.getEducationId());
+					}
+				}
+			}
+			json.put("flag", 1);
+		}catch (Exception ex) {
+			// 统一异常处理类
+			//ex.printStackTrace();
+			json.put("flag", 2);
+			this.handleException(form.getRetrieveSO().getPersonId(),Constants.SOA_EDU, ex);
+		}
+		outputJson(json);
+		return this.NONE;
+	}
+	
+	/**
+	 * 查询教育经历列表
+	 */
+	public String query() {
+		try {
+			this.resetPromptMessage();// 清空错误提示信息 做一个reset方法，设置tip为空
+			validateInput("list");
+			this.saveSysLog(Constants.SOA_EDU, queryInputParameter);//保存查询日志
+		    // 调用ws
+			List<EducationexperienceListDTO> dtoList = (List<EducationexperienceListDTO>) educationexperienceService.query(form.getQueryListSO(), menuId, this.getAccount().getId());
+			if(dtoList != null && dtoList.size()==1){
+				form.getRetrieveSO().setEducationId(dtoList.get(0).getEducationId());
+				return view();
+			}else{
+				if(dtoList!=null&&dtoList.size()>1){
+					form.setDtoList(dtoList);
+				}else{
+					form.setDtoList(new ArrayList<EducationexperienceListDTO>());
+				}
+				return "list";
+			}
+		} catch (Exception ex) {
+			// 统一异常处理类
+			ex.printStackTrace();
+			this.handleException(queryInputParameter,Constants.SOA_EDU, ex);
+			return "list";
+		}
+	}
+	
+	/**
+	 * 新增/编辑教育经历信息
+	 */
+	public String input() {
+		String eduId = form.getRetrieveSO().getEducationId();
+		if(eduId != null && !eduId.equals("")){//编辑
+			try {
+				EducationexperienceDetaiDTO dto= (EducationexperienceDetaiDTO) educationexperienceService.find(form.getRetrieveSO());
+				if(dto!=null){
+					form.setDto(dto);
+				}else{
+					form.setDto(new EducationexperienceDetaiDTO());
+				}
+			} catch (Exception ex) {
+				// 统一异常处理类
+				this.handleException(queryInputParameter,Constants.SOA_EDU, ex);
+			}
+		}
+		return "input";
+	}
+	
+	/**
+	 * 查看教育经历详细信息
+	 */
+	public String view() {
+		try{
+			this.resetPromptMessage();// 清空错误提示信息 做一个reset方法，设置tip为空
+			validateInput("view");
+			this.saveSysLog(Constants.SOA_EDU, queryInputParameter);//保存查询日志
+			//调用ws
+			EducationexperienceDetaiDTO dto= (EducationexperienceDetaiDTO) educationexperienceService.view(form.getRetrieveSO(), menuId, this.getAccount().getId());
+			if(dto!=null){
+				form.setDto(dto);
+			}else{
+				form.setDto(new EducationexperienceDetaiDTO());
+			}
+			return "view";
+		}catch (Exception ex) {
+			// 统一异常处理类
+			//ex.printStackTrace();
+			this.handleException(queryInputParameter,Constants.SOA_EDU, ex);
+			return "view";
+		}
+	}
+	
+	/**
+	 * 删除人员所有的教育经历信息
+	 */
+	public String deleteAll() {
+		try{
+			this.resetPromptMessage();// 清空错误提示信息 做一个reset方法，设置tip为空
+			this.saveSysLog(Constants.SOA_EDU, form.getRetrieveSO().getPersonId());//保存查询日志
+			int result = educationexperienceService.deleteAll(form.getRetrieveSO().getPersonId());
+			return "delete";
+		}catch (Exception ex) {
+			// 统一异常处理类
+			//ex.printStackTrace();
+			this.handleException(form.getRetrieveSO().getPersonId(),Constants.SOA_EDU, ex);
+			return "delete";
+		}
+	}
+	
+	/**
+	 * 检查输入参数
+	 * @param type
+	 * @return
+	 * @throws Exception 
+	 */
+	private void validateInput(String type)throws Exception{
+		if(type.equals("list"))
+		{
+			QueryEducationexperienceListSO queryListSO = form.getQueryListSO();// 获得参数对象
+		}else if(type.equals("view")){
+			RetrieveEducationexperienceSO retrieveSO=form.getRetrieveSO();// 获得参数对象
+			String rsPersonId = retrieveSO.getPersonId(); 
+			//保存输入参数
+			queryInputParameter=rsPersonId;
+			// 分析输入参数
+			if(rsPersonId.equals("") ){
+				throw new ValidateException(Constants.ERROR_NOINPUT);
+			}
+		}
+	}
+	
+	public EducationexperienceForm getForm() {
+		return form;
+	}
+	public void setForm(EducationexperienceForm form) {
+		this.form = form;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public RsPersonService getRsPersonService() {
+		return rsPersonService;
+	}
+
+	public void setRsPersonService(RsPersonService rsPersonService) {
+		this.rsPersonService = rsPersonService;
+	}
+}

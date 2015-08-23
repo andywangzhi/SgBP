@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="page.system" extends="base" namespace="/system">
+       
+        <!-- 主页及菜单生成 -->
+        <action name="main" class="system.main">
+            <result name="success">/page/main.jsp</result>
+        </action>
+		
+		<!-- 用户管理  -->
+		<action name="account" class="system.account">
+			<result name="success">/page/system/account/list.jsp</result>
+			<result name="add">/page/system/account/add.jsp</result>
+			<result name="edit">/page/system/account/edit.jsp</result>
+			<result name="view">/page/system/account/view.jsp</result>
+		</action>
+		
+		<!-- 部门管理  -->
+		<action name="dept" class="system.dept">
+			<result name="success">/page/system/dept/list.jsp</result>
+		</action>
+		
+		<!-- 用户组管理  -->
+		<action name="group" class="system.group">
+			<result name="success">/page/system/group/list.jsp</result>
+			<result name="add">/page/system/group/add.jsp</result>
+			<result name="edit">/page/system/group/edit.jsp</result>
+			<result name="view">/page/system/group/view.jsp</result>
+		</action>
+		
+		<!-- 角色管理  -->
+		<action name="role" class="system.role">
+			<result name="success">/page/system/role/list.jsp</result>
+			<result name="add">/page/system/role/add.jsp</result>
+			<result name="edit">/page/system/role/edit.jsp</result>
+			<result name="view">/page/system/role/view.jsp</result>
+		</action>
+		
+		<!--  菜单管理 -->
+		<action name="menu" class="system.menu" >
+			<result name="success">/page/system/menu/list.jsp</result>
+			<result name="add">/page/system/menu/add.jsp</result>
+			<result name="edit">/page/system/menu/edit.jsp</result>
+			<result name="view">/page/system/menu/view.jsp</result>
+		</action>
+		
+		<!--  资源管理 -->
+		<action name="resource" class="system.sysResource" >
+			<result name="success">/page/system/resource/list.jsp</result>
+			<result name="add">/page/system/resource/add.jsp</result>
+			<result name="edit">/page/system/resource/edit.jsp</result>
+			<result name="view">/page/system/resource/view.jsp</result>
+		</action>
+		
+		<!--  敏感信息 -->
+		<action name="dictionary" class="system.dictionary" >
+			<result name="success">/page/system/dictionary/list.jsp</result>
+			<result name="add">/page/system/dictionary/add.jsp</result>
+			<result name="edit">/page/system/dictionary/edit.jsp</result>
+			<result name="view">/page/system/dictionary/view.jsp</result>
+		</action>
+		
+		<!--  数据类型 -->
+		<action name="confType" class="system.confType" >
+			<result name="success">/page/system/confType/list.jsp</result>
+			<result name="add">/page/system/confType/add.jsp</result>
+			<result name="edit">/page/system/confType/edit.jsp</result>
+			<result name="view">/page/system/confType/view.jsp</result>
+		</action>
+		
+		<!--  基础数据 -->
+		<action name="conf" class="system.conf" >
+			<result name="success">/page/system/conf/list.jsp</result>
+			<result name="add">/page/system/conf/add.jsp</result>
+			<result name="edit">/page/system/conf/edit.jsp</result>
+			<result name="view">/page/system/conf/view.jsp</result>
+		</action>
+		
+		<!-- 日志管理  -->
+		<action name="sysLog" class="system.sysLog">
+			<result name="success">/page/system/syslog/list.jsp</result>
+			<result name="add">/page/system/syslog/add.jsp</result>
+			<result name="edit">/page/system/syslog/edit.jsp</result>
+			<result name="view">/page/system/syslog/view.jsp</result>
+		</action>
+			
+		<!-- 在线用户情况  -->
+		<action name="online" class="system.online">
+			<result name="success">/page/system/online/list.jsp</result>
+		</action>
+		
+		<!-- 上传文件 -->
+		<action name="upload" class="system.upload">
+			<interceptor-ref name="uploadStack" />
+			<result name="success">/page/system/upload/input.jsp</result>
+		</action>
+		
+		<!-- 截屏保存图片 -->
+		<action name="screenshots" class="system.screenshots">
+			<result name="success">/page/system/screenshots/input.jsp</result>
+		</action>
+	</package>
+</struts>

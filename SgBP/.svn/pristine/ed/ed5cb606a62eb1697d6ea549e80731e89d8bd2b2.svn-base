@@ -1,0 +1,85 @@
+#UserService wsdl
+RouterForUser=http://192.168.100.50:7001/myws/service/UserService?wsdl
+
+#RsPersonProxyService wsdl
+RsPersonProxyService=http://192.168.100.50:7001/myws/service/RsPersonService?wsdl
+#RsPersonProxyService=http://192.168.100.56/myws/service/RsPersonService?wsdl
+
+#WorkexperienceProxyService wsdl
+WorkexperienceProxyService=http://192.168.100.50:7001/myws/service/WorkexperienceService?wsdl
+
+#EducationProxyService wsdl
+EducationProxyService=http://192.168.100.50:7001/myws/service//EducationexperienceService?wsdl
+
+#TechnologicalHarvestProxyService wsdl
+TechnologicalHarvestProxyService=http://192.168.100.50:7001/myws/service/TechnologicalHarvestService?wsdl
+#TechnicallymessProxyService wsdl
+ProjectExperienceProxyService=http://192.168.100.50:7001/myws/service/ProjectExperienceService?wsdl
+
+#TechnicallymessProxyService
+TechnicallymessProxyService=http://192.168.100.50:7001/myws/service/TechnicallymessService?wsdl
+
+#RsAffixService wsdl
+#RsAffixService=http://192.168.100.56/myws/service/RsAffixService?wsdl
+RsAffixService=http://192.168.100.50:7001/myws/service/RsAffixService?wsdl
+
+#RsTestService wsdl
+#RsAffixService=http://192.168.100.56/myws/service/RsTestService?wsdl
+RsTestService=http://192.168.100.50:7001/myws/service/RsTestService?wsdl
+
+
+#RsPersonTypeService
+RsPersonTypeProxyService=http://192.168.100.50:7001/myws/service/RsPersonTypeService
+#upload directory
+FileRootPath=/data/MyPro
+
+
+#upload directory
+
+#ScreenShotsPath root
+ScreenShotsPath=/file/ScreenShots
+
+
+
+
+
+
+
+
+
+
+
+#the line number from 55 to 87 is the config of the data change webservice,please attention
+#myproex
+#UserService wsdl
+OutRouterForUser=http://192.168.100.50:7001/extws/service/UserService?wsdl
+
+#RsPersonProxyService wsdl
+OutRsPersonProxyService=http://192.168.100.50:7001/extws/service/RsPersonService?wsdl
+#RsPersonProxyService=http://192.168.100.56/myws/service/RsPersonService?wsdl
+
+#WorkexperienceProxyService wsdl
+OutWorkexperienceProxyService=http://192.168.100.50:7001/extws/service/WorkexperienceService?wsdl
+
+#EducationProxyService wsdl
+OutEducationProxyService=http://192.168.100.50:7001/extws/service//EducationexperienceService?wsdl
+
+#TechnologicalHarvestProxyService wsdl
+OutTechnologicalHarvestProxyService=http://192.168.100.50:7001/extws/service/TechnologicalHarvestService?wsdl
+#TechnicallymessProxyService wsdl
+OutProjectExperienceProxyService=http://192.168.100.50:7001/extws/service/ProjectExperienceService?wsdl
+
+#TechnicallymessProxyService
+OutTechnicallymessProxyService=http://192.168.100.50:7001/extws/service/TechnicallymessService?wsdl
+
+#OutRsAffixService wsdl
+#OutRsAffixService=http://192.168.100.56/myws/service/RsAffixService?wsdl
+OutRsAffixService=http://192.168.100.50:7001/extws/service/RsAffixService?wsdl
+
+#RsTestService wsdl
+#RsAffixService=http://192.168.100.56/myws/service/RsTestService?wsdl
+OutRsTestService=http://192.168.100.50:7001/extws/service/RsTestService?wsdl
+
+
+#RsPersonTypeService
+OutRsPersonTypeProxyService=http://192.168.100.50:7001/extws/service/RsPersonTypeService

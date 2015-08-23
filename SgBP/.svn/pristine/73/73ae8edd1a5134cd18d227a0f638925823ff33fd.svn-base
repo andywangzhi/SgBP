@@ -1,0 +1,78 @@
+package com.gzepro.internal.query.soa.action.rcsm.base;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import net.sf.json.JSONObject;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.gzepro.internal.query.common.Constants;
+import com.gzepro.internal.query.common.util.DateUtil;
+import com.gzepro.internal.query.model.RsSocialworker;
+import com.gzepro.internal.query.model.RsTalantteam;
+import com.gzepro.internal.query.soa.base.SoaBaseJsonAction;
+import com.gzepro.internal.query.soa.service.user.impl.RsTalantTeamService;
+
+@SuppressWarnings("serial")
+@Scope("prototype")
+@Component("rsTalantTeam")
+public class RsTalantTeamAction   extends SoaBaseJsonAction{
+
+	@Resource
+	private RsTalantTeamService rsTalantTeamService;
+	
+	private RsSocialworker socialworker=new RsSocialworker();
+	
+	@Override
+	public String execute() throws Exception {
+		return SUCCESS;
+	}
+	
+	public String toConfig()throws Exception{
+		try{
+			List<RsSocialworker> list=rsTalantTeamService.queryRsSocialworker();
+			if(list!=null&&list.size()>0){
+				socialworker=list.get(0);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "error";
+		}
+		return "conf";
+	}
+
+	public String view()throws Exception{
+		String curYear=String.valueOf(DateUtil.getYear(new Date()));
+		List<RsTalantteam> curData=rsTalantTeamService.queryCurrentYear();
+		List<RsTalantteam> lastData=rsTalantTeamService.queryLastYear();
+		List<RsSocialworker> socialworkerList=rsTalantTeamService.queryRsSocialworker();
+		return "view";
+	}
+	
+	public String saveOrUpdate()throws Exception{
+		try{
+			if(socialworker!=null){
+				socialworker=rsTalantTeamService.saveOrUpdate(socialworker);
+			}
+		}catch (Exception ex) {
+			ex.printStackTrace();
+			return "error";
+		}
+		return "conf";
+	}
+
+	public RsSocialworker getSocialworker() {
+		return socialworker;
+	}
+
+	public void setSocialworker(RsSocialworker socialworker) {
+		this.socialworker = socialworker;
+	}
+	
+	
+}

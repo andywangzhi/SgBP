@@ -1,0 +1,87 @@
+package com.gzepro.internal.query.model;
+
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+/**
+ * RsSocialworker entity. @author MyEclipse Persistence Tools
+ * author:张建薇
+ * addDate:2013-03-22
+ * description:持证社工人
+ */
+@Entity
+@Table(name = "RS_SOCIALWORKER ")
+public class RsSocialworker implements java.io.Serializable {
+	private static final long serialVersionUID = -7928119002589450402L;
+	
+	private Long swid;
+	private Date swdate;
+	private String swcounty;
+	private Long swcount;
+
+	// Constructors
+
+	/** default constructor */
+	public RsSocialworker() {
+	}
+
+	/** full constructor */
+	public RsSocialworker(Date swdate, String swcounty, Long swcount) {
+		this.swdate = swdate;
+		this.swcounty = swcounty;
+		this.swcount = swcount;
+	}
+
+	// Property accessors
+
+	@Id  
+    @Column(name="swid")
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq_socialWorker")      
+    @SequenceGenerator(name="seq_socialWorker",allocationSize=1,initialValue=1, sequenceName="SEQ_RS_SOCIALWORKER ") 
+	public Long getSwid() {
+		return this.swid;
+	}
+
+	public void setSwid(Long swid) {
+		this.swid = swid;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "swdate", nullable = false, length = 7)
+	public Date getSwdate() {
+		return this.swdate;
+	}
+
+	public void setSwdate(Date swdate) {
+		this.swdate = swdate;
+	}
+
+	
+	@Column(name = "swcounty", length = 2)
+	public String getSwcounty() {
+		return this.swcounty;
+	}
+
+	public void setSwcounty(String swcounty) {
+		this.swcounty = swcounty;
+	}
+
+	@Column(name = "swcount", length = 2)
+	public Long getSwcount() {
+		return this.swcount;
+	}
+
+	public void setSwcount(Long swcount) {
+		this.swcount = swcount;
+	}
+
+}

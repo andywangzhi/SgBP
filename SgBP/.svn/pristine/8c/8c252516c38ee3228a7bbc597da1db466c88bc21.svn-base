@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) 2009-2012 by fsll
+ * All rights reserved.
+ */
+
+package com.gzepro.internal.query.soa.service.user.dto.rcsm.rctj;
+
+/**
+ * 
+ * 
+ * 人才统计信息查询条件
+ * 
+ * @author 王志 E-mail:wangzhi291@163.com
+ * @version 1.0
+ * Created On: 2012-7-31
+ */
+public class RetrieveRctjSO {
+	private String forDate;//开始时间
+	private String todate;//结束时间
+	private String Pcounty;//区县
+	private String specialtyType;// 专业类型
+	private String technicallytype;//职称级别
+	
+	public String getForDate() {
+		return forDate;
+	}
+	public void setForDate(String forDate) {
+		this.forDate = forDate;
+	}
+	public String getTodate() {
+		return todate;
+	}
+	public void setTodate(String todate) {
+		this.todate = todate;
+	}
+	public String getPcounty() {
+		return Pcounty;
+	}
+	public void setPcounty(String pcounty) {
+		Pcounty = pcounty;
+	}
+	public String getSpecialtyType() {
+		return specialtyType;
+	}
+	public void setSpecialtyType(String specialtyType) {
+		this.specialtyType = specialtyType;
+	}
+	public String getTechnicallytype() {
+		return technicallytype;
+	}
+	public void setTechnicallytype(String technicallytype) {
+		this.technicallytype = technicallytype;
+	}
+}

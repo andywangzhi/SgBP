@@ -1,0 +1,517 @@
+/**
+ * 
+ */
+package com.gzepro.internal.query.soa.action.rcsm.rctj;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.struts2.ServletActionContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import wsepr.easypoi.excel.Excel;
+
+import com.gzepro.internal.query.soa.base.SoaBaseJsonAction;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.rckh.RckhForm;
+import com.gzepro.internal.query.soa.service.user.impl.RsRcgzkhpfbService;
+import com.gzepro.internal.query.soa.service.user.impl.RsRczytjnrService;
+import com.gzepro.internal.query.system.model.RsRcgzkhpfb;
+import com.gzepro.internal.query.system.model.RsRczytjnr;
+
+/**
+ * @author SgBP 广州易宝信息技术有限公司
+ * @since  2013-3-21
+ * @version 1.0
+ */
+@SuppressWarnings("serial")
+@Scope("prototype")
+@Component("soa.RcgzkhpfbAction")
+public class RcgzkhpfbAction extends SoaBaseJsonAction {
+	private RsRcgzkhpfbService rsRcgzkhpfbService;
+	private RckhForm form = new RckhForm();
+	
+	private RsRczytjnrService rsRczytjnrService;
+
+	public String saveOrUpdate(){
+		//按6大类人才计算，每类人才数据库各2分
+		String strYearStrat = form.getRsRcgzkhpfb().getYear()+"-01"+"-01";
+		String strYearEnd = form.getRsRcgzkhpfb().getYear()+"-12"+"-31";
+		
+		List<Object> obj=null;
+		List<RsRcgzkhpfb> list_ = rsRcgzkhpfbService.findByYear(form.getRsRcgzkhpfb().getPcounty(), form.getRsRcgzkhpfb().getYear());
+		if(list_ != null && list_.size() != 0){
+			form.getRsRcgzkhpfb().setPk(list_.get(0).getPk());
+		}
+		
+		obj= rsRcgzkhpfbService.findBySql("select count(*),y.type from RS_PERSONTYPE y join RS_PERSON r on y.personid=r.personid and pcounty like '"+form.getRsRcgzkhpfb().getPcounty()+"' group by y.type");
+		int count = 0;
+		count = obj.size() * 2 >12?12:obj.size() * 2;
+		form.getRsRcgzkhpfb().setJlrcxxk(count+"");
+		//博士学位或正高人数
+		obj= rsRcgzkhpfbService.findBySql("select count(*) from RS_TECHNICALLYMESS y join RS_PERSON r on y.personid=r.personid and (y.technicallyLevel='5' or r.cultureType='1') and r.pcounty " +
+				"like '"+form.getRsRcgzkhpfb().getPcounty()+"' and r.adddate>=to_date('"+strYearStrat+"','YYYY-MM-dd') and r.adddate<=to_date('"+strYearEnd+"','YYYY-MM-dd') ");
+		int _bsrs = ((BigDecimal)obj.get(0)).intValue();		
+//		//副高职称人数
+		obj= rsRcgzkhpfbService.findBySql("select count(*) from RS_TECHNICALLYMESS y join RS_PERSON r on y.personid=r.personid and y.technicallyLevel='4' and r.pcounty " +
+				"like '"+form.getRsRcgzkhpfb().getPcounty()+"' and r.adddate>=to_date('"+strYearStrat+"','YYYY-MM-dd') and r.adddate<=to_date('"+strYearEnd+"','YYYY-MM-dd') ");
+		int _fgrs = ((BigDecimal)obj.get(0)).intValue();
+//		//硕士人数
+		obj= rsRcgzkhpfbService.findBySql("select count(*) from RS_PERSON r where r.cultureType='2' and " +
+				"r.pcounty like '"+form.getRsRcgzkhpfb().getPcounty()+"' and r.adddate>=to_date('"+strYearStrat+"','YYYY-MM-dd') and r.adddate<=to_date('"+strYearEnd+"','YYYY-MM-dd') ");
+		int _ssrs = ((BigDecimal)obj.get(0)).intValue();
+//		//本科人数
+		obj= rsRcgzkhpfbService.findBySql("select count(*) from RS_PERSON r where r.cultureType='3' and " +
+				"r.pcounty like '"+form.getRsRcgzkhpfb().getPcounty()+"' and r.adddate>=to_date('"+strYearStrat+"','YYYY-MM-dd') and r.adddate<=to_date('"+strYearEnd+"','YYYY-MM-dd') ");
+		int _bkrs = ((BigDecimal)obj.get(0)).intValue();
+		float count1 = _bsrs *(Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getBsxwbl())))+
+				_fgrs *(Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getFgzc())))+
+				_ssrs *(Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getSsrc())))+
+				_bkrs *(Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getBkrc())));
+		count1 = count1 > 6 ? 6 : count1;
+		form.getRsRcgzkhpfb().setJqrcyj(setfloat(count1));
+//		//副高总人数
+		obj= rsRcgzkhpfbService.findBySql("select count(*) from RS_TECHNICALLYMESS y join RS_PERSON r on y.personid=r.personid and y.technicallyLevel='4' and r.pcounty " +
+				"like '"+form.getRsRcgzkhpfb().getPcounty()+"' and y.adddate>=to_date('"+strYearStrat+"','YYYY-MM-dd') and y.adddate<=to_date('"+strYearEnd+"','YYYY-MM-dd') ");
+		int _fgzrs = ((BigDecimal)obj.get(0)).intValue();
+//		//正高总人数
+		obj= rsRcgzkhpfbService.findBySql("select count(*) from RS_TECHNICALLYMESS y join RS_PERSON r on y.personid=r.personid and y.technicallyLevel='5' and r.pcounty " +
+				"like '"+form.getRsRcgzkhpfb().getPcounty()+"' and y.adddate>=to_date('"+strYearStrat+"','YYYY-MM-dd') and y.adddate<=to_date('"+strYearEnd+"','YYYY-MM-dd') ");
+		int _zgzrs = ((BigDecimal)obj.get(0)).intValue();
+		float count2 = _fgzrs *(Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getJsfg())))+
+				_zgzrs *(Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getJszg())));
+		count2 = count2 > 4 ? 4 : count2;
+		form.getRsRcgzkhpfb().setJqrcpy(setfloat(count2));
+//		
+//		//省级项数
+		obj= rsRcgzkhpfbService.findBySql("select count(*) from RS_TECHNOLOGICALHARVEST y join RS_PERSON r on y.personid=r.personid and y.harvestLevel='2' and r.pcounty " +
+				"like '"+form.getRsRcgzkhpfb().getPcounty()+"' and y.adddate>=to_date('"+strYearStrat+"','YYYY-MM-dd') and y.adddate<=to_date('"+strYearEnd+"','YYYY-MM-dd') ");
+		int _sjxs = ((BigDecimal)obj.get(0)).intValue();
+//		//市级项数
+		obj= rsRcgzkhpfbService.findBySql("select count(*) from RS_TECHNOLOGICALHARVEST y join RS_PERSON r on y.personid=r.personid and y.harvestLevel='3' and r.pcounty " +
+				"like '"+form.getRsRcgzkhpfb().getPcounty()+"' and y.adddate>=to_date('"+strYearStrat+"','YYYY-MM-dd') and y.adddate<=to_date('"+strYearEnd+"','YYYY-MM-dd') ");
+		int _sjzrs = ((BigDecimal)obj.get(0)).intValue();
+		float count3 = _sjxs *(Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getSjjl())))+
+				_sjzrs *(Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getBsjl())));
+		count3 = count3 > 3 ? 3 : count3;
+		setCount();
+		form.getRsRcgzkhpfb().setKxjsjl(setfloat(count3));
+		rsRcgzkhpfbService.saveOrUpdate(form.getRsRcgzkhpfb());
+		form.setPcounty(form.getRsRcgzkhpfb().getPcounty());
+		form.setYear(form.getRsRcgzkhpfb().getYear());
+		return "rcgzkhpfb";
+	}
+	private String setfloat(float value){
+		BigDecimal   b   =   new   BigDecimal(value);
+		return b.setScale(1,BigDecimal.ROUND_HALF_UP).floatValue()+"";		  
+	}
+	
+	private String setCount(){
+		float value = Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getZtyjrcgz()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getCtrcgzwj()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getJlrcxxk()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getBgrcgzqk()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getRczykfzxzj()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getXcyxrcsj()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getSszdrcgz()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getJqrcyj()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getJqrcpy()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getKxjsjl()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getZysqsl()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getGxjsqy()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getGcjsyjkfzx()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getRczyzlhzzl()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getQyjyglrc()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getZyjsrc()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getNcsyrc()));
+			value +=  Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getShgzrc()));
+			  
+		form.getRsRcgzkhpfb().setCountall(setfloat(value));
+		value += Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getSrcgzxm()))+
+				Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getYjqrjh()))+
+				Float.parseFloat(setValue0(form.getRsRcgzkhpfb().getYjgdscxtd()))
+				;	 
+		form.getRsRcgzkhpfb().setEndcountall(setfloat(value));
+		return null;
+	}
+	
+	private String setValue0(String value){
+		if(value == null || value.equals("")){
+			return "0";
+		}
+		try {
+			Float.parseFloat(value);
+		} catch (Exception e) {
+			return "0";
+		}
+		return value;
+	}
+	
+	public String query(){
+		List<RsRcgzkhpfb> list = null;
+		if(form.getPcounty() != null && !form.getPcounty().equals("")
+				&& form.getYear() != null && !form.getYear().equals("")){
+			list = rsRcgzkhpfbService.findByYear(form.getPcounty(),form.getYear());
+		}		
+		if(list != null && list.size() != 0){
+			form.setRsRcgzkhpfb(list.get(0));
+		}else{
+			form.setRsRcgzkhpfb(new RsRcgzkhpfb());
+		}
+		return "rcgzkhpfb";
+	}
+	
+
+	public String ExportRcgzkhpfbExecl(){
+		try{
+			
+			String n = "人才工作考核评分表.xls";
+			String url = "\\file";
+			String fname = url + "\\";
+			String pathname = fname + n;
+			pathname = ServletActionContext.getRequest().getRealPath(pathname);
+
+			String pcounty = form.getPcounty();
+			String year = form.getYear();
+			List<RsRcgzkhpfb> rcgzs = rsRcgzkhpfbService.findByYear(pcounty, year);
+			HSSFWorkbook workbook = generateExcleForRctj( rcgzs, pathname);
+			
+			
+//			File file = new File(pathname);
+			HttpServletResponse response = getResponse();
+			OutputStream os = response.getOutputStream();// 取得输出流
+			response.reset();// 清空输出流
+
+			String name = new String(n.getBytes("GB2312"), "ISO8859-1");
+			response.setHeader("Content-disposition", "attachment; filename=\""
+					+ name + "\"");// 设定输出文件头
+			response.setContentType("application/msexcel");// 定义输出类型
+			workbook.write(os);
+//			response.setContentLength((int) file.length());
+			
+			/*if (file.isFile()) {
+				InputStream in = new FileInputStream(file);
+				int readLen = 0;
+				byte[] buf = new byte[1024];
+				while ((readLen = in.read(buf, 0, 1024)) != -1) {
+					os.write(buf, 0, readLen);
+				}
+				in.close();
+			}
+			os.flush();
+			os.close(); */// 关闭流
+//			if (file.isFile() && file.exists()) {
+//				file.delete();
+//			}
+			
+			return null;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return this.NONE;
+		}
+		   
+	}
+	
+public HSSFWorkbook generateExcleForRctj( List<RsRcgzkhpfb> rcgzs,String pathname) throws IOException {
+		
+		Excel excel = new Excel(pathname);
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		
+		if(rcgzs!=null&&rcgzs.size()>0){
+		workbook = excel.getWorkBook();
+		RsRcgzkhpfb r = rcgzs.get(0);
+		
+		HSSFFont fontTitle = workbook.createFont();
+		fontTitle.setFontName("宋体"); // 使用字体
+		fontTitle.setFontHeightInPoints((short) 22);
+		fontTitle.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		
+		HSSFCellStyle cellStyleTitle = workbook.createCellStyle();
+		cellStyleTitle.setFont(fontTitle); 
+		cellStyleTitle.setAlignment(HSSFCellStyle.ALIGN_CENTER_SELECTION);
+		cellStyleTitle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+		
+		excel.cell(0,0).style(cellStyleTitle);
+		
+		HSSFCellStyle cellStyle = workbook.createCellStyle();
+		cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER_SELECTION);
+		cellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+		cellStyle.setWrapText(true); // 自动换行
+		cellStyle.setBorderBottom((short) 1); // 设置边框样式
+		cellStyle.setBorderLeft((short) 1); // 左边框
+		cellStyle.setBorderRight((short) 1); // 右边框
+		cellStyle.setBorderTop((short) 1);
+		excel.cell(9, 4).style(cellStyle);
+		excel.cell(10, 4).style(cellStyle);
+		excel.cell(11,4).style(cellStyle);
+		excel.cell(9,4).value("  AA得分=博士学位或正高人数×"+r.getBsxwbl()+"，副高职称人数×"+r.getFgzc()+"，硕士人数×"+r.getSsrc()+"，本科人数×"+r.getBkrc()+"，最高6分");
+		excel.cell(10,4).value("   BB得分= 副高总人数×"+r.getFgzc()+"，正高总人数×"+r.getJszg()+"，  最高4分");
+		excel.cell(11,4).value("  CC得分=省级项数×"+r.getSjjl()+"，市级项数×"+r.getBsjl()+"，最高3分");
+		excel.cell(2,7).value(r.getZtyjrcgz());
+		excel.cell(3,7).value(r.getCtrcgzwj());
+		excel.cell(4,7).value(r.getJlrcxxk());
+		excel.cell(5,7).value(r.getBgrcgzqk());
+		excel.cell(6,7).value(r.getRczykfzxzj());
+		excel.cell(7,7).value(r.getXcyxrcsj());
+		excel.cell(8,7).value(r.getSszdrcgz());
+		excel.cell(9,7).value(r.getJqrcyj());
+		excel.cell(10,7).value(r.getJqrcpy());
+		excel.cell(11,7).value(r.getKxjsjl());
+		excel.cell(12,7).value(r.getZysqsl());
+		excel.cell(13,7).value(r.getGxjsqy());
+		excel.cell(14,7).value(r.getGcjsyjkfzx());
+		excel.cell(15,7).value(r.getRczyzlhzzl());
+		excel.cell(16,7).value(r.getQyjyglrc());
+		excel.cell(17,7).value(r.getZyjsrc());
+		excel.cell(18,7).value(r.getNcsyrc());
+		excel.cell(19,7).value(r.getShgzrc());
+		excel.cell(20,7).value(r.getCountall());
+		excel.cell(21,7).value(r.getSrcgzxm());
+		excel.cell(22,7).value(r.getYjqrjh());
+		excel.cell(23,7).value(r.getYjgdscxtd());
+		excel.cell(24,7).value(r.getEndcountall());
+		}
+		return workbook;
+	}
+	public String saveOrupdateTJ(){
+		//按6大类人才计算，每类人才数据库各2分
+		String strYearStrat = form.getRsRczytjnr().getYear()+"01"+"01";
+		String strYearEnd = form.getRsRczytjnr().getYear()+"12"+"31";
+		List<Object> obj=null;
+		//党政、企业经营管理和专业技术人才中大学本科及以上学历<br />人员所占比例
+		obj= rsRcgzkhpfbService.findBySql("select count(*) as count,y.type from RS_PERSONTYPE y where y.personType like '%1%' or y.personType like '%2%' or y.personType like '%3%' " +
+				"							union select count(*) as count,y.type from RS_PERSONTYPE y where (y.personType like '%1%' or y.personType like '%2%' or y.personType like '%3%') and y.cultureType in ('1','2','3') ");
+		int dzqyzs = ((BigDecimal)obj.get(0)).intValue();
+		int bkyszs = ((BigDecimal)obj.get(1)).intValue();
+		float count;
+		if(dzqyzs != 0){
+			count = bkyszs/dzqyzs;
+		}else{
+			count = 0;
+		}
+		form.getRsRczytjnr().setBkysxlbl(count+"");
+		//高技能人才占技能劳动者比例
+		obj= rsRcgzkhpfbService.findBySql("select count(*) as count,y.type from RS_PERSONTYPE y join view_rs_persontype r on y.personid=r.personid and r.type like '%4%'");
+		int _gjnzs = ((BigDecimal)obj.get(0)).intValue();
+		if(form.getRsRczytjnr().getRlzyzl() != null && !form.getRsRczytjnr().getRlzyzl().equals("")){
+			count = _gjnzs/Float.parseFloat(setValue0(form.getRsRczytjnr().getRlzyzl()));
+		}else{
+			count = 0;
+		}
+		form.getRsRczytjnr().setGjnrcbl(count+"");
+		//农村实用人才平均受教育年限
+		obj= rsRcgzkhpfbService.findBySql("select count(*) as count,y.cultureType from RS_PERSONTYPE y join view_rs_persontype r on y.personid=r.personid and r.type like '%5%' group by y.cultureType order by cultureType desc");
+		//获得国家级、省级科学技术奖励数量
+		obj= rsRcgzkhpfbService.findBySql("select count(*) from RS_TECHNOLOGICALHARVEST y join RS_PERSON r on y.personid=r.personid and y.harvestLevel in ('1','2') " +
+				" and y.adddate>=to_date('"+strYearStrat+"','YYYY-MM-dd') and y.adddate<=to_date('"+strYearEnd+"','YYYY-MM-dd') ");
+		int _sjxs = ((BigDecimal)obj.get(0)).intValue();
+		form.getRsRczytjnr().setHdgjjjlsl(_sjxs+"");
+		//党政人才
+		obj= rsRcgzkhpfbService.findBySql("select count(*) as count from RS_PERSONTYPE y join view_rs_persontype r on y.personid=r.personid and y.personType like '%1%' union" +
+				"select count(*) as count from RS_PERSONTYPE y join view_rs_persontype r on y.personid=r.personid and y.personType like '%1%'  and y.cultureType in ('1','2','3') ");
+		int dzrczl = ((BigDecimal)obj.get(0)).intValue();
+		form.getRsRczytjnr().setDzrczl(dzrczl+"");
+		//大学本科及以上学历人数及比例
+		int _bkysdzrczl = ((BigDecimal)obj.get(1)).intValue();
+		if(dzrczl != 0){
+			count = _bkysdzrczl/dzrczl;
+		}else{
+			count = 0;
+		}
+		form.getRsRczytjnr().setDzbkysrsbl(count+"");
+		//企业经<br />营管理<br />人才
+		obj= rsRcgzkhpfbService.findBySql("select count(*) as count from RS_PERSONTYPE y join view_rs_persontype r on y.personid=r.personid and y.personType like '%2%' union" +
+				"select count(*) as count from RS_PERSONTYPE y join view_rs_persontype r on y.personid=r.personid and y.personType like '%2%'  and y.cultureType in ('1','2','3') ");
+		int qyrczl = ((BigDecimal)obj.get(0)).intValue();
+		form.getRsRczytjnr().setQyrczl(dzrczl+"");
+		//大学本科及以上学历人数及比例
+		int _bkyqyrczl = ((BigDecimal)obj.get(1)).intValue();
+		if(dzrczl != 0){
+			count = _bkyqyrczl/qyrczl;
+		}else{
+			count = 0;
+		}
+		form.getRsRczytjnr().setQybkysszbl(count+"");
+		//专业技<br />术人才
+		obj= rsRcgzkhpfbService.findBySql("select count(*) as count from RS_PERSONTYPE y join view_rs_persontype r on y.personid=r.personid and y.personType like '%3%' union" +
+				"select count(*) as count from RS_PERSONTYPE y join view_rs_persontype r on y.personid=r.personid and y.personType like '%3%'  and y.cultureType in ('1','2','3') ");
+		int zyrczl = ((BigDecimal)obj.get(0)).intValue();
+		form.getRsRczytjnr().setZyjszl(zyrczl+"");
+		//大学本科及以上学历人数及比例
+		int _bkyzyrczl = ((BigDecimal)obj.get(1)).intValue();
+		if(zyrczl != 0){
+			count = _bkyzyrczl/zyrczl;
+		}else{
+			count = 0;
+		}
+		form.getRsRczytjnr().setZybkjysbl(count+"");
+		//高技<br />能人才
+		obj= rsRcgzkhpfbService.findBySql("select count(*) as count from RS_PERSONTYPE y join view_rs_persontype r on y.personid=r.personid and y.personType like '%4%' union" +
+				"select count(*) as count from RS_PERSONTYPE y join view_rs_persontype r on y.personid=r.personid and y.personType like '%4%'  and y.cultureType in ('1','2','3') ");
+		int gjnrczl = ((BigDecimal)obj.get(0)).intValue();
+		form.getRsRczytjnr().setRlzyzhslzs(gjnrczl+"");
+		//农村实<br />用人才
+		obj= rsRcgzkhpfbService.findBySql("select count(*) as count from RS_PERSONTYPE y join view_rs_persontype r on y.personid=r.personid and y.personType like '%5%'");
+		int ncrczl = ((BigDecimal)obj.get(0)).intValue();
+		form.getRsRczytjnr().setNcrczl(ncrczl+"");
+		//社会工<br />作人才
+		obj= rsRcgzkhpfbService.findBySql("select count(*) as count from RS_PERSONTYPE y join view_rs_persontype r on y.personid=r.personid and y.personType like '%6%'");
+		int sgrczl = ((BigDecimal)obj.get(0)).intValue();
+		form.getRsRczytjnr().setNcrczl(sgrczl+"");
+		//具有副高以上职称人才数量
+		obj= rsRcgzkhpfbService.findBySql("select count(*) from RS_TECHNICALLYMESS y join RS_PERSON r on y.personid=r.personid and y.technicallyLevel in('4','5') ");
+		int _fgzrs = ((BigDecimal)obj.get(0)).intValue();
+		form.getRsRczytjnr().setJyfgrcsl(_fgzrs+"");
+		//具有博士学位人才数量
+		obj= rsRcgzkhpfbService.findBySql("select count(*) from RS_PERSON r where y.cultureType like '1'");
+		int _bszrs = ((BigDecimal)obj.get(0)).intValue();
+		form.getRsRczytjnr().setJyfgrcsl(_bszrs+"");
+		rsRczytjnrService.saveOrUpdate(form.getRsRczytjnr());
+		return "rczytjnr";
+	}
+	public String queryTJ(){
+		return "rczytjnr";
+	}
+
+	public String ExportRczytjnrExecl() {
+		try {
+
+			String n = "全市人才资源统计内容及任务分工.xls";
+			String url = "\\file";
+			String fname = url + "\\";
+			String pathname = fname + n;
+			pathname = ServletActionContext.getRequest().getRealPath(pathname);
+
+			String year = form.getYear();
+			List<RsRczytjnr>  rc = rsRczytjnrService.find(year);
+		 
+			HSSFWorkbook workbook = generateExcleForRczytjnr( rc, pathname);
+
+			HttpServletResponse response = getResponse();
+			OutputStream os = response.getOutputStream();// 取得输出流
+			response.reset();// 清空输出流
+
+			String name = new String((year+n).getBytes("GB2312"), "ISO8859-1");
+			response.setHeader("Content-disposition", "attachment; filename=\""
+					+ name + "\"");// 设定输出文件头
+			response.setContentType("application/msexcel");// 定义输出类型
+			workbook.write(os);
+
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return this.NONE;
+		}
+	}
+
+	private HSSFWorkbook generateExcleForRczytjnr(List<RsRczytjnr> rc, String pathname) {
+		Excel excel = new Excel(pathname);
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		
+		if(rc!=null&&rc.size()>0){
+			workbook = excel.getWorkBook();
+			RsRczytjnr r = rc.get(0);
+
+			excel.cell(4,3).value(r.getRlzyzhslzs());
+			excel.cell(5,3).value(r.getRlzbgxl());
+			excel.cell(6,3).value(r.getRcgxl());
+			
+			
+			excel.cell(8,3).value(r.getRczyzl());
+			excel.cell(9,3).value(r.getRlzyzl());
+			excel.cell(10,3).value(r.getRczybl());
+			excel.cell(11,3).value(r.getBkysxlbl());
+			excel.cell(12,3).value(r.getGjnrcbl()); 
+			excel.cell(13,3).value(r.getNcsyrcjynx());
+			excel.cell(14,3).value(r.getGnpjsjynx());   
+			excel.cell(15,3).value(r.getXzldsjynx());   
+			excel.cell(16,3).value(r.getZyldnlrksjy()); 
+			excel.cell(17,3).value(r.getMwldlzyfry());  
+			excel.cell(18,3).value(r.getMbwrkkxjrs());  
+			excel.cell(19,3).value(r.getNmcyrys());     
+			excel.cell(20,3).value(r.getCyryszbl());    
+			                                            
+			excel.cell(22,3).value(r.getRlzbtzzbl());   
+			excel.cell(23,3).value(r.getRczxzjzbl());	 
+			excel.cell(24,3).value(r.getCzrlzbtzzbl());	 
+			excel.cell(25,3).value(r.getQsfmzlsql());	 
+			excel.cell(26,3).value(r.getQsgjzlsql());	 
+			excel.cell(27,3).value(r.getGjkjlwsll());	 
+			excel.cell(28,3).value(r.getGjkjlwyyl());	 
+			excel.cell(29,3).value(r.getHdgjjjlsl());	 
+			                                           
+			excel.cell(31,3).value(r.getDzrczl());     
+			excel.cell(32,3).value(r.getDzrcfkjzl());	 
+			excel.cell(33,3).value(r.getDzbkysrsbl());	 
+			excel.cell(34,3).value(r.getXlygwyszbl());	 
+			excel.cell(35,3).value(r.getQyrczl());		 
+			excel.cell(36,3).value(r.getQybkysszbl());	 
+			excel.cell(37,3).value(r.getQyyjwgzszbl()); 
+			excel.cell(38,3).value(r.getSchfsxprcs());	 
+			excel.cell(39,3).value(r.getFgyjjqyrcsl());	 
+			                                             
+			excel.cell(40,3).value(r.getQyzcyrcbl());    
+			excel.cell(41,3).value(r.getZyjszl());		 
+			excel.cell(42,3).value(r.getZyfjjrczl());	 
+			excel.cell(43,3).value(r.getZybkjysbl());	 
+			excel.cell(44,3).value(r.getZyzcyrcbl());	 
+			excel.cell(45,3).value(r.getQyzyjsrsbl());	 
+			excel.cell(46,3).value(r.getRlzyzhslzs());	 
+			excel.cell(47,3).value(r.getGjnfgjjsl());	 
+			
+			excel.cell(48,3).value(r.getNcrczl());    
+			excel.cell(49,3).value(r.getNczldlbl()); 
+			excel.cell(50,3).value(r.getShgzzl());	 
+			excel.cell(51,3).value(r.getShgsysl());	 
+			excel.cell(52,3).value(r.getShgszbl());	 
+			excel.cell(53,3).value(r.getJyfgrcsl());	 
+			excel.cell(54,3).value(r.getJybsrcsl());	 
+			excel.cell(55,3).value(r.getZzbshrcsl());	 
+			excel.cell(56,3).value(r.getYjgccrcsl()); 
+			
+			excel.cell(58,3).value(r.getXzgxqymd());     
+			excel.cell(59,3).value(r.getXzgjjyjzx());	 
+			excel.cell(60,3).value(r.getXzgjjqyzx());	 
+			excel.cell(61,3).value(r.getXzgjjsys());	 
+			excel.cell(62,3).value(r.getXzgcsys());	 
+			excel.cell(63,3).value(r.getXzkygzz());	 
+			
+		
+		}
+		
+
+		return workbook;
+	}
+
+	public RsRcgzkhpfbService getRsRcgzkhpfbService() {
+		return rsRcgzkhpfbService;
+	}
+
+	public void setRsRcgzkhpfbService(RsRcgzkhpfbService rsRcgzkhpfbService) {
+		this.rsRcgzkhpfbService = rsRcgzkhpfbService;
+	}
+
+	public RckhForm getForm() {
+		return form;
+	}
+
+	public void setForm(RckhForm form) {
+		this.form = form;
+	}
+
+	public RsRczytjnrService getRsRczytjnrService() {
+		return rsRczytjnrService;
+	}
+
+	public void setRsRczytjnrService(RsRczytjnrService rsRczytjnrService) {
+		this.rsRczytjnrService = rsRczytjnrService;
+	}
+	
+}

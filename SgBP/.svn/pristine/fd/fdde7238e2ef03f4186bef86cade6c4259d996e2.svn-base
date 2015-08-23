@@ -1,0 +1,26 @@
+#UserService wsdl
+RouterForUser=http://192.168.100.88:7011/myws/service/UserService?wsdl
+
+#RsPersonProxyService wsdl
+RsPersonProxyService=http://192.168.100.88:7011/SG/base/proxy/RsPersonProxyService?wsdl
+
+#WorkexperienceProxyService wsdl
+WorkexperienceProxyService=http://192.168.100.88:7011/SG/gzjl/proxy/WorkexperienceProxyService?wsdl
+
+#EducationProxyService wsdl
+EducationProxyService=http://192.168.100.88:7011/SG/jyjl/proxy/EducationProxyService?wsdl
+
+#TechnologicalHarvestProxyService wsdl
+TechnologicalHarvestProxyService=http://192.168.100.88:7011/SG/kjcg/proxy/TechnologicalHarvestProxyService?wsdl
+
+#TechnicallymessProxyService wsdl
+ProjectExperienceProxyService=http://192.168.100.88:7011/SG/xmjy/proxy/ProjectExperienceProxyService?wsdl
+
+#TechnicallymessProxyService
+TechnicallymessProxyService=http://192.168.100.88:7011/SG/zcxx/proxy/TechnicallymessProxyService?wsdl
+
+#upload directory
+FileRootPath=/data/MyPro
+
+#ScreenShotsPath root
+ScreenShotsPath=/file/ScreenShots

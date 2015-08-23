@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>DataGrid ContextMenu - jQuery EasyUI Demo</title>
+	<link rel="stylesheet" type="text/css" href="../themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../themes/icon.css">
+	<script type="text/javascript" src="../jquery/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="../jquery/jquery.easyui.min.js"></script>
+    
+    <link rel="stylesheet" type="text/css" href="css/reset.css" />
+    
+</head>
+<body>
+
+<div class="web_paht">
+    <div class="row_l web_paht_l">您的位置：毕业生申报&nbsp;&gt;&nbsp;基本信息</div>
+    <div class="row_r web_paht_r tool">
+        <a href="#" class="prev">返回</a>
+        <a href="#" class="refresh">刷新</a>
+        <a href="#" class="print">打印</a>
+        <a href="#" class="up">导出</a>
+    </div>
+</div>
+
+<div class="main_in">
+
+    <div id="nav" class="easyui-accordion" fit="true" border="false">
+         <div title="精确查询" headerCls="bar_title" icon="title" selected="true">
+              <div class="table_edit">
+                  <table>
+                      <tbody>
+                          <tr>
+                              <th width="90px">姓名：</th>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <th width="90px">身份证号：</th>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                              <th width="90px">电话号码：</th>
+                              <td><input name="" type="text" value="" class="inp" /></td>
+                          </tr>
+                      
+                          <tr>
+                              <th width="90px">人才类型：</th>
+                              <td colspan="5">
+                                  <input name="rclx" type="radio" value="" checked="checked" /> 党政人才&nbsp;&nbsp;
+                                  <input name="rclx" type="radio" value="" /> 企业经营管理人才&nbsp;&nbsp;
+                                  <input name="rclx" type="radio" value="" /> 专业技术人才&nbsp;&nbsp;
+                                  <input name="rclx" type="radio" value="" /> 高技能人才&nbsp;&nbsp;
+                                  <input name="rclx" type="radio" value="" /> 农村实用人才&nbsp;&nbsp;
+                                  <input name="rclx" type="radio" value="" /> 社工人才
+                              </td>
+                          </tr>
+                          <tr>
+                              <th width="90px">文化程度：</th>
+                              <td>
+                              <select name="whcd" class="inp">
+                                  <option>本科</option>
+                                  <option>专科</option>
+                                  <option>高中</option>
+                              </select>
+                              </td>
+                              <th width="90px">毕业时间：</th>
+                              <td>
+                              <select name="whcd" class="inp">
+                                  <option>2012-7</option>
+                                  <option>2011-7</option>
+                                  <option>2010-7</option>
+                              </select>
+                              </td>
+                              <th width="90px"></th>
+                              <td></td>
+                          </tr>
+                      </tbody>
+                      <tfoot>
+                          <tr><td colspan="6">
+                          <a href="#" class="btn_search" >搜 索</a>
+                          </td></tr>
+                      </tfoot>
+                  </table>
+              </div>
+              
+              <div class="table_edit">
+                  <table>
+                      <thead>
+                          <tr>
+                              <th><p align="center">姓名</p></th>
+                              <th><p align="center">性别</p></th>
+                              <th><p align="center">身份证号</p></th>
+                              <th><p align="center">政治面貌</p></th>
+                              <th><p align="center">文化程度</p></th>
+                              <th><p align="center">联系电话</p></th>
+                              <th><p align="center">毕业院校</p></th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                          </tr>
+                          <tr>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                          </tr>
+                          <tr>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                          </tr>
+                          <tr>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                          </tr>
+                          <tr>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+              
+              <div class="paging">
+                  <p class="row_l">
+                  共 <span style="color:#F00">145</span> 条 <span style="color:#F00">10</span> 页 <span style="color:#F00">15 </span>条/页 第 <span style="color:#F00">1</span> 页 
+                  </p>
+                  <p class="row_r">
+                  <a href="#none"><img src="images/page/ico_p1.gif" width="12" height="11" align="absmiddle" /> 首页</a>&nbsp;&nbsp;
+                  <a href="#none"><img src="images/page/ico_p2.gif" width="7" height="11" align="absmiddle" /> 前一页</a>&nbsp;&nbsp;
+                  <a href="#none"><img src="images/page/ico_p3.gif" width="7" height="11" align="absmiddle" /> 下一页</a>&nbsp;&nbsp;
+                  <a href="#none"><img src="images/page/ico_p4.gif" width="12" height="11" align="absmiddle" /> 尾页</a>
+                  转到第 <input name="PageNo1" type="text" size="3" style="width:36px;height:18px; border:#B8B8B8 1px solid; vertical-align:-2px" /> 页&nbsp;
+                  <a><img src="images/page/ico_go.gif" align="absmiddle" /></a>
+                  </p>
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    
+
+	
+</div>
+
+</body>
+</html>

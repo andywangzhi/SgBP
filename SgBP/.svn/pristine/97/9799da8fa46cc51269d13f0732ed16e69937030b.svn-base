@@ -1,0 +1,205 @@
+package com.gzepro.internal.query.model;
+
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+/**
+ * RsSocialworker entity. @author MyEclipse Persistence Tools
+ * author:张建薇
+ * addDate:2013-03-22
+ * description:持证社工人
+ */
+@Entity
+@Table(name = "RS_SOCIALWORKER")
+public class RsSocialworker implements java.io.Serializable {
+	private static final long serialVersionUID = -7928119002589450402L;
+	
+	private Long swid;
+	private String swdate;
+	private Long t1;
+	private Long t2;
+	private Long t3;
+	private Long t4;
+	private Long t5;
+	private Long t6;
+	private Long t7;
+	private Long t8;
+	private Long t9;
+	private Long t10;
+	private Long t11;
+	private Long t12;
+	private Long t13;
+
+	// Constructors
+
+	/** default constructor */
+	public RsSocialworker() {
+	}
+
+	/** full constructor */
+	public RsSocialworker(String swdate, Long t1, Long t2,Long t3,Long t4,Long t5,Long t6,
+			Long t7,Long t8,Long t9,Long t10,Long t11,Long t12,Long t13) {
+		this.swdate = swdate;
+		this.t1 = t1;
+		this.t2 = t2;
+		this.t3 = t3;
+		this.t4 = t4;
+		this.t5 = t5;
+		this.t6 = t6;
+		this.t7 = t7;
+		this.t8 = t8;
+		this.t9 = t9;
+		this.t10 = t10;
+		this.t11 = t11;
+		this.t12 = t12;
+		this.t13 = t13;
+	}
+
+	// Property accessors
+
+	@Id  
+    @Column(name="swid")
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq_socialWorker")      
+    @SequenceGenerator(name="seq_socialWorker",allocationSize=1,initialValue=1, sequenceName="SEQ_RS_SOCIALWORKER ") 
+	public Long getSwid() {
+		return this.swid;
+	}
+
+	public void setSwid(Long swid) {
+		this.swid = swid;
+	}
+
+	@Column(name = "swdate", length = 32)
+	public String getSwdate() {
+		return this.swdate;
+	}
+
+	public void setSwdate(String swdate) {
+		this.swdate = swdate;
+	}
+
+	@Column(name = "t1", length = 2)
+	public Long getT1() {
+		return t1;
+	}
+
+	public void setT1(Long t1) {
+		this.t1 = t1;
+	}
+
+	@Column(name = "t2", length = 2)
+	public Long getT2() {
+		return t2;
+	}
+
+	public void setT2(Long t2) {
+		this.t2 = t2;
+	}
+
+	@Column(name = "t3", length = 2)
+	public Long getT3() {
+		return t3;
+	}
+
+	public void setT3(Long t3) {
+		this.t3 = t3;
+	}
+
+	@Column(name = "t4", length = 2)
+	public Long getT4() {
+		return t4;
+	}
+
+	public void setT4(Long t4) {
+		this.t4 = t4;
+	}
+
+	@Column(name = "t5", length = 2)
+	public Long getT5() {
+		return t5;
+	}
+
+	public void setT5(Long t5) {
+		this.t5 = t5;
+	}
+
+	@Column(name = "t6", length = 2)
+	public Long getT6() {
+		return t6;
+	}
+
+	public void setT6(Long t6) {
+		this.t6 = t6;
+	}
+
+	@Column(name = "t7", length = 2)
+	public Long getT7() {
+		return t7;
+	}
+
+	public void setT7(Long t7) {
+		this.t7 = t7;
+	}
+
+	@Column(name = "t8", length = 2)
+	public Long getT8() {
+		return t8;
+	}
+
+	public void setT8(Long t8) {
+		this.t8 = t8;
+	}
+
+	@Column(name = "t9", length = 2)
+	public Long getT9() {
+		return t9;
+	}
+
+	public void setT9(Long t9) {
+		this.t9 = t9;
+	}
+
+	@Column(name = "t10", length = 2)
+	public Long getT10() {
+		return t10;
+	}
+
+	public void setT10(Long t10) {
+		this.t10 = t10;
+	}
+
+	@Column(name = "t11", length = 2)
+	public Long getT11() {
+		return t11;
+	}
+
+	public void setT11(Long t11) {
+		this.t11 = t11;
+	}
+
+	@Column(name = "t12", length = 2)
+	public Long getT12() {
+		return t12;
+	}
+
+	public void setT12(Long t12) {
+		this.t12 = t12;
+	}
+
+	@Column(name = "t13", length = 2)
+	public Long getT13() {
+		return t13;
+	}
+
+	public void setT13(Long t13) {
+		this.t13 = t13;
+	}
+
+}

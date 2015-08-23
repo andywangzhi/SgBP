@@ -1,0 +1,73 @@
+##########Account#################
+sql.account.findAll =select * from sys_account where valid ='1' and  account_name = ?
+hql.account.queryAcountByName =from Account u where u.valid ='1' and  u.name = ?
+hql.account.findAll =from Account u
+hql.account.findAllByDeptId =from Account u where u.valid \='1' and  u.id in (select ad.accountId from AccountDept ad where ad.deptId \= ?) 
+hql.account.findGroupManager =from Account u where u.valid \='1' and  u.id in (select gm.accountId from GroupManager gm where gm.groupId \= ?) 
+hql.account.findRoleAccount =from Account u where u.valid \='1' and  u.id in (select ar.accountId from AccountRole ar where ar.roleId \= ?) 
+hql.account.findAccountExist = from Account u where u.name = ?
+##########Role#######################
+hql.dept.findAll=from Dept d where d.valid \='1' 
+
+##########Role#######################
+hql.role.findAll=from Role r
+
+##########OperType########################
+hql.operType.findAll = from OperType o where o.valid \='1'  order by o.id asc 
+hql.operType.checkOperName = from OperType o where o.valid ='1' and o.typename = ?
+hql.operType.findDef = from OperType o where o.valid ='1' and o.def = '1'
+hql.operType.findNotDef = from OperType o where o.valid \='1' and o.def \= '0'  
+
+#########SysLog#################
+hql.sysLog.findAll=from SysLog r
+
+#########Menu#################
+hql.menu.findRoot=from Menu r where r.valid \='1' and r.parentId is null order by r.priority asc
+hql.menu.findAll=from Menu r  where r.valid \='1' order by r.priority asc
+hql.menu.findChild=select distinct f from Menu f where f.valid \='1' and f.parentId \= ?  order by f.priority asc  
+hql.menu.findAllRole=select distinct f from Menu f where f.valid \='1' and f.id in(select gm.menuId from GroupMenu gm where gm.groupId \= ? )  order by f.priority asc  
+hql.menu.findRoleRoot=select distinct f from Menu f where f.valid \='1' and f.parentId is null and f.id in(select gm.menuId from GroupMenu gm where gm.groupId \= ? )  order by f.priority asc  
+hql.menu.findRoleChild=select distinct f from Menu f where f.valid \='1' and f.parentId \= ? and f.id in(select gm.menuId from GroupMenu gm where gm.groupId \= ? )  order by f.priority asc  
+hql.menu.findRoleMenu=select distinct f from RoleMenu f where f.menuId \= ? and f.roleId \= ? 
+hql.menu.findRoleMenuSec=select distinct f from RoleMenu f where f.menuId \= ? and f.roleId \= ?  and f.rightId \= ? and rightType \= ?
+hql.menu.findOper=select distinct f from MenuOper f where f.menuId \= ? 
+hql.menu.findDic=select distinct f from Dictionary f where f.valid \='1' and  f.menuId \= ? 
+hql.menu.findGroup=select distinct f from GroupMenu f where f.menuId \= ? and f.groupId \= ? 
+
+#########Dictionary#################
+hql.dictionary.findAll=from Dictionary r
+
+#########Dictionary#################
+hql.sysResource.findAll=from SysResource r
+
+#########group#################
+hql.group.findAll=from Group r
+sql.group.findUser=select sg.group_id,sg.group_level from sys_account_role ar,sys_role sr,sys_group sg where sg.is_valid='1' and ar.role_id=sr.role_id and sr.is_valid='1' and sr.group_id=sg.group_id and sg.is_valid='1' and ar.account_id= ?
+sql.group.findManager=select sg.group_id,sg.group_level from sys_group_account ga,sys_group sg where sg.is_valid\='1' and sg.group_id\=ga.group_id and  ga.account_id\=? 
+
+#########Online#################
+hql.online.findAll=from Online r
+hql.online.queryByLoginId =from Online u where u.loginId = ?
+sql.online.deleteOverData=delete from sys_online where round((sysdate-last_visit_date)*24*60)>=30
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

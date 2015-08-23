@@ -1,0 +1,453 @@
+package com.gzepro.internal.query.system.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+
+/**
+ * RsRcgzkhpfb entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "RS_RCGZKHPFB")
+public class RsRcgzkhpfb implements java.io.Serializable {
+
+	// Fields
+
+	private String pk;
+	private String year;
+	private String adddate;
+	private String lastupdatetime;
+	private String adduser;
+	private String ztyjrcgz;
+	private String ctrcgzwj;
+	private String jlrcxxk;
+	private String bgrcgzqk;
+	private String rczykfzxzj;
+	private String xcyxrcsj;
+	private String sszdrcgz;
+	private String jqrcyj;
+	private String bsxwbl;
+	private String fgzc;
+	private String ssrc;
+	private String bkrc;
+	private String jqrcpy;
+	private String jsfg;
+	private String jszg;
+	private String kxjsjl;
+	private String sjjl;
+	private String bsjl;
+	private String zysqsl;
+	private String gxjsqy;
+	private String gcjsyjkfzx;
+	private String rczyzlhzzl;
+	private String qyjyglrc;
+	private String zyjsrc;
+	private String ncsyrc;
+	private String ncldl;
+	private String shgzrc;
+	private String srcgzxm;
+	private String yjqrjh;
+	private String yjgdscxtd;
+	private String pcounty;
+	private String countall;
+	private String endcountall;
+	// Constructors
+
+	/** default constructor */
+	public RsRcgzkhpfb() {
+	}
+
+	/** full constructor */
+	public RsRcgzkhpfb(String year, String adddate, String lastupdatetime,
+			String adduser, String ztyjrcgz, String ctrcgzwj, String jlrcxxk,
+			String bgrcgzqk, String rczykfzxzj, String xcyxrcsj,
+			String sszdrcgz, String jqrcyj, String bsxwbl, String fgzc,
+			String ssrc, String bkrc, String jqrcpy, String jsfg, String jszg,
+			String kxjsjl, String sjjl, String bsjl, String zysqsl,
+			String gxjsqy, String gcjsyjkfzx, String rczyzlhzzl,
+			String qyjyglrc, String zyjsrc, String ncsyrc, String ncldl,
+			String shgzrc, String srcgzxm, String yjqrjh, String yjgdscxtd) {
+		this.year = year;
+		this.adddate = adddate;
+		this.lastupdatetime = lastupdatetime;
+		this.adduser = adduser;
+		this.ztyjrcgz = ztyjrcgz;
+		this.ctrcgzwj = ctrcgzwj;
+		this.jlrcxxk = jlrcxxk;
+		this.bgrcgzqk = bgrcgzqk;
+		this.rczykfzxzj = rczykfzxzj;
+		this.xcyxrcsj = xcyxrcsj;
+		this.sszdrcgz = sszdrcgz;
+		this.jqrcyj = jqrcyj;
+		this.bsxwbl = bsxwbl;
+		this.fgzc = fgzc;
+		this.ssrc = ssrc;
+		this.bkrc = bkrc;
+		this.jqrcpy = jqrcpy;
+		this.jsfg = jsfg;
+		this.jszg = jszg;
+		this.kxjsjl = kxjsjl;
+		this.sjjl = sjjl;
+		this.bsjl = bsjl;
+		this.zysqsl = zysqsl;
+		this.gxjsqy = gxjsqy;
+		this.gcjsyjkfzx = gcjsyjkfzx;
+		this.rczyzlhzzl = rczyzlhzzl;
+		this.qyjyglrc = qyjyglrc;
+		this.zyjsrc = zyjsrc;
+		this.ncsyrc = ncsyrc;
+		this.ncldl = ncldl;
+		this.shgzrc = shgzrc;
+		this.srcgzxm = srcgzxm;
+		this.yjqrjh = yjqrjh;
+		this.yjgdscxtd = yjgdscxtd;
+	}
+
+	// Property accessors
+	
+	@Id  
+    @Column(name="PK",unique = true, nullable = false, length = 35)
+	@GeneratedValue(generator = "T_PERSON_GENERATOR")
+	@GenericGenerator(name = "T_PERSON_GENERATOR", strategy = "com.gzepro.internal.query.base.id.SgBPIdentifierGenerator")    
+	public String getPk() {
+		return this.pk;
+	}
+
+	public void setPk(String pk) {
+		this.pk = pk;
+	}
+
+	@Column(name = "YEAR", length = 10)
+	public String getYear() {
+		return this.year;
+	}
+
+	public void setYear(String year) {
+		this.year = year;
+	}
+
+	@Column(name = "ADDDATE", length = 50)
+	public String getAdddate() {
+		return this.adddate;
+	}
+
+	public void setAdddate(String adddate) {
+		this.adddate = adddate;
+	}
+
+	@Column(name = "LASTUPDATETIME", length = 50)
+	public String getLastupdatetime() {
+		return this.lastupdatetime;
+	}
+
+	public void setLastupdatetime(String lastupdatetime) {
+		this.lastupdatetime = lastupdatetime;
+	}
+
+	@Column(name = "ADDUSER", length = 50)
+	public String getAdduser() {
+		return this.adduser;
+	}
+
+	public void setAdduser(String adduser) {
+		this.adduser = adduser;
+	}
+
+	@Column(name = "ZTYJRCGZ", length = 5)
+	public String getZtyjrcgz() {
+		return this.ztyjrcgz;
+	}
+
+	public void setZtyjrcgz(String ztyjrcgz) {
+		this.ztyjrcgz = ztyjrcgz;
+	}
+
+	@Column(name = "CTRCGZWJ", length = 5)
+	public String getCtrcgzwj() {
+		return this.ctrcgzwj;
+	}
+
+	public void setCtrcgzwj(String ctrcgzwj) {
+		this.ctrcgzwj = ctrcgzwj;
+	}
+
+	@Column(name = "JLRCXXK", length = 5)
+	public String getJlrcxxk() {
+		return this.jlrcxxk;
+	}
+
+	public void setJlrcxxk(String jlrcxxk) {
+		this.jlrcxxk = jlrcxxk;
+	}
+
+	@Column(name = "BGRCGZQK", length = 5)
+	public String getBgrcgzqk() {
+		return this.bgrcgzqk;
+	}
+
+	public void setBgrcgzqk(String bgrcgzqk) {
+		this.bgrcgzqk = bgrcgzqk;
+	}
+
+	@Column(name = "RCZYKFZXZJ", length = 5)
+	public String getRczykfzxzj() {
+		return this.rczykfzxzj;
+	}
+
+	public void setRczykfzxzj(String rczykfzxzj) {
+		this.rczykfzxzj = rczykfzxzj;
+	}
+
+	@Column(name = "XCYXRCSJ", length = 5)
+	public String getXcyxrcsj() {
+		return this.xcyxrcsj;
+	}
+
+	public void setXcyxrcsj(String xcyxrcsj) {
+		this.xcyxrcsj = xcyxrcsj;
+	}
+
+	@Column(name = "SSZDRCGZ", length = 5)
+	public String getSszdrcgz() {
+		return this.sszdrcgz;
+	}
+
+	public void setSszdrcgz(String sszdrcgz) {
+		this.sszdrcgz = sszdrcgz;
+	}
+
+	@Column(name = "JQRCYJ", length = 5)
+	public String getJqrcyj() {
+		return this.jqrcyj;
+	}
+
+	public void setJqrcyj(String jqrcyj) {
+		this.jqrcyj = jqrcyj;
+	}
+
+	@Column(name = "BSXWBL", length = 5)
+	public String getBsxwbl() {
+		return this.bsxwbl;
+	}
+
+	public void setBsxwbl(String bsxwbl) {
+		this.bsxwbl = bsxwbl;
+	}
+
+	@Column(name = "FGZC", length = 5)
+	public String getFgzc() {
+		return this.fgzc;
+	}
+
+	public void setFgzc(String fgzc) {
+		this.fgzc = fgzc;
+	}
+
+	@Column(name = "SSRC", length = 5)
+	public String getSsrc() {
+		return this.ssrc;
+	}
+
+	public void setSsrc(String ssrc) {
+		this.ssrc = ssrc;
+	}
+
+	@Column(name = "BKRC", length = 5)
+	public String getBkrc() {
+		return this.bkrc;
+	}
+
+	public void setBkrc(String bkrc) {
+		this.bkrc = bkrc;
+	}
+
+	@Column(name = "JQRCPY", length = 5)
+	public String getJqrcpy() {
+		return this.jqrcpy;
+	}
+
+	public void setJqrcpy(String jqrcpy) {
+		this.jqrcpy = jqrcpy;
+	}
+
+	@Column(name = "JSFG", length = 5)
+	public String getJsfg() {
+		return this.jsfg;
+	}
+
+	public void setJsfg(String jsfg) {
+		this.jsfg = jsfg;
+	}
+
+	@Column(name = "JSZG", length = 5)
+	public String getJszg() {
+		return this.jszg;
+	}
+
+	public void setJszg(String jszg) {
+		this.jszg = jszg;
+	}
+
+	@Column(name = "KXJSJL", length = 5)
+	public String getKxjsjl() {
+		return this.kxjsjl;
+	}
+
+	public void setKxjsjl(String kxjsjl) {
+		this.kxjsjl = kxjsjl;
+	}
+
+	@Column(name = "SJJL", length = 5)
+	public String getSjjl() {
+		return this.sjjl;
+	}
+
+	public void setSjjl(String sjjl) {
+		this.sjjl = sjjl;
+	}
+
+	@Column(name = "BSJL", length = 5)
+	public String getBsjl() {
+		return this.bsjl;
+	}
+
+	public void setBsjl(String bsjl) {
+		this.bsjl = bsjl;
+	}
+
+	@Column(name = "ZYSQSL", length = 5)
+	public String getZysqsl() {
+		return this.zysqsl;
+	}
+
+	public void setZysqsl(String zysqsl) {
+		this.zysqsl = zysqsl;
+	}
+
+	@Column(name = "GXJSQY", length = 5)
+	public String getGxjsqy() {
+		return this.gxjsqy;
+	}
+
+	public void setGxjsqy(String gxjsqy) {
+		this.gxjsqy = gxjsqy;
+	}
+
+	@Column(name = "GCJSYJKFZX", length = 5)
+	public String getGcjsyjkfzx() {
+		return this.gcjsyjkfzx;
+	}
+
+	public void setGcjsyjkfzx(String gcjsyjkfzx) {
+		this.gcjsyjkfzx = gcjsyjkfzx;
+	}
+
+	@Column(name = "RCZYZLHZZL", length = 50)
+	public String getRczyzlhzzl() {
+		return this.rczyzlhzzl;
+	}
+
+	public void setRczyzlhzzl(String rczyzlhzzl) {
+		this.rczyzlhzzl = rczyzlhzzl;
+	}
+
+	@Column(name = "QYJYGLRC", length = 50)
+	public String getQyjyglrc() {
+		return this.qyjyglrc;
+	}
+
+	public void setQyjyglrc(String qyjyglrc) {
+		this.qyjyglrc = qyjyglrc;
+	}
+
+	@Column(name = "ZYJSRC", length = 50)
+	public String getZyjsrc() {
+		return this.zyjsrc;
+	}
+
+	public void setZyjsrc(String zyjsrc) {
+		this.zyjsrc = zyjsrc;
+	}
+
+	@Column(name = "NCSYRC", length = 50)
+	public String getNcsyrc() {
+		return this.ncsyrc;
+	}
+
+	public void setNcsyrc(String ncsyrc) {
+		this.ncsyrc = ncsyrc;
+	}
+
+	@Column(name = "NCLDL", length = 5)
+	public String getNcldl() {
+		return this.ncldl;
+	}
+
+	public void setNcldl(String ncldl) {
+		this.ncldl = ncldl;
+	}
+
+	@Column(name = "SHGZRC", length = 5)
+	public String getShgzrc() {
+		return this.shgzrc;
+	}
+
+	public void setShgzrc(String shgzrc) {
+		this.shgzrc = shgzrc;
+	}
+
+	@Column(name = "SRCGZXM", length = 5)
+	public String getSrcgzxm() {
+		return this.srcgzxm;
+	}
+
+	public void setSrcgzxm(String srcgzxm) {
+		this.srcgzxm = srcgzxm;
+	}
+
+	@Column(name = "YJQRJH", length = 5)
+	public String getYjqrjh() {
+		return this.yjqrjh;
+	}
+
+	public void setYjqrjh(String yjqrjh) {
+		this.yjqrjh = yjqrjh;
+	}
+
+	@Column(name = "YJGDSCXTD", length = 5)
+	public String getYjgdscxtd() {
+		return this.yjgdscxtd;
+	}
+
+	public void setYjgdscxtd(String yjgdscxtd) {
+		this.yjgdscxtd = yjgdscxtd;
+	}
+	@Column(name = "PCOUNTY", length = 5)
+	public String getPcounty() {
+		return pcounty;
+	}
+
+	public void setPcounty(String pcounty) {
+		this.pcounty = pcounty;
+	}
+	@Column(name = "COUNTALL", length = 5)
+	public String getCountall() {
+		return countall;
+	}
+
+	public void setCountall(String countall) {
+		this.countall = countall;
+	}
+	@Column(name = "ENDCOUNTALL", length = 5)
+	public String getEndcountall() {
+		return endcountall;
+	}
+
+	public void setEndcountall(String endcountall) {
+		this.endcountall = endcountall;
+	}
+
+}

@@ -1,0 +1,124 @@
+package com.gzepro.internal.query.system.service;
+
+import java.util.Date;
+import java.util.List;
+
+import com.gzepro.internal.query.common.util.Paging;
+import com.gzepro.internal.query.model.RsBatchlog;
+import com.gzepro.internal.query.model.RsEducationexperience;
+import com.gzepro.internal.query.model.RsPerson;
+import com.gzepro.internal.query.model.RsProjectexperience;
+import com.gzepro.internal.query.model.RsResult;
+import com.gzepro.internal.query.model.RsTechnicallymess;
+import com.gzepro.internal.query.model.RsTechnologicalharvest;
+import com.gzepro.internal.query.model.RsWorkexperience;
+import com.gzepro.internal.query.soa.service.user.dto.rcsm.base.QueryRsPersonListSO;
+
+/**
+ * 
+ * 
+ * Exel批量导入的接口serice
+ * 
+ * @author 王志 E-mail:wangzhi291@163.com
+ * @version 1.0 Created On: 2012-7-24
+ */
+public interface ExcelService {
+	/**
+	 * 增加一条人员基本信息数据
+	 * 
+	 * @param account
+	 */
+	public RsPerson add(RsPerson person);
+
+	public RsEducationexperience addRsEducationexperience(
+			RsEducationexperience educationexperience);
+
+	public RsProjectexperience addRsProjectexperience(
+			RsProjectexperience projectexperience);
+
+	public RsTechnicallymess addRsTechnicallymess(RsTechnicallymess rsTechnicallymess);
+
+	public RsWorkexperience addRsWorkexperience(RsWorkexperience rsWorkexperience);
+
+	public RsTechnologicalharvest addRsTechnologicalharvest(
+			RsTechnologicalharvest rsTechnologicalharvest);
+	/**
+	 * 
+	 * @param lognumber 批次编号
+	 * @param fromDate  开始时间
+	 * @param todate	结束时间
+	 * @param adduser	经手人
+	 * @param typeid	类型ID
+	 * @return
+	 */
+	public Paging queryRsBatchlog(String lognumber,Date fromDate,Date todate,String adduser, String typeid,Paging paramPaging);
+	
+	public RsBatchlog addBatchlog(RsBatchlog batchlog);
+
+	/**
+	 * 通过身份证号码查询是不是已经录入了的人员
+	 * 
+	 * @param idcard
+	 */
+	public boolean queryRsperson(String idcard);
+	
+	/**
+	 * 提供给批量导入生成批次所用
+	 * 
+	 * @return 批量导入的总次数
+	 */
+	public Long queryBatchlogNumber();
+	
+	/**
+	 * 精确查询人员信息 供execl导入
+	 * 
+	 * @param name
+	 * @param idcard
+	 * @param personType
+	 * @param count
+	 * @return
+	 */
+	public Paging jqQueryRsperson(String name,String idcard,String unitlvl,Paging p,String personType,String pcounty);
+	
+	/**
+	 * 精确查询人员信息的数量
+	 * 
+	 * @param name
+	 * @param idcard
+	 * @param personType
+	 * @return
+	 */
+	public Long jqQueryRsperson(String name,String idcard,String personType,String pcounty,String unitlvl);
+	
+	/**
+	 * 模糊查询人员信息
+	 * 
+	 * @param name
+	 * @param idcard
+	 * @param personType
+	 * @return
+	 */
+	public Paging mhQueryRsperson(QueryRsPersonListSO so,Paging p);
+		
+	/**
+	 * 模糊查询人员信息的数量
+	 * 
+	 * @param name
+	 * @param idcard
+	 * @param personType
+	 * @return
+	 */
+	public Long mhQueryRsperson(QueryRsPersonListSO so);
+	
+	
+	/**
+	 * 
+	 * @param name
+	 * @param idcard
+	 * @param personType
+	 * @param p
+	 * @return
+	 */
+	public List<RsResult> tjQueryRsperson();
+
+}
